@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Nunito";
+  src: url('/src/fonts/nunitoItalic.ttf') format('ttf');
+}
+
+.react-datepicker__year-select {
+
+    font-size: 13px;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 1px;
+
+
+}
+
+.react-datepicker__month-select {
+    font-size: 13px;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 1px;
+}
+
+@keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  } 
+  .animate-fadein {
+    animation: fadein 2s;
+  }
+  .animate-fadeout {
+    animation: fadeout 1s;
+  }
