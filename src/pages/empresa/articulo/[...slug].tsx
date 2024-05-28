@@ -1,4 +1,4 @@
-import { FamiliaFormValues, IEmpresa, IFamilia, IYears } from "@/interfaces/creation";
+import { FamiliaFormValues, IEmpresa, IFamilia, IYears, ICuenta } from "@/interfaces/creation";
 import {
   api_getCuenta,
   api_getFamilias,
@@ -43,7 +43,8 @@ export default function Index() {
   const [slugs, setSlugs] = useState<{ familia: string; subFamilia: string }>();
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
   const [dataFamilia, setDataFamilia] = useState<IFamilia>();
-  const [dataYears, setDataYears] = useState<IYears>();
+  const [dataCuentas, setDataCuentas] = useState<ICuenta[]>([]);
+  const [dataYears, setDataYears] = useState<IYears[]>([]);
   const [createSubFamily,SetCreateSubFamily] = useState<Boolean>(false);
   const getEmpresa = async (id: string) => {
     try {
@@ -72,10 +73,11 @@ export default function Index() {
     }
   };
 
+
   const getCuentas = async (id: string) => {
     try {
       const dataGet = await api_getCuenta(jwt,id);
-      setDataFamilia(dataGet.data.data);
+      setDataCuentas(dataGet.data.dataList);
     } catch (error) {
       console.log(error);
     }
@@ -132,8 +134,8 @@ export default function Index() {
           </div>
           <div className="animate-fadein ">
           <Divider/>
-          {!createSubFamily && <SubFamilia  create={() =>SetCreateSubFamily(true)} guid={slugs?.familia} familyGuid={slugs.subFamilia} />}
-          {createSubFamily && <CreateSubFamily  change={() =>SetCreateSubFamily(false)}/>}
+          {!createSubFamily && <SubFamilia  create={() =>SetCreateSubFamily(true)} guid={slugs?.familia} familyGuid={slugs.subFamilia}/>}
+          {createSubFamily && <CreateSubFamily  change={() =>SetCreateSubFamily(false)} guid={slugs?.familia} familyGuid={slugs.subFamilia} yearGuid={dataYears} cuentasGuid={dataCuentas}/>}
           </div>
         </div>
       </div>
