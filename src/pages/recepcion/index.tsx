@@ -8,7 +8,7 @@ import { useInfiniteQuery } from "react-query";
 import React from "react";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { IEmpresa } from "@/interfaces/creation";
-import { FaFilePen } from "react-icons/fa6";
+import { FaDolly, FaFilePen } from "react-icons/fa6";
 
 
 export default function index() {
@@ -121,42 +121,50 @@ export default function index() {
 
 function Element({ element }: { element: IEmpresa }) {
   const router = useRouter();
-  const dataEmpresa = (empresaId: string) => {
-    router.push(`/recepcion/cotizacion/${empresaId}`);
-  }
+
 
   const deleteElement = () => {
     console.log("delete");
   }
 
   return (
-    <div className="hover:shadow-md border rounded-md shadow animate-fadein flex flex-col justify-between" style={{ minHeight: "150px" }}>
-      <div className="flex flex-col justify-between h-full">
-        <div className="flex flex-row justify-between p-2">
-          <div className="basis-1/2 flex flex-col justify-left text-left">
-            <span className="font-bold mb-2">Nombre</span>
-            <span className="text-sm align-left">
-              {element.razonSocial}
-            </span>
-          </div>
-          <div className="basis-1/2 flex flex-col justify-left text-left">
-            <span className="font-bold mb-2 text-right">Giro</span>
-            <span className="text-sm text-right">
-              {element.giro ? element.giro : "Sin información"}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-row p-3 bg-[#FAF6FF] justify-between">
-          <span className="basis-1/2 font-bold text-sm text-left mt-auto">Acciones</span>
-          <a
-              onClick={() => dataEmpresa(element.id)} 
-              className="flex items-center cursor-pointer hover:font-bold"
-            >
-              <span className="text-sm underline text-primary">Cotizaciones</span>
-              <FaFilePen className="text-primary ml-2" />
-            </a>
-        </div>
+    <div
+    className=" hover:shadow-md  border rounded-md  shadow animate-fadein"
+  >
+    <div className="flex flex-row justify-between p-2">
+      <div className="basis-1/2 flex flex-col justify-left text-left">
+        <span className="font-bold mb-2">Razon social</span>
+        <span className="text-sm align-left">
+          {element.razonSocial}
+        </span>
+      </div>
+      <div className="basis-1/2 flex flex-col justify-left text-right ">
+        <span className="font-bold mb-2">Giro</span>
+        <span className="text-sm align-left">
+         {element.giro ? element.giro : "No informado"}
+        </span>
       </div>
     </div>
+    <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
+      <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
+      <div className="flex  flex-wrap justify-end space-x-4">
+        <a
+          onClick={() => router.push(`/recepcion/cotizacion/${element.id}`)} 
+          className="flex items-center cursor-pointer hover:font-bold"
+        >
+          <span className="text-sm underline text-primary">Cotizaciones</span>
+          <FaFilePen className="text-primary ml-2" />
+        </a>
+        <a
+          onClick={() => {router.push(`/recepcion/${element.id}`)}}
+          className="flex items-center cursor-pointer hover:font-bold"
+        >
+          <span className="text-sm underline text-primary">Recepcion</span>
+        <FaDolly className="text-primary ml-2" />
+        </a>
+
+      </div>
+    </div>
+  </div>
   );
 }

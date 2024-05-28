@@ -16,3 +16,11 @@ export  const TipoAlmacenSchema = z.object({
     Nombre: z.string({required_error:"Campo requerido"}).min(1,{message: "Campo requerido"}).max(50,{message: "Campo con 50 caracteres maximos"}),
     
   });
+
+  export const RecepcionSchema = z.object({
+    CentroCostoId: z.string({required_error:"Campo requerido"}).default(""),
+    bodegaId:z.string({required_error:"Campo requerido"}),
+    FechaDocumento: z.date({required_error:"Campo requerido"}),
+    year: z.number({required_error:"Campo requerido"}),
+    TipoDocumento:z.number({required_error:"Campo requerido"}),
+  })

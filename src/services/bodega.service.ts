@@ -65,8 +65,8 @@ export function api_getOneEmpresa(bearer: string, id: string) {
 export function api_postBodegas(bearer: string, data: any) {
   return api.post(`bodega`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getBodegas(bearer: string, page: number) {
-  return api.get(`bodega?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getBodegas(bearer: string,centroCosto:string) {
+  return api.get(`bodega/${centroCosto}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_postAlmacen(bearer: string, data: any) {
   return api.post(`almacen`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
