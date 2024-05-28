@@ -1,5 +1,5 @@
 import { IBodega, ICentroCosto, IEmpresa } from "@/interfaces/creation";
-import { api_getBodegas, api_getOneEmpresa } from "@/services/bodega.service";
+import { api_getArticulos, api_getBodegas, api_getOneEmpresa } from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +39,10 @@ export default function Index() {
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
   const [centroCostos, setCentroCostos] = useState<ICentroCosto[]>([]);
   const [bodegas, setBodegas] = useState<IBodega[]>([]);
+  const [meta, setMeta] = useState<{ total: number; pages: number }>({
+    total: 0,
+    pages: 0,
+  });
   const getEmpresa = async (id: string) => {
     try {
       const dataGet = await api_getOneEmpresa(jwt, id);
@@ -59,6 +63,16 @@ export default function Index() {
     }
   };
 
+  const getArticulos = async (id:string) => {
+    try {
+      const dataGet = await api_getArticulos(jwt, id,meta.pages+1);
+      setBodegas(dataGet.data.dataList);
+    } catch (error) {
+      // router.back();
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (!router.query.slug) {
       // router.back();
@@ -69,6 +83,7 @@ export default function Index() {
     setSlugs({
       empresa: empresa,
     });
+    getArticulos(empresa);
   }, [router.query]);
 
   if (!dataEmpresa) return "cargando";
