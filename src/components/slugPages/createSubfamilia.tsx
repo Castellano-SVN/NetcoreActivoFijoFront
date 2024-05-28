@@ -89,7 +89,7 @@ export default function CreateSubFamily(props: props) {
       // await api_postSubFamilias(jwt, data);
       // handleClose();
       // refetch();
-      // toast.success("Familia guardada correctamente");
+      // toast.success("Sub-Familia guardada correctamente");
     } catch (error) {}
   };
   return (

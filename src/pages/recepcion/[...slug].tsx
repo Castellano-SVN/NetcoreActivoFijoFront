@@ -75,6 +75,7 @@ export default function Index() {
   if (!slugs?.empresa) return "cargando";
   const onSubmit: SubmitHandler<IRecepcionForm> = (data) => console.log(data);
 
+
   return (
     <>
       <div className="flex items-center justify-center">
@@ -94,14 +95,14 @@ export default function Index() {
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-wrap">
+            <div className="flex flex-row mb-4">
               <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
                 <label className="label">
                   <span className="label-text">Centro de costo</span>
                 </label>
                 <label className="form-control w-full max-w-xs">
                   <select
-                  defaultValue={""}
+                    defaultValue={""}
                     className="select select-bordered"
                     {...register("CentroCostoId", {
                       onChange: (e) => {
@@ -110,10 +111,10 @@ export default function Index() {
                     })}
                   >
                     <option value={""} disabled>
-                    Seleccione el centro de costo
+                      Seleccione el centro de costo
                     </option>
                     {centroCostos.map((element: ICentroCosto, index: number) => (
-                        <option key={index} value={element.id}>{element.nombre}</option>
+                      <option key={index} value={element.id}>{element.nombre}</option>
 
                     ))}
                   </select>
@@ -128,36 +129,36 @@ export default function Index() {
                 </label>
                 <select
                   defaultValue={""}
-                    className="select select-bordered"
-                    {...register("bodegaId", {
-                      onChange: (e) => {
-                      },
-                    })}
-                  >
-                    <option value={""} disabled>
+                  className="select select-bordered"
+                  {...register("bodegaId", {
+                    onChange: (e) => {
+                    },
+                  })}
+                >
+                  <option value={""} disabled>
                     Seleccione el centro de costo
-                    </option>
-                    {bodegas.map((element: IBodega, index: number) => (
-                        <option key={index} value={element.id}>{element.nombre}</option>
+                  </option>
+                  {bodegas.map((element: IBodega, index: number) => (
+                    <option key={index} value={element.id}>{element.nombre}</option>
 
-                    ))}
-                  </select>
-                  <label className="label text-error">
-                    {errors.CentroCostoId ? errors.CentroCostoId.message : ""}
-                  </label>
+                  ))}
+                </select>
+                <label className="label text-error">
+                  {errors.CentroCostoId ? errors.CentroCostoId.message : ""}
+                </label>
                 {/* <Select
                   defaultValue={""}
                   {...register("bodegaId", {
                     setValueAs: (value) =>
                       value === "" ? undefined : Number(value),
                   })}
-                >
+                  >
                   <Select.Option value={""} disabled>
-                    Seleccione el centro de costo
+                  Seleccione el centro de costo
                   </Select.Option>
                   {bodegas.map((element: IBodega, index: number) => (
                     <Select.Option key={index} value={element.id}>
-                      {element.nombre}
+                    {element.nombre}
                     </Select.Option>
                   ))}
                 </Select> */}
@@ -165,7 +166,37 @@ export default function Index() {
                   {errors.CentroCostoId ? errors.CentroCostoId.message : ""}
                 </label>
               </div>
+
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 ml-4">
+                <label className="label">
+                  <span className="label-text">Tipo de documento</span>
+                </label>
+                <label className="inline-flex items-center ml-4 mr-4 mt-2 mb-2">
+                  <input type="radio" {...register("TipoDocumento")} value="1" className="form-radio h-5 w-5 text-gray-600" />
+                  <span className="ml-2">Factura</span>
+                </label>
+                <label className="inline-flex items-center ml-4 mr-4 mt-2 mb-2">
+                  <input type="radio" {...register("TipoDocumento")} value="2" className="form-radio h-5 w-5 text-gray-600" />
+                  <span className="ml-2">Guía de despacho</span>
+                </label>
+              </div>
             </div>
+
+            <div className="flex flex-row mb-4">
+              <div className="flex flex-col ml-2">
+                <div className="flex flex-row">
+                  <span className="p-2">Numero de documento:</span>
+                  <input type="text" className="border p-2 rounded-md" />
+                </div>
+              </div>
+              <div className="flex flex-col ml-2">
+                <div className="flex flex-row">
+                  <span className="p-2">Fecha de documento:</span>
+                  <input type="date" className="border p-2 rounded-md" />
+                </div>
+              </div>
+            </div>
+
           </form>
           {/* <CreateCotizacion guid={slugs?.empresa} /> */}
           {/* <Show  empresaId={slugs.empresa}/> */}
