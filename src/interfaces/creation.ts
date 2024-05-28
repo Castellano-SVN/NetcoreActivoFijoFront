@@ -131,6 +131,34 @@ interface FamiliaFormValues {
   Descripcion?: string;
   Eliminado: boolean;
 }
+
+interface CotizacionFormValues {
+  EmpresaId: string;
+  AnoNumero: number;
+  id: string;
+  SolicitudId: string;
+  ProveedorId: string;
+  ContactoId?: string;
+  FormaPagoCodigo: number;
+  EstadoCotizacionCodigo:number;
+  Numero: number;
+  Nombre: string;
+  FechaIngreso: string;
+  FechaEntrega: string;
+  ValorIvaIncluido: boolean;
+  Exenta: boolean;
+  ValorNeto: number;
+  Descuento?: number;
+  Impuesto:number;
+  ValorTotal:number;
+  Observaciones?:string;
+  DescuentoPorcentual:boolean;
+  Activa:boolean;
+  RedondeaImpuesto:boolean;
+
+
+}
+
 interface IYears {
   Numero: number;
   Nombre: string;
@@ -247,51 +275,51 @@ interface ArticuloFormValues {
   Eliminado: boolean
 }
 
-interface ICuenta{
+interface ICuenta {
   id: string;
   anoNumero: number;
-  empresaId:string;
-  cuentaId?:string | null;
-  numeroNivel?: number |null;
-  tipoCuentaCodigo?:number|null;
-  numero:number;
-  numeroCuenta?:string|null;
-  descripcion:string;
-  fechaCreacion:Date;
-  informeAnalitico:boolean;
-  centroCostos:boolean;
-  balanceTrimestral:boolean;
-  actualizacionPresupuestaria:boolean;
-  presupuestoInicial?:number |null;
-  presupuestoVigente?:number | null;
-  fondoRendir:boolean;
-  fondoFijo:boolean;
-  cuentaPorPagar:boolean;
-  facturaPorPagar:boolean;
-  proveedores:boolean;
-  anticipoProveedores:boolean;
-  rut:boolean;
-  clientes:boolean;
-  honorarios:boolean;
-  honorarioPorPagar:boolean;
-  retencionHonorario:boolean;
-  sueldosPorPagar:boolean;
-  caja:boolean;
-  activoCirculante:boolean;
-  pasivoCirculante:boolean;
-  correccionMonetaria:boolean;
-  gav:boolean;
-  planta:boolean;
-  contrata:boolean;
-  impuestoRenta:boolean;
-  devolucionFondo:boolean;
-  cuentaPasivoPresupuesto:boolean;
-  cuentaResultado:boolean;
-  tipoIngresoOperacionalCodigo?:number;
-  tipoGastoOperacionalCodigo?:number;
-  tipoCuentaEstadoResultadoCodigo?:number;
+  empresaId: string;
+  cuentaId?: string | null;
+  numeroNivel?: number | null;
+  tipoCuentaCodigo?: number | null;
+  numero: number;
+  numeroCuenta?: string | null;
+  descripcion: string;
+  fechaCreacion: Date;
+  informeAnalitico: boolean;
+  centroCostos: boolean;
+  balanceTrimestral: boolean;
+  actualizacionPresupuestaria: boolean;
+  presupuestoInicial?: number | null;
+  presupuestoVigente?: number | null;
+  fondoRendir: boolean;
+  fondoFijo: boolean;
+  cuentaPorPagar: boolean;
+  facturaPorPagar: boolean;
+  proveedores: boolean;
+  anticipoProveedores: boolean;
+  rut: boolean;
+  clientes: boolean;
+  honorarios: boolean;
+  honorarioPorPagar: boolean;
+  retencionHonorario: boolean;
+  sueldosPorPagar: boolean;
+  caja: boolean;
+  activoCirculante: boolean;
+  pasivoCirculante: boolean;
+  correccionMonetaria: boolean;
+  gav: boolean;
+  planta: boolean;
+  contrata: boolean;
+  impuestoRenta: boolean;
+  devolucionFondo: boolean;
+  cuentaPasivoPresupuesto: boolean;
+  cuentaResultado: boolean;
+  tipoIngresoOperacionalCodigo?: number;
+  tipoGastoOperacionalCodigo?: number;
+  tipoCuentaEstadoResultadoCodigo?: number;
   cuentaPatrimonio: boolean;
-  cuentaContabilizaIva:boolean;
+  cuentaContabilizaIva: boolean;
 
 }
 
@@ -360,5 +388,5 @@ interface IBodega {
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues,ICuenta,FamiliaFormValues,IFamilia,IYears
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,
 }
