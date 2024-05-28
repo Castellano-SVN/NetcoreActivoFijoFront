@@ -32,7 +32,7 @@ import SubFamilia from "@/components/slugPages/subfamilia";
 import { useContextStore } from "../../../store/context.store";
 import CreateSubFamily from "../../../components/slugPages/createSubfamilia";
 export default function Index() {
-  
+
   const { setActive } = useContextStore()
   useEffect(() => {
     setActive("Prestadores");
@@ -45,7 +45,7 @@ export default function Index() {
   const [dataFamilia, setDataFamilia] = useState<IFamilia>();
   const [dataCuentas, setDataCuentas] = useState<ICuenta[]>([]);
   const [dataYears, setDataYears] = useState<IYears[]>([]);
-  const [createSubFamily,SetCreateSubFamily] = useState<Boolean>(false);
+  const [createSubFamily, SetCreateSubFamily] = useState<Boolean>(false);
   const getEmpresa = async (id: string) => {
     try {
       const dataGet = await api_getOneEmpresa(jwt, id);
@@ -55,9 +55,9 @@ export default function Index() {
     }
   };
 
-  const getFamilia = async (id: string,empresa:string) => {
+  const getFamilia = async (id: string, empresa: string) => {
     try {
-      const dataGet = await api_getOneFamilias(jwt, id,empresa);
+      const dataGet = await api_getOneFamilias(jwt, id, empresa);
       setDataFamilia(dataGet.data.data);
     } catch (error) {
       console.log(error);
@@ -76,16 +76,16 @@ export default function Index() {
 
   const getCuentas = async (id: string) => {
     try {
-      const dataGet = await api_getCuenta(jwt,id);
+      const dataGet = await api_getCuenta(jwt, id);
       setDataCuentas(dataGet.data.dataList);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const SubfamiliasQuerys = async(familia:string,subfamilia:string) => {
+  const SubfamiliasQuerys = async (familia: string, subfamilia: string) => {
     await getCuentas(familia);
-    await getFamilia(familia,subfamilia);
+    await getFamilia(familia, subfamilia);
     await getYears();
   }
 
@@ -94,7 +94,7 @@ export default function Index() {
     const familia = router.query.slug[0];
     const subFamilia = router.query.slug[1];
     getEmpresa(familia);
-  if (subFamilia) SubfamiliasQuerys(familia,subFamilia);
+    if (subFamilia) SubfamiliasQuerys(familia, subFamilia);
     setSlugs({
       familia: familia as string,
       subFamilia: subFamilia as string,
@@ -133,13 +133,13 @@ export default function Index() {
             </div>
           </div>
           <div className="animate-fadein ">
-          <Divider/>
-          {!createSubFamily && <SubFamilia  create={() =>SetCreateSubFamily(true)} guid={slugs?.familia} familyGuid={slugs.subFamilia}/>}
-          {createSubFamily && <CreateSubFamily  change={() =>SetCreateSubFamily(false)} guid={slugs?.familia} familyGuid={slugs.subFamilia} yearGuid={dataYears} cuentasGuid={dataCuentas}/>}
+            <Divider />
+            {!createSubFamily && <SubFamilia create={() => SetCreateSubFamily(true)} guid={slugs?.familia} familyGuid={slugs.subFamilia} />}
+            {createSubFamily && <CreateSubFamily change={() => SetCreateSubFamily(false)} guid={slugs?.familia} familyGuid={slugs.subFamilia} yearGuid={dataYears} cuentasGuid={dataCuentas} />}
           </div>
         </div>
       </div>
-  );
+    );
 
   return (
     <div className="flex items-center justify-center">
@@ -152,7 +152,7 @@ export default function Index() {
             <span className="text-left">{dataEmpresa.giro}</span>
           </div>
         </div>
-        <Divider/>
+        <Divider />
         <Familia guid={slugs?.familia} />
       </div>
     </div>
