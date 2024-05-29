@@ -274,6 +274,25 @@ export default function Index() {
                 </div>
               </div>
             </div>
+              <div className="flex flex-row mb-4 justify-around">
+                <div>
+              <button
+            className="px-16 btn btn-outline btn-primary"
+            onClick={() => router.back()}
+          >
+            Volver
+          </button>
+                </div>
+                <div>
+              <button
+            className="px-16 btn btn-outline btn-primary"
+            onClick={() => router.back()}
+          >
+            Volver
+          </button>
+
+                </div>
+              </div>
           </form>
           {/* <CreateCotizacion guid={slugs?.empresa} /> */}
           {/* <Show  empresaId={slugs.empresa}/> */}
