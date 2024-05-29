@@ -386,7 +386,13 @@ interface IBodega {
   sigla?: string;
   descripcion?: string;
 }
+
+interface ITipoDocumento {
+  codigo:number,
+  descripcion:string;
+  sigla:string;
+}
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,ITipoDocumento,
 }

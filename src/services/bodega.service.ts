@@ -61,6 +61,9 @@ export function api_getOneEmpresa(bearer: string, id: string) {
   return api.get(`empresa/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_getTipoDocumentos(bearer: string) {
+  return api.get(`tipodocumento`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 
 export function api_postBodegas(bearer: string, data: any) {
   return api.post(`bodega`, data, { headers: { "Authorization": `Bearer ${bearer}` } })

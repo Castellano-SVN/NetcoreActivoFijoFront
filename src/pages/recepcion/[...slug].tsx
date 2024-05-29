@@ -1,11 +1,11 @@
-import { IBodega, ICentroCosto, IEmpresa } from "@/interfaces/creation";
-import { api_getArticulos, api_getBodegas, api_getOneEmpresa } from "@/services/bodega.service";
+import { IBodega, ICentroCosto, IEmpresa,ITipoDocumento } from "@/interfaces/creation";
+import { api_getArticulos, api_getBodegas, api_getOneEmpresa, api_getTipoDocumentos } from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { Divider, Select } from "react-daisyui";
+import { Divider, Input, Select } from "react-daisyui";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { RecepcionSchema } from "../../schemas/tipo_almacen.schema";
 interface IRecepcionForm {
@@ -14,7 +14,9 @@ interface IRecepcionForm {
   bodegaId: string;
   FechaDocumento: Date;
   TipoDocumento: number;
+  NumeroDocumento: number;
 }
+
 export default function Index() {
   const { setActive } = useContextStore();
   const router = useRouter();
@@ -39,6 +41,8 @@ export default function Index() {
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
   const [centroCostos, setCentroCostos] = useState<ICentroCosto[]>([]);
   const [bodegas, setBodegas] = useState<IBodega[]>([]);
+  const [tipoDocumentos, setTipoDocumento] = useState<ITipoDocumento[]>([]);
+  
   const [meta, setMeta] = useState<{ total: number; pages: number }>({
     total: 0,
     pages: 0,
@@ -62,28 +66,39 @@ export default function Index() {
       console.log(error);
     }
   };
-
+  
   const getArticulos = async (id:string) => {
     try {
       const dataGet = await api_getArticulos(jwt, id,meta.pages+1);
-      setBodegas(dataGet.data.dataList);
     } catch (error) {
       // router.back();
       console.log(error);
     }
   };
 
+  const getDocumentos = async () => {
+    try {
+      const dataGet = await api_getTipoDocumentos(jwt);
+      setTipoDocumento(dataGet.data.dataList);
+
+    } catch (error) {
+      // router.back();
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (!router.query.slug) {
       // router.back();
       return;
     }
     const empresa = router.query.slug[0];
+    getDocumentos()
     getEmpresa(empresa);
     setSlugs({
       empresa: empresa,
     });
     getArticulos(empresa);
+
   }, [router.query]);
 
   if (!dataEmpresa) return "cargando";
@@ -104,18 +119,20 @@ export default function Index() {
             </div>
           </div>
           <Divider />
-          <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
+          <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4 px-16">
             <div className="flex flex-col">
               <span className="font-bold text-2xl">Recepcion</span>
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-row mb-4">
-              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
+            <div className="flex flex-col flex-wrap justify-center items-center">
+           
+           
+            <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
                 <label className="label">
-                  <span className="label-text">Centro de costo</span>
+                  <span className="label-text font-bold">Centro de costo</span>
                 </label>
-                <label className="form-control w-full max-w-xs">
+                <label className="form-control w-full ">
                   <select
                     defaultValue={""}
                     className="select select-bordered"
@@ -138,9 +155,10 @@ export default function Index() {
                   </label>
                 </label>
               </div>
-              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
+
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
                 <label className="label">
-                  <span className="label-text">Bodega</span>
+                  <span className="label-text font-bold">Bodega</span>
                 </label>
                 <select
                   defaultValue={""}
@@ -159,59 +177,67 @@ export default function Index() {
                   ))}
                 </select>
                 <label className="label text-error">
-                  {errors.CentroCostoId ? errors.CentroCostoId.message : ""}
+                  {errors.bodegaId ? errors.bodegaId.message : ""}
                 </label>
-                {/* <Select
-                  defaultValue={""}
-                  {...register("bodegaId", {
-                    setValueAs: (value) =>
-                      value === "" ? undefined : Number(value),
-                  })}
-                  >
-                  <Select.Option value={""} disabled>
-                  Seleccione el centro de costo
-                  </Select.Option>
-                  {bodegas.map((element: IBodega, index: number) => (
-                    <Select.Option key={index} value={element.id}>
-                    {element.nombre}
-                    </Select.Option>
-                  ))}
-                </Select> */}
-                <label className="label text-error">
-                  {errors.CentroCostoId ? errors.CentroCostoId.message : ""}
-                </label>
+
               </div>
 
-              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 ml-4">
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
                 <label className="label">
-                  <span className="label-text">Tipo de documento</span>
+                  <span className="label-text font-bold">Tipo documentos</span>
                 </label>
-                <label className="inline-flex items-center ml-4 mr-4 mt-2 mb-2">
-                  <input type="radio" {...register("TipoDocumento")} value="1" className="form-radio h-5 w-5 text-gray-600" />
-                  <span className="ml-2">Factura</span>
+                <div className="flex flex-row space-x-2">
+                  {
+                    tipoDocumentos.map((e:ITipoDocumento,index:number) => (
+                  
+                    <label key={index} className="cursor-pointer flex items-center space-x-2">
+                      <input type="radio" name="radio-10" className="radio checked:bg-primary"  />
+                      <span className="label-text">{e.descripcion}</span> 
+                    </label>
+                  
+
+                    ))
+                  }
+
+                </div>
+                <label className="label text-error">
+                  {errors.TipoDocumento ? errors.TipoDocumento.message : ""}
                 </label>
-                <label className="inline-flex items-center ml-4 mr-4 mt-2 mb-2">
-                  <input type="radio" {...register("TipoDocumento")} value="2" className="form-radio h-5 w-5 text-gray-600" />
-                  <span className="ml-2">Guía de despacho</span>
-                </label>
+              </div>
+
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
+                  <label className="label">
+                    <span className="label-text font-bold">Numero de documento:</span>
+                  </label>
+                  <Input  />
+                  <label className="label text-error">
+                    {errors.NumeroDocumento && (
+                      <span>{errors.NumeroDocumento.message}</span>
+                    )}
+                  </label>
+                </div>
+
+                <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
+                  <label className="label">
+                    <span className="label-text font-bold">Fecha documento:</span>
+                  </label>
+                  <Input  type="date"/>
+                  <label className="label text-error">
+                    {errors.NumeroDocumento && (
+                      <span>{errors.NumeroDocumento.message}</span>
+                    )}
+              </label>
+              </div>
+
+            </div>
+            <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4 px-16">
+            <div className="flex flex-col">
+              <span className="font-bold text-2xl">Articulos</span>
+              <div>
+                {/* for table */}
               </div>
             </div>
-
-            <div className="flex flex-row mb-4">
-              <div className="flex flex-col ml-2">
-                <div className="flex flex-row">
-                  <span className="p-2">Numero de documento:</span>
-                  <input type="text" className="border p-2 rounded-md" />
-                </div>
-              </div>
-              <div className="flex flex-col ml-2">
-                <div className="flex flex-row">
-                  <span className="p-2">Fecha de documento:</span>
-                  <input type="date" className="border p-2 rounded-md" />
-                </div>
-              </div>
-            </div>
-
+          </div>
           </form>
           {/* <CreateCotizacion guid={slugs?.empresa} /> */}
           {/* <Show  empresaId={slugs.empresa}/> */}

@@ -154,7 +154,10 @@ export default function Page() {
   };
   useEffect(() => {
     getTipoLocation();
+    console.log(almacen)
+    defaultValues();
   }, [almacen]);
+
   return (
     <>
       <Head>
@@ -222,7 +225,6 @@ export default function Page() {
                 </div>
               </div>
               <div className="my-2">
-                {JSON.stringify(errors)}
                 <div className="flex items-center justify-center">
                   <Button type="submit" className="text-base-100" color="primary">Guardar</Button>
                 </div>
