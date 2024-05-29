@@ -8,6 +8,7 @@ import { z } from "zod";
 import { useRouter } from "next/router";
 import { api_postSubFamilias } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
+import { toast } from "react-toastify";
 
 
 interface props {
@@ -30,7 +31,7 @@ export default function CreateSubFamily(props: props) {
     AnoNumero: z.number({
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
-    }).optional(),
+    }),
     Id: z.string({
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
@@ -44,6 +45,10 @@ export default function CreateSubFamily(props: props) {
       invalid_type_error: "Campo requerido",
     }).optional(),
     CuentaId: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional(),
+    CuentaObligacionId: z.string({
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
     }).optional(),
@@ -75,6 +80,14 @@ export default function CreateSubFamily(props: props) {
     formState: { errors },
   } = methods;
 
+  const [cuentaYear, setCuentaYear] = useState<ICuenta[]>([]); // Cuenta listada segun el año seleccionado
+  const selectCuenta = (id: number) => {
+    if (!id) {setCuentaYear([]);return}
+    const yearsFilter = props.cuentasGuid.filter(e => e.anoNumero === id)
+    setCuentaYear(yearsFilter);
+  }
+
+
   useEffect(() => {
     console.log("se ejecuto 1 vez")
     setValue("EmpresaId", props.guid);
@@ -85,13 +98,13 @@ export default function CreateSubFamily(props: props) {
     data: SubFamiliaFormValues
   ) => {
     try {
-      console.log(data);
-      // await api_postSubFamilias(jwt, data);
-      // handleClose();
-      // refetch();
-      // toast.success("Sub-Familia guardada correctamente");
+      console.log(data); 
+      await api_postSubFamilias(jwt, data);
+      /* refetch(); */
+      toast.success("Sub-Familia guardada correctamente");
     } catch (error) {}
   };
+
   return (
     <>
       <div className="flex flex-row justify-start md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
@@ -110,7 +123,7 @@ export default function CreateSubFamily(props: props) {
                 Codigo:
               </span>
               <input
-                type="text"
+                type="number"
                 {...register("Codigo", {
                   setValueAs: (value) =>
                     value === "" ? undefined : Number(value),
@@ -136,7 +149,69 @@ export default function CreateSubFamily(props: props) {
               <label className="label text-error">
                 {errors.Nombre ? errors.Nombre.message : ""}
               </label>
+              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                Año:
+              </span>
+              <select
+                {...register("AnoNumero",{
+                  onChange: (e) => {
+                    selectCuenta(getValues("AnoNumero"));
+                },
+                  setValueAs:(value) => (value === "" ? undefined: Number(value))
+                })}
+                
+                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+              >
+                <option value="">Seleccione un año</option>
+                {props.yearGuid.map((option, index) => (
+                  <option key={index} value={option.numero}>
+                    {option.nombre}
+                  </option>
+                ))}
+              </select>
+              <label className="label text-error">
+                {errors.AnoNumero ? errors.AnoNumero.message : ""}
+              </label>
 
+              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                Cuenta:
+              </span>
+              <select
+                {...register("CuentaId",{
+                  setValueAs:(value) => (value === "" ? undefined: value)
+                })}
+                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+              >
+                <option key={0} value={0}>Seleccione una cuenta</option>
+                {cuentaYear.map((option, index) => (
+                  <option key={index} value={option.id}>
+                    {option.numeroCuenta}
+                  </option>
+                ))}
+              </select>
+              <label className="label text-error">
+                {errors.CuentaId ? errors.CuentaId.message : ""}
+              </label>
+
+              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                Cuenta Obligacion:
+              </span>
+              <select
+                {...register("CuentaObligacionId",{
+                  setValueAs:(value) => (value === "" ? undefined: value)
+                })}
+                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+              >
+                <option key={0} value={0}>Seleccione una cuenta</option>
+                {cuentaYear.map((option, index) => (
+                  <option key={index} value={option.id}>
+                    {option.numeroCuenta}
+                  </option>
+                ))}
+              </select>
+              <label className="label text-error">
+                {errors.CuentaObligacionId ? errors.CuentaObligacionId.message : ""}
+              </label>
               <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
                 Descripcion:
               </span>
@@ -151,7 +226,7 @@ export default function CreateSubFamily(props: props) {
               
             <div className="mt-2">
               <button
-                className="px-16 btn btn-primary btn-primary"
+                className="px-16 btn btn-primary"
                 type="submit"
               >
                 Crear Sub-Familia <FaPlus />
