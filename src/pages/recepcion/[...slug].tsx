@@ -1,4 +1,4 @@
-import { IBodega, ICentroCosto, IEmpresa,ITipoDocumento } from "@/interfaces/creation";
+import { IArticulo, IBodega, ICentroCosto, IEmpresa, ITipoDocumento } from "@/interfaces/creation";
 import { api_getArticulos, api_getBodegas, api_getOneEmpresa, api_getTipoDocumentos } from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
@@ -42,7 +42,7 @@ export default function Index() {
   const [centroCostos, setCentroCostos] = useState<ICentroCosto[]>([]);
   const [bodegas, setBodegas] = useState<IBodega[]>([]);
   const [tipoDocumentos, setTipoDocumento] = useState<ITipoDocumento[]>([]);
-  
+
   const [meta, setMeta] = useState<{ total: number; pages: number }>({
     total: 0,
     pages: 0,
@@ -66,10 +66,12 @@ export default function Index() {
       console.log(error);
     }
   };
-  
-  const getArticulos = async (id:string) => {
+
+  const [dataArticulos, setArticulos] = useState<IArticulo[]>([]);
+  const getArticulos = async (id: string) => {
     try {
-      const dataGet = await api_getArticulos(jwt, id,meta.pages+1);
+      const dataGet = await api_getArticulos(jwt, id, meta.pages + 1);
+      setArticulos(dataGet.data.dataList);
     } catch (error) {
       // router.back();
       console.log(error);
@@ -126,9 +128,9 @@ export default function Index() {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col flex-wrap justify-center items-center">
-           
-           
-            <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
+
+
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
                 <label className="label">
                   <span className="label-text font-bold">Centro de costo</span>
                 </label>
@@ -188,13 +190,13 @@ export default function Index() {
                 </label>
                 <div className="flex flex-row space-x-2">
                   {
-                    tipoDocumentos.map((e:ITipoDocumento,index:number) => (
-                  
-                    <label key={index} className="cursor-pointer flex items-center space-x-2">
-                      <input type="radio" name="radio-10" className="radio checked:bg-primary"  />
-                      <span className="label-text">{e.descripcion}</span> 
-                    </label>
-                  
+                    tipoDocumentos.map((e: ITipoDocumento, index: number) => (
+
+                      <label key={index} className="cursor-pointer flex items-center space-x-2">
+                        <input type="radio" name="radio-10" className="radio checked:bg-primary" />
+                        <span className="label-text">{e.descripcion}</span>
+                      </label>
+
 
                     ))
                   }
@@ -206,38 +208,72 @@ export default function Index() {
               </div>
 
               <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
-                  <label className="label">
-                    <span className="label-text font-bold">Numero de documento:</span>
-                  </label>
-                  <Input  />
-                  <label className="label text-error">
-                    {errors.NumeroDocumento && (
-                      <span>{errors.NumeroDocumento.message}</span>
-                    )}
-                  </label>
-                </div>
+                <label className="label">
+                  <span className="label-text font-bold">Numero de documento:</span>
+                </label>
+                <Input />
+                <label className="label text-error">
+                  {errors.NumeroDocumento && (
+                    <span>{errors.NumeroDocumento.message}</span>
+                  )}
+                </label>
+              </div>
 
-                <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
-                  <label className="label">
-                    <span className="label-text font-bold">Fecha documento:</span>
-                  </label>
-                  <Input  type="date"/>
-                  <label className="label text-error">
-                    {errors.NumeroDocumento && (
-                      <span>{errors.NumeroDocumento.message}</span>
-                    )}
-              </label>
+              <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 mx-4 md:mx-0 lg:mx-0">
+                <label className="label">
+                  <span className="label-text font-bold">Fecha documento:</span>
+                </label>
+                <Input type="date" />
+                <label className="label text-error">
+                  {errors.NumeroDocumento && (
+                    <span>{errors.NumeroDocumento.message}</span>
+                  )}
+                </label>
               </div>
 
             </div>
             <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4 px-16">
-            <div className="flex flex-col">
-              <span className="font-bold text-2xl">Articulos</span>
-              <div>
-                {/* for table */}
+              <div className="flex flex-col">
+                <span className="font-bold text-2xl mb-2">Articulos</span>
+                <div>
+                  <div className="overflow-x-auto w-auto rounded-lg border mb-4">
+                    <table className="table">
+                      {/* head */}
+                      <thead>
+                        <tr>
+                          <th className="font-bold text-black">Código</th>
+                          <th className="font-bold text-black">Nombre</th>
+                          <th className="font-bold text-black">Cantidad</th>
+                          <th className="font-bold text-black">Precio</th>
+                          <th className="font-bold text-black">Observaciones</th>
+                          <th className="font-bold text-black">Recepcionado</th>
+                          <th className="font-bold text-black">Por recepcionar</th>
+                          <th className="font-bold text-black">Cantidad Recibida</th>
+                          <th className="font-bold text-black">Observacion</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-center">
+                        {dataArticulos.map((articulo: IArticulo, index) => (
+                          <tr key={index} className="hover:bg-[#FAF6FF]">
+                            <td>{articulo.codigo}</td>
+                            <td>{articulo.nombre}</td>
+                            <td>0</td>
+                            <td>{articulo.articuloValors.map((valor, i) => (
+                              <div key={i}>{valor.valor}</div>
+                            ))}</td>
+                            <td>{articulo.descripcion}</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td><Input type="Number" className="w-full"/></td>
+                            <td><Input type="text" className="w-full"/></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           </form>
           {/* <CreateCotizacion guid={slugs?.empresa} /> */}
           {/* <Show  empresaId={slugs.empresa}/> */}

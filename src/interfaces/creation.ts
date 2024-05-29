@@ -117,7 +117,7 @@ interface SubFamiliaFormValues {
   Codigo: number;
   FamiliaId: string;
   CuentaId?: string;
-  CuentaOblicacionId?: string;
+  CuentaObligacionId?: string;
   Nombre: string;
   Descripcion?: string;
   Eliminado: boolean;
@@ -160,8 +160,9 @@ interface CotizacionFormValues {
 }
 
 interface IYears {
-  Numero: number;
-  Nombre: string;
+  id: string;
+  numero: number;
+  nombre: string;
 }
 interface IFamilia {
   empresaId: string;
@@ -323,6 +324,9 @@ interface ICuenta {
 
 }
 
+interface IArticuloValor{
+valor:string;
+}
 interface IArticulo {
   empresaId: string;
   anoNumero: number;
@@ -333,6 +337,7 @@ interface IArticulo {
   nombre: string;
   descripcion?: string | null;
   eliminado: boolean
+  articuloValors:IArticuloValor[];
 }
 
 interface IAno {
@@ -372,7 +377,7 @@ interface ISubFamilia {
   codigo: number;
   familiaId: string;
   cuentaId?: string;
-  cuentaOblicacionId?: string;
+  cuentaObligacionId?: string;
   nombre: string;
   descripcion?: string;
   eliminado: boolean;
@@ -394,5 +399,5 @@ interface ITipoDocumento {
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,ITipoDocumento,
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,ITipoDocumento,IArticuloValor,
 }
