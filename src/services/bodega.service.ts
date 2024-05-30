@@ -42,7 +42,7 @@ export function api_postEmpresas_Bloquear(bearer: string, id: string) {
 export function api_putEmpresas(bearer: string, data: any) {
   return api.put(`empresa`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getCuenta(bearer: string,empresaId:string) {
+export function api_getCuenta(bearer: string, empresaId: string) {
   return api.get(`cuenta/${empresaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_postCentroCostos(bearer: string, data: any) {
@@ -68,7 +68,7 @@ export function api_getTipoDocumentos(bearer: string) {
 export function api_postBodegas(bearer: string, data: any) {
   return api.post(`bodega`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getBodegas(bearer: string,centroCosto:string) {
+export function api_getBodegas(bearer: string, centroCosto: string) {
   return api.get(`bodega/${centroCosto}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_postAlmacen(bearer: string, data: any) {
@@ -85,7 +85,7 @@ export function api_getAlmacenById(bearer: string, id: string) {
 export function api_getTipoLocation(bearer: string, id: string) {
   return api.get(`tipolocacion?id=${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_postTipoLocation(bearer: string, data:any) {
+export function api_postTipoLocation(bearer: string, data: any) {
   return api.post(`tipolocacion`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getOneLocacion(bearer: string, id: string) {
@@ -96,7 +96,7 @@ export function api_postLocation(bearer: string, data: any) {
   return api.post(`locacion`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getSubFamilias(bearer: string,id: string, page: number) {
+export function api_getSubFamilias(bearer: string, id: string, page: number) {
   return api.get(`subFamilia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
@@ -104,9 +104,12 @@ export function api_postSubFamilias(bearer: string, data: any) {
   return api.post(`subFamilia`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-
 export function api_getArticulos(bearer: string, id: string, page: number) {
   return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_postArticulos(bearer: string, data: any) {
+  return api.post(`articulo`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_getFamilias(bearer: string, id: string, page: number) {
@@ -121,3 +124,4 @@ export function api_postFamilias(bearer: string, data: any) {
 export function api_getYears(bearer: string) {
   return api.get(`ano`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
