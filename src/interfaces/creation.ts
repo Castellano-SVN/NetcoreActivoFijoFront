@@ -338,8 +338,8 @@ interface IArticulo {
   codigo?: string | null;
   nombre: string;
   descripcion?: string | null;
-  eliminado: boolean
-  articuloValors: IArticuloValor[];
+  eliminado: boolean;
+  valor: number;
 }
 
 interface IAno {
