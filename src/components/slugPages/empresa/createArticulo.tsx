@@ -2,11 +2,11 @@ import { FaPlus } from "react-icons/fa";
 import { Button, Modal } from "react-daisyui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ArticuloFormValues, ICuenta, ITipoUnidad, IYears } from "@/interfaces/creation";
+import { ArticuloFormValues, ICuenta, ISubFamilia, ITipoUnidad, IYears } from "@/interfaces/creation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import { api_postArticulos, api_postSubFamilias } from "@/services/bodega.service";
+import { api_getOneSubFamilias, api_postArticulos, api_postSubFamilias } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { toast } from "react-toastify";
 
@@ -22,7 +22,7 @@ interface props {
 export default function CreateArticulo(props: props) {
     const router = useRouter();
     const { jwt } = useUserStore();
-
+    const [dataSubFamilia, setDataSubFamilia] = useState<ISubFamilia>();
     const validationSchema = z.object({
         EmpresaId: z.string({
             required_error: "Campo requerido",
@@ -95,6 +95,15 @@ export default function CreateArticulo(props: props) {
         } catch (error) { }
     };
 
+    const getSubFamilia = async (id: string, empresa: string) => {
+        try {
+          const dataGet = await api_getOneSubFamilias(jwt, id, empresa);
+          setDataSubFamilia(dataGet.data.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
     return (
         <>
             <div className="flex flex-row justify-start md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
@@ -106,79 +115,45 @@ export default function CreateArticulo(props: props) {
                 <FormProvider {...methods}>
                     <div className="mt-2">
                         <form
-                            className="flex flex-col p-4 text-left"
+                            className="flex flex-col  p-8 text-left border shadow-md rounded-md mb-4 mx-2 md:mx-auto lg:mx-auto"
                             onSubmit={handleSubmit(onSubmit)}
                         >
-                            <span className="text-base font-semibold leading-6 text-gray-900 ">
-                                Codigo:
-                            </span>
-                            <input
-                                type="text"
-                                {...register("Codigo", {
-                                    setValueAs: (value) =>
-                                        value === "" ? undefined : value,
-                                })}
-                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                            <div className="flex flex-row">
+                                <div className="flex flex-col mr-2">
+                                    <span className="text-base font-semibold leading-6 text-gray-900">
+                                        Nombre:
+                                    </span>
+                                    <input
+                                        type="text"
+                                        {...register("Nombre", {
+                                            setValueAs: (value) =>
+                                                value === "" ? undefined : value,
+                                        })}
+                                        className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
+                                    />
+                                    <label className="label text-error">
+                                        {errors.Nombre ? errors.Nombre.message : ""}
+                                    </label>
+                                </div>
 
-                            />
-                            <label className="label text-error">
-                                {errors.Codigo ? errors.Codigo.message : ""}
-                            </label>
+                                <div className="flex flex-col">
+                                    <span className="text-base font-semibold leading-6 text-gray-900 ">
+                                        Codigo:
+                                    </span>
+                                    <input
+                                        type="text"
+                                        {...register("Codigo", {
+                                            setValueAs: (value) =>
+                                                value === "" ? undefined : value,
+                                        })}
+                                        className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
 
-                            <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                                Nombre:
-                            </span>
-                            <input
-                                type="text"
-                                {...register("Nombre", {
-                                    setValueAs: (value) =>
-                                        value === "" ? undefined : value,
-                                })}
-                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
-                            />
-                            <label className="label text-error">
-                                {errors.Nombre ? errors.Nombre.message : ""}
-                            </label>
-                            <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                                Año:
-                            </span>
-                            <select
-                                {...register("AnoNumero", {
-                                    setValueAs: (value) => (value === "" ? undefined : Number(value))
-                                })}
-
-                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
-                            >
-                                <option value="">Seleccione un año</option>
-                                {props.yearGuid.map((option, index) => (
-                                    <option key={index} value={option.numero}>
-                                        {option.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                            <label className="label text-error">
-                                {errors.AnoNumero ? errors.AnoNumero.message : ""}
-                            </label>
-
-                            <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                                Tipo unidad codigo:
-                            </span>
-                            <select
-                                {...register("TipoUnidadCodigo", {
-                                    setValueAs: (value) => (value === "" ? undefined : Number(value))
-                                })}
-                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
-                            >
-                                <option key={0} value={""}>Seleccione un tipo unidad</option>
-                                {props.tipoUnidad.map((option, index) => (
-                                    <option key={index} value={option.codigo}>
-                                        {option.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                            <label className="label text-error">
-                                {errors.TipoUnidadCodigo ? errors.TipoUnidadCodigo.message : ""}
-                            </label>
+                                    />
+                                    <label className="label text-error">
+                                        {errors.Codigo ? errors.Codigo.message : ""}
+                                    </label>
+                                </div>
+                            </div>
 
                             <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
                                 Valor:
@@ -189,11 +164,35 @@ export default function CreateArticulo(props: props) {
                                     setValueAs: (value) =>
                                         value === "" ? undefined : Number(value),
                                 })}
-                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
+                                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
                             />
                             <label className="label text-error">
                                 {errors.Valor ? errors.Valor.message : ""}
                             </label>
+
+                            <div className="flex flex-col md:flex-row lg:flex-row">
+                                <div className="flex flex-col">
+                                    <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                                        Tipo unidad codigo:
+                                    </span>
+                                    <select
+                                        {...register("TipoUnidadCodigo", {
+                                            setValueAs: (value) => (value === "" ? undefined : Number(value))
+                                        })}
+                                        className="mt-1 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                                    >
+                                        <option key={0} value={""}>Seleccione un tipo unidad</option>
+                                        {props.tipoUnidad.map((option, index) => (
+                                            <option key={index} value={option.codigo}>
+                                                {option.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <label className="label text-error">
+                                        {errors.TipoUnidadCodigo ? errors.TipoUnidadCodigo.message : ""}
+                                    </label>
+                                </div>
+                            </div>
 
                             <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
                                 Descripcion:
@@ -201,7 +200,7 @@ export default function CreateArticulo(props: props) {
                             <textarea
                                 {...register("Descripcion")}
                                 className=" mt-1 w-full rounded-md text-base font-semibold leading-6 text-gray-900 focus:ring-2 focus:ring-primary border bg-primary-content"
-                                rows={10}
+                                rows={3}
                             ></textarea>
                             <label className="label text-error">
                                 {errors.Descripcion ? errors.Descripcion.message : ""}
@@ -210,13 +209,15 @@ export default function CreateArticulo(props: props) {
 
 
                             <div className="mt-2">
-                                <button
-                                    className="px-16 btn btn-primary"
-                                    type="submit"
-                                >
-                                    Crear Familia <FaPlus />
-                                </button>
-                                <div className="my-2">
+                                <div className="flex justify-center">
+                                    <button
+                                        className="px-16 btn btn-primary"
+                                        type="submit"
+                                    >
+                                        Crear Articulo <FaPlus />
+                                    </button>
+                                </div>
+                                <div className="my-2 flex justify-center">
                                     <button
                                         className="px-16 btn btn-outline btn-primary"
                                         onClick={() => props.change()}
