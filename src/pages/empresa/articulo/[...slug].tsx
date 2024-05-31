@@ -135,8 +135,8 @@ export default function Index() {
           </div>
         </div>
         <Divider />
-        {!createArticulo && <Articulo create={() => setCreateArticulo(true)} guid={slugs.familia} familyGuid={slugs.articulo} subFamilyGuid={slugs.subFamilia} />}
-        {createArticulo && <CreateArticulo change={() => setCreateArticulo(false)} guid={slugs.familia} subFamilyGuid={slugs.articulo} yearGuid={dataYears} familyGuid={slugs.familia} tipoUnidad={dataTipoUnidad} />}
+        {!createArticulo && <Articulo create={() => setCreateArticulo(true)} guid={slugs.familia} familyGuid={slugs.subFamilia} subFamilyGuid={slugs.articulo} />}
+        {createArticulo && <CreateArticulo change={() => setCreateArticulo(false)} guid={slugs.familia} subFamilyGuid={slugs.articulo} yearGuid={dataYears} familyGuid={slugs.subFamilia} tipoUnidad={dataTipoUnidad} />}
       </div>
     </div>
   )

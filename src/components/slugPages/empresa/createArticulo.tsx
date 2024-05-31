@@ -52,6 +52,7 @@ export default function CreateArticulo(props: props) {
             required_error: "Campo requerido",
             invalid_type_error: "Campo requerido",
         }),
+        Valor: z.number({ required_error: "Campo requerido", invalid_type_error: "Campo requerido" }),
         Descripcion: z.string({
             required_error: "Campo requerido",
             invalid_type_error: "Campo requerido",
@@ -178,6 +179,22 @@ export default function CreateArticulo(props: props) {
                             <label className="label text-error">
                                 {errors.TipoUnidadCodigo ? errors.TipoUnidadCodigo.message : ""}
                             </label>
+
+                            <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                                Valor:
+                            </span>
+                            <input
+                                type="number" step="0.01"
+                                {...register("Valor", {
+                                    setValueAs: (value) =>
+                                        value === "" ? undefined : Number(value),
+                                })}
+                                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
+                            />
+                            <label className="label text-error">
+                                {errors.Valor ? errors.Valor.message : ""}
+                            </label>
+
                             <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
                                 Descripcion:
                             </span>
@@ -189,6 +206,8 @@ export default function CreateArticulo(props: props) {
                             <label className="label text-error">
                                 {errors.Descripcion ? errors.Descripcion.message : ""}
                             </label>
+
+
 
                             <div className="mt-2">
                                 <button
