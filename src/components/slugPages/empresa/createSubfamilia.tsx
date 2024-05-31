@@ -37,8 +37,8 @@ export default function CreateSubFamily(props: props) {
       invalid_type_error: "Campo requerido",
     }).optional(),
     Codigo: z.number({
-        required_error: "Campo requerido",
-        invalid_type_error: "El campo debe ser numerico",
+      required_error: "Campo requerido",
+      invalid_type_error: "El campo debe ser numerico",
     }),
     FamiliaId: z.string({
       required_error: "Campo requerido",
@@ -82,7 +82,7 @@ export default function CreateSubFamily(props: props) {
 
   const [cuentaYear, setCuentaYear] = useState<ICuenta[]>([]); // Cuenta listada segun el año seleccionado
   const selectCuenta = (id: number) => {
-    if (!id) {setCuentaYear([]);return}
+    if (!id) { setCuentaYear([]); return }
     const yearsFilter = props.cuentasGuid.filter(e => e.anoNumero === id)
     setCuentaYear(yearsFilter);
   }
@@ -98,11 +98,11 @@ export default function CreateSubFamily(props: props) {
     data: SubFamiliaFormValues
   ) => {
     try {
-      console.log(data); 
+      console.log(data);
       await api_postSubFamilias(jwt, data);
-      /* refetch(); */
+      reset();
       toast.success("Sub-Familia guardada correctamente");
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -114,8 +114,8 @@ export default function CreateSubFamily(props: props) {
       </div>
       <div className="flex flex-row justify-center md:justify-center lg:justify-center  mt-0 md:mt-4 md:ml-4">
         <FormProvider {...methods}>
-        <div className="mt-2">
-          <form
+          <div className="mt-2">
+            <form
               className="flex flex-col p-4 text-left"
               onSubmit={handleSubmit(onSubmit)}
             >
@@ -153,13 +153,13 @@ export default function CreateSubFamily(props: props) {
                 Año:
               </span>
               <select
-                {...register("AnoNumero",{
+                {...register("AnoNumero", {
                   onChange: (e) => {
                     selectCuenta(getValues("AnoNumero"));
-                },
-                  setValueAs:(value) => (value === "" ? undefined: Number(value))
+                  },
+                  setValueAs: (value) => (value === "" ? undefined : Number(value))
                 })}
-                
+
                 className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option value="">Seleccione un año</option>
@@ -177,12 +177,12 @@ export default function CreateSubFamily(props: props) {
                 Cuenta:
               </span>
               <select
-                {...register("CuentaId",{
-                  setValueAs:(value) => (value === "" ? undefined: value)
+                {...register("CuentaId", {
+                  setValueAs: (value) => (value === "" ? undefined : value)
                 })}
                 className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
-                <option key={0} value={0}>Seleccione una cuenta</option>
+                <option key={0} value={""}>Seleccione una cuenta</option>
                 {cuentaYear.map((option, index) => (
                   <option key={index} value={option.id}>
                     {option.numeroCuenta}
@@ -197,12 +197,12 @@ export default function CreateSubFamily(props: props) {
                 Cuenta Obligacion:
               </span>
               <select
-                {...register("CuentaObligacionId",{
-                  setValueAs:(value) => (value === "" ? undefined: value)
+                {...register("CuentaObligacionId", {
+                  setValueAs: (value) => (value === "" ? undefined : value)
                 })}
                 className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
-                <option key={0} value={0}>Seleccione una cuenta</option>
+                <option key={0} value={""}>Seleccione una cuenta</option>
                 {cuentaYear.map((option, index) => (
                   <option key={index} value={option.id}>
                     {option.numeroCuenta}
@@ -223,27 +223,27 @@ export default function CreateSubFamily(props: props) {
               <label className="label text-error">
                 {errors.Descripcion ? errors.Descripcion.message : ""}
               </label>
-              
-            <div className="mt-2">
-              <button
-                className="px-16 btn btn-primary"
-                type="submit"
-              >
-                Crear Sub-Familia <FaPlus />
-              </button>
-              <div className="my-2">
-              <button
-                className="px-16 btn btn-outline btn-primary"
-                onClick={() => props.change()}
-              >
-                Volver
-              </button>
+
+              <div className="mt-2">
+                <button
+                  className="px-16 btn btn-primary"
+                  type="submit"
+                >
+                  Crear Sub-Familia <FaPlus />
+                </button>
+                <div className="my-2">
+                  <button
+                    className="px-16 btn btn-outline btn-primary"
+                    onClick={() => props.change()}
+                  >
+                    Volver
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
         </FormProvider>
-      </div>    
+      </div>
     </>
   );
 }
