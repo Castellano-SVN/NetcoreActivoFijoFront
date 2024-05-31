@@ -49,7 +49,7 @@ export default function Page(props: props) {
             if (lastPage.pages > pages.length) {
                 return pages.length + 1;
             } else {
-                return undefined; // no more pages to load
+                return undefined;
             }
         },
         onSuccess: (data) => {
@@ -185,7 +185,7 @@ function Element({ element }: { element: IArticulo }) {
                     <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
                     <div className="flex  flex-wrap justify-end space-x-4">
                         <a
-                            onClick={Show}
+
                             className="flex items-center cursor-pointer hover:font-bold"
                         >
                             <span className="text-sm underline text-primary">Ver</span>

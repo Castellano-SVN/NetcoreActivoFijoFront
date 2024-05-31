@@ -140,7 +140,7 @@ interface CotizacionFormValues {
   ProveedorId: string;
   ContactoId?: string;
   FormaPagoCodigo: number;
-  EstadoCotizacionCodigo:number;
+  EstadoCotizacionCodigo: number;
   Numero: number;
   Nombre: string;
   FechaIngreso: string;
@@ -149,12 +149,12 @@ interface CotizacionFormValues {
   Exenta: boolean;
   ValorNeto: number;
   Descuento?: number;
-  Impuesto:number;
-  ValorTotal:number;
-  Observaciones?:string;
-  DescuentoPorcentual:boolean;
-  Activa:boolean;
-  RedondeaImpuesto:boolean;
+  Impuesto: number;
+  ValorTotal: number;
+  Observaciones?: string;
+  DescuentoPorcentual: boolean;
+  Activa: boolean;
+  RedondeaImpuesto: boolean;
 
 
 }
@@ -273,7 +273,9 @@ interface ArticuloFormValues {
   Codigo?: string | null;
   Nombre: string;
   Descripcion?: string | null;
-  Eliminado: boolean
+  Eliminado: boolean;
+  Valor: number;
+
 }
 
 interface ICuenta {
@@ -324,8 +326,8 @@ interface ICuenta {
 
 }
 
-interface IArticuloValor{
-valor:string;
+interface IArticuloValor {
+  valor: string;
 }
 interface IArticulo {
   empresaId: string;
@@ -337,7 +339,7 @@ interface IArticulo {
   nombre: string;
   descripcion?: string | null;
   eliminado: boolean
-  articuloValors:IArticuloValor[];
+  articuloValors: IArticuloValor[];
 }
 
 interface IAno {
@@ -393,11 +395,11 @@ interface IBodega {
 }
 
 interface ITipoDocumento {
-  codigo:number,
-  descripcion:string;
-  sigla:string;
+  codigo: number,
+  descripcion: string;
+  sigla: string;
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears,CotizacionFormValues,ITipoDocumento,IArticuloValor,
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor,
 }
