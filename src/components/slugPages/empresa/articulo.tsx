@@ -159,7 +159,6 @@ function Element({ element }: { element: IArticulo }) {
     }
     const Show = () => {
         const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
-        console.log(currentUrl)
         router.push(`${currentUrl}/${element.id}`)
     }
     return (
@@ -172,6 +171,12 @@ function Element({ element }: { element: IArticulo }) {
                         <span className="font-bold mb-2">Nombre</span>
                         <span className="text-sm align-left">
                             {element.nombre}
+                        </span>
+                    </div>
+                    <div className="basis-1/2 flex flex-col justify-left text-right ">
+                        <span className="font-bold mb-2">Precio</span>
+                        <span className="text-sm align-left">
+                            ${element.valor}
                         </span>
                     </div>
                     <div className="basis-1/2 flex flex-col justify-left text-right ">
