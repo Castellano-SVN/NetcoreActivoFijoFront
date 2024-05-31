@@ -116,40 +116,48 @@ export default function CreateSubFamily(props: props) {
         <FormProvider {...methods}>
           <div className="mt-2">
             <form
-              className="flex flex-col p-4 text-left"
+              className="flex flex-col p-8 text-left border shadow-md rounded-md mb-4 mx-2 md:mx-auto lg:mx-auto"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <span className="text-base font-semibold leading-6 text-gray-900 ">
-                Codigo:
-              </span>
-              <input
-                type="number"
-                {...register("Codigo", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
-                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
-                maxLength={4}
-              />
-              <label className="label text-error">
-                {errors.Codigo ? errors.Codigo.message : ""}
-              </label>
+              <div className="flex flex-row">
+                <div className="flex flex-col mr-2">
+                  <span className="text-base font-semibold leading-6 text-gray-900">
+                    Nombre:
+                  </span>
+                  <input
+                    type="text"
+                    {...register("Nombre", {
+                      setValueAs: (value) =>
+                        value === "" ? undefined : value,
+                    })}
+                    className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
+                  />
+                  <label className="label text-error">
+                    {errors.Nombre ? errors.Nombre.message : ""}
+                  </label>
+                </div>
 
-              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                Nombre:
-              </span>
-              <input
-                type="text"
-                {...register("Nombre", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : value,
-                })}
-                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
-              />
-              <label className="label text-error">
-                {errors.Nombre ? errors.Nombre.message : ""}
-              </label>
-              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
+                <div className="flex flex-col">
+                  <span className="text-base font-semibold leading-6 text-gray-900 ">
+                    Codigo:
+                  </span>
+                  <input
+                    type="number"
+                    {...register("Codigo", {
+                      setValueAs: (value) =>
+                        value === "" ? undefined : Number(value),
+                    })}
+                    className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                    maxLength={4}
+                  />
+                  <label className="label text-error">
+                    {errors.Codigo ? errors.Codigo.message : ""}
+                  </label>
+                </div>
+              </div>
+
+
+              <span className="mt-1 text-base font-semibold leading-6 text-gray-900">
                 Año:
               </span>
               <select
@@ -160,7 +168,7 @@ export default function CreateSubFamily(props: props) {
                   setValueAs: (value) => (value === "" ? undefined : Number(value))
                 })}
 
-                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option value="">Seleccione un año</option>
                 {props.yearGuid.map((option, index) => (
@@ -180,7 +188,7 @@ export default function CreateSubFamily(props: props) {
                 {...register("CuentaId", {
                   setValueAs: (value) => (value === "" ? undefined : value)
                 })}
-                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option key={0} value={""}>Seleccione una cuenta</option>
                 {cuentaYear.map((option, index) => (
@@ -200,7 +208,7 @@ export default function CreateSubFamily(props: props) {
                 {...register("CuentaObligacionId", {
                   setValueAs: (value) => (value === "" ? undefined : value)
                 })}
-                className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option key={0} value={""}>Seleccione una cuenta</option>
                 {cuentaYear.map((option, index) => (
@@ -218,20 +226,23 @@ export default function CreateSubFamily(props: props) {
               <textarea
                 {...register("Descripcion")}
                 className=" mt-1 w-full rounded-md text-base font-semibold leading-6 text-gray-900 focus:ring-2 focus:ring-primary border bg-primary-content"
-                rows={10}
+                rows={3}
               ></textarea>
               <label className="label text-error">
                 {errors.Descripcion ? errors.Descripcion.message : ""}
               </label>
 
               <div className="mt-2">
-                <button
-                  className="px-16 btn btn-primary"
-                  type="submit"
-                >
-                  Crear Sub-Familia <FaPlus />
-                </button>
-                <div className="my-2">
+                <div className="flex justify-center">
+                  <button
+                    className="px-16 btn btn-primary"
+                    type="submit"
+                  >
+                    Crear Sub-Familia <FaPlus />
+                  </button>
+                </div>
+
+                <div className="my-2 flex justify-center">
                   <button
                     className="px-16 btn btn-outline btn-primary"
                     onClick={() => props.change()}
