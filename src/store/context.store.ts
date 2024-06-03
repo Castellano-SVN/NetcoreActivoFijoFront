@@ -7,14 +7,22 @@ interface IMenu {
   active: boolean;
   href: string;
 }
-const Menus: IMenu[] = [
-  {name:"Prestadores",active:false,href: "/empresa"},
-  {name:"Recepcion",active:false,href: "/recepcion"},
-  {name:"Despacho",active:false,href: "/despacho"},
+
+interface IMenuChildren extends IMenu {
+  children: IMenu[]
+}
+const Menus: IMenuChildren[] = [
+  {name:"Prestadores",active:false,href: "/empresa",children:[]},
+  {name:"Recepcion",active:false,href: "/recepcion",
+    children:[
+      {name:"Ingreso",active:false, href:'/recepcion/ingreso'}
+    ]
+  },
+  {name:"Despacho",active:false,href: "/despacho",children:[]},
 ]
 interface State {
   bread: breadI[];
-  menus: IMenu[];
+  menus: IMenuChildren[];
 }
 
 type Actions = {

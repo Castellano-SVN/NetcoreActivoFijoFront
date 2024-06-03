@@ -16,18 +16,40 @@ export default function TopBar(props: props) {
   const handleClick = (path: string) => {
     router.push(path); //path es nuestro camino 
   };
-
   return (
     <>
        <Navbar className="shadow-md bg-primary text-base-100">
        <div className="hidden lg:flex flex-1">
        <Menu horizontal className="px-1">
-        {
-          menus.map((e,index) => 
-          <Menu.Item  key={index}  className={e.active ? "font-extrabold" : ""}>
-            <a onClick={() => router.push(e.href)}>{e.name}</a>
-          </Menu.Item>)
-        }
+       {
+  menus.map((e, index) => {
+    if (e.children.length === 0) {
+      return (
+        <Menu.Item key={index} className={e.active ? "font-extrabold" : ""}>
+          <a onClick={() => router.push(e.href)}>{e.name}</a>
+        </Menu.Item>
+      );
+    } else {
+      return (
+<Menu.Item>
+            <details>
+              <summary className={e.active ? "font-extrabold" : ""} >{e.name}</summary>
+              <ul className="p-2 bg-primary">
+                {
+                   e.children.map((children, index) => (
+                  <li>
+                    <a onClick={() => router.push(children.href)} className={children.active ? "font-extrabold" : ""}>{children.name}</a>
+                  </li>
+                  )
+                )}
+                
+              </ul>
+            </details>
+          </Menu.Item>
+      );
+    }
+  })
+}
           {/* <Menu.Item className="font-extrabold	">
             <a onClick={() => router.push("/empresa")}>Prestadores</a>
           </Menu.Item>
