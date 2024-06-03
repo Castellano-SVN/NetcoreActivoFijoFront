@@ -22,7 +22,6 @@ interface props {
 export default function CreateArticulo(props: props) {
     const router = useRouter();
     const { jwt } = useUserStore();
-    const [dataSubFamilia, setDataSubFamilia] = useState<ISubFamilia>();
     const validationSchema = z.object({
         EmpresaId: z.string({
             required_error: "Campo requerido",
@@ -78,11 +77,6 @@ export default function CreateArticulo(props: props) {
     } = methods;
 
 
-    useEffect(() => {
-        console.log("se ejecuto 1 vez")
-        setValue("EmpresaId", props.guid);
-        setValue("SubFamiliaId", props.subFamilyGuid)
-    }, [props.guid, props.familyGuid]);
 
     const onSubmit: SubmitHandler<ArticuloFormValues> = async (
         data: ArticuloFormValues
@@ -95,14 +89,47 @@ export default function CreateArticulo(props: props) {
         } catch (error) { }
     };
 
-    const getSubFamilia = async (id: string, empresa: string) => {
+    const [slugs, setSlugs] = useState<{ subFamilia: string; familia: string }>();
+    const SubfamiliasQuerys = async (subFamilia: string, familia: string) => {
+        await getSubFamilia(subFamilia, familia);
+
+    }
+
+    useEffect(() => {
+        if (!router.query.slug) return;
+        const empresa = router.query.slug[0];
+        const familia = router.query.slug[1];
+        const subFamilia = router.query.slug[2];
+        console.log(router.query.slug);
+        if (subFamilia) SubfamiliasQuerys(subFamilia, familia);
+        setSlugs({
+            familia: familia as string,
+            subFamilia: subFamilia as string,
+        });
+    }, [router.query]);
+
+    const [dataSubFamilia, setDataSubFamilia] = useState<ISubFamilia>();
+
+    const getSubFamilia = async (id: string, familia: string) => {
         try {
-          const dataGet = await api_getOneSubFamilias(jwt, id, empresa);
-          setDataSubFamilia(dataGet.data.data);
+            const dataGet = await api_getOneSubFamilias(jwt, id, familia);
+            setDataSubFamilia(dataGet.data.data);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      };
+    };
+
+    useEffect(() => {
+        console.log("se ejecuto 1 vez");
+        setValue("EmpresaId", props.guid);
+        setValue("SubFamiliaId", props.subFamilyGuid);
+    }, [props.guid, props.familyGuid]);
+
+    useEffect(() => {
+        if (!dataSubFamilia) return;
+        setValue("AnoNumero", dataSubFamilia?.anoNumero);
+    }, [dataSubFamilia])
+
 
     return (
         <>
