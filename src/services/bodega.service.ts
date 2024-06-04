@@ -116,6 +116,10 @@ export function api_postArticulos(bearer: string, data: any) {
   return api.post(`articulo`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_putArticulos(bearer: string, data: any) {
+  return api.put(`articulo`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
 export function api_deleteArticulo(bearer: string, id: string) {
   return api.delete(`articulo/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

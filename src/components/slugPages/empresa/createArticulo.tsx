@@ -2,11 +2,11 @@ import { FaPlus } from "react-icons/fa";
 import { Button, Modal } from "react-daisyui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ArticuloFormValues, ICuenta, ISubFamilia, ITipoUnidad, IYears } from "@/interfaces/creation";
+import { ArticuloFormValues, IArticulo, ICuenta, ISubFamilia, ITipoUnidad, IYears } from "@/interfaces/creation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import { api_getOneSubFamilias, api_postArticulos, api_postSubFamilias } from "@/services/bodega.service";
+import { api_getOneSubFamilias, api_postArticulos, api_postSubFamilias, api_putArticulos } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { toast } from "react-toastify";
 
@@ -82,11 +82,19 @@ export default function CreateArticulo(props: props) {
         data: ArticuloFormValues
     ) => {
         try {
-            console.log(data);
-            await api_postArticulos(jwt, data);
-            reset();
-            toast.success("Articulo guardado correctamente");
-        } catch (error) { }
+            if (!data.Id) {
+                await api_postArticulos(jwt, data);
+                toast.success("Articulo guardado correctamente");
+                reset();
+            } else {
+                await api_putArticulos(jwt, data);
+                toast.success("Articulo actualizado correctamente");
+            }
+            props.change();
+        } catch (error) {
+            console.log(error);
+            toast.error("Ocurrió un error al guardar la persona");
+        }
     };
 
     const [slugs, setSlugs] = useState<{ subFamilia: string; familia: string }>();
@@ -130,6 +138,32 @@ export default function CreateArticulo(props: props) {
         setValue("AnoNumero", dataSubFamilia?.anoNumero);
     }, [dataSubFamilia])
 
+    const [show, setShow] = useState<boolean>(false);
+    const setArticuloEdit = async () => {
+        const articuloEditLs = localStorage.getItem("editArticulo")
+        if (!articuloEditLs) {
+            setShow(false);
+            return
+        };
+        const editArticulo: { articulo: IArticulo } = JSON.parse(articuloEditLs);
+        toast.info("Editando articulo existente");
+        setValue("EmpresaId", editArticulo.articulo.empresaId);
+        setValue("AnoNumero", editArticulo.articulo.anoNumero);
+        setValue("SubFamiliaId", editArticulo.articulo.subFamiliaId);
+        setValue("Id", editArticulo.articulo.id);
+        setValue("TipoUnidadCodigo", editArticulo.articulo.tipoUnidadCodigo);
+        setValue("Codigo", editArticulo.articulo.codigo);
+        setValue("Nombre", editArticulo.articulo.nombre);
+        setValue("Valor", editArticulo.articulo.valor);
+        setValue("Descripcion", editArticulo.articulo.descripcion);
+        setValue("Eliminado", editArticulo.articulo.eliminado);
+        setShow(true);
+        localStorage.clear();
+    }
+    useEffect(
+        () => {
+            setArticuloEdit();
+        }, []);
 
     return (
         <>
@@ -234,25 +268,44 @@ export default function CreateArticulo(props: props) {
                             </label>
 
 
-
-                            <div className="mt-2">
-                                <div className="flex justify-center">
-                                    <button
-                                        className="px-16 btn btn-primary"
-                                        type="submit"
-                                    >
-                                        Crear Articulo <FaPlus />
-                                    </button>
+                            {show ? (
+                                <div className="mt-2">
+                                    <div className="flex justify-center">
+                                        <button
+                                            className="px-16 btn btn-primary"
+                                            type="submit"
+                                        >
+                                            Modificar Articulo <FaPlus />
+                                        </button>
+                                    </div>
+                                    <div className="my-2 flex justify-center">
+                                        <button
+                                            className="px-16 btn btn-outline btn-primary"
+                                            onClick={() => props.change()}
+                                        >
+                                            Volver
+                                        </button>
+                                    </div>
+                                </div>) : (
+                                <div className="mt-2">
+                                    <div className="flex justify-center">
+                                        <button
+                                            className="px-16 btn btn-primary"
+                                            type="submit"
+                                        >
+                                            Crear Articulo <FaPlus />
+                                        </button>
+                                    </div>
+                                    <div className="my-2 flex justify-center">
+                                        <button
+                                            className="px-16 btn btn-outline btn-primary"
+                                            onClick={() => props.change()}
+                                        >
+                                            Volver
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="my-2 flex justify-center">
-                                    <button
-                                        className="px-16 btn btn-outline btn-primary"
-                                        onClick={() => props.change()}
-                                    >
-                                        Volver
-                                    </button>
-                                </div>
-                            </div>
+                            )}
                         </form>
                     </div>
                 </FormProvider>
