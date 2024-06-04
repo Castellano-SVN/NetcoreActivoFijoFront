@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FaEye, FaPlus } from "react-icons/fa";
 import { Button, Modal } from "react-daisyui";
 import { toast } from "react-toastify";
-import { FaCircleXmark } from "react-icons/fa6";
+import { FaCircleXmark, FaPenToSquare } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
 import { useUserStore } from "@/store/user.store";
 import { api_deleteArticulo, api_getArticulos } from "@/services/bodega.service";
@@ -157,11 +157,6 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const Show = () => {
-        const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
-        router.push(`${currentUrl}/${element.id}`)
-    }
-
     const handleClickDelete = () => {
         setIsModalOpen(true);
     };
@@ -211,7 +206,7 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
                     <div className="flex flex-wrap justify-end space-x-4">
                         <a className="flex items-center cursor-pointer hover:font-bold"  onClick={editArticulo}>
                             <span className="text-sm underline text-primary">Editar</span>
-                            <FaEye className="text-primary ml-2" />
+                            <FaPenToSquare className="text-primary ml-2" />
                         </a>
                         <a className="flex items-center cursor-pointer hover:font-bold" onClick={handleClickDelete}>
                             <span className="text-sm underline items-center text-error">Borrar</span>
