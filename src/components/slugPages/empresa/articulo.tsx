@@ -94,7 +94,7 @@ export default function Page(props: props) {
                     {data?.pages?.map((page, pageIndex) => (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full mt-2" key={pageIndex}>
                             {page.dataList.map((articulo: IArticulo, index: number) => (
-                                <Element element={articulo} key={index} refetch={refetch} />
+                                <Element element={articulo} key={index} refetch={refetch} create={props.create}/>
                             ))}
                         </div>
                     ))}
@@ -112,8 +112,8 @@ export default function Page(props: props) {
                                 {isFetchingNextPage
                                     ? "Cargando más..."
                                     : hasNextPage
-                                    ? "Ver más"
-                                    : "No hay más datos"}
+                                        ? "Ver más"
+                                        : "No hay más datos"}
                             </button>
                         </div>
                         <div className="mt-4">
@@ -151,7 +151,7 @@ export default function Page(props: props) {
     );
 }
 
-function Element({ element, refetch }: { element: IArticulo, refetch: () => void }) {
+function Element({ element, refetch, create }: { element: IArticulo, refetch: () => void, create: () => void }) {
     const router = useRouter();
     const { jwt } = useUserStore();
 
@@ -184,6 +184,11 @@ function Element({ element, refetch }: { element: IArticulo, refetch: () => void
         }
     };
 
+    const editArticulo = () => {
+        localStorage.setItem("editArticulo", JSON.stringify({ articulo: element }));
+        create();
+    };
+
     return (
         <>
             <div className="hover:shadow-md border rounded-md shadow">
@@ -204,11 +209,7 @@ function Element({ element, refetch }: { element: IArticulo, refetch: () => void
                 <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
                     <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
                     <div className="flex flex-wrap justify-end space-x-4">
-                        <a className="flex items-center">
-                            <span className="text-sm underline text-primary">Ver</span>
-                            <FaEye className="text-primary ml-2" />
-                        </a>
-                        <a className="flex items-center" >
+                        <a className="flex items-center cursor-pointer hover:font-bold"  onClick={editArticulo}>
                             <span className="text-sm underline text-primary">Editar</span>
                             <FaEye className="text-primary ml-2" />
                         </a>
