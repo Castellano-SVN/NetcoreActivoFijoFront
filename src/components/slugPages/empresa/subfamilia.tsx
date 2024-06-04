@@ -8,10 +8,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { FaCircleXmark } from "react-icons/fa6";
+import { FaCircleXmark, FaPenToSquare } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
 import { useUserStore } from "@/store/user.store";
-import { api_getSubFamilias } from "@/services/bodega.service";
+import { api_deleteArticulo, api_deleteSubFamilia, api_getSubFamilias } from "@/services/bodega.service";
 import ErrorAlert from "@/components/alerts/errorAlert";
 import { ISubFamilia } from "@/interfaces/creation";
 import WarningAlert from "@/components/alerts/warningAlert";
@@ -94,7 +94,7 @@ export default function Page(props: props) {
           {data?.pages?.map((page, pageIndex) => (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full mt-2" key={pageIndex}>
               {page.dataList.map((subFamily: ISubFamilia, index: number) => (
-                <Element element={subFamily} key={index} />
+                <Element element={subFamily} key={index} refetch={refetch} create={props.create} />
               ))}
             </div>
           ))}
@@ -149,17 +149,43 @@ export default function Page(props: props) {
   );
 }
 
-function Element({ element }: { element: ISubFamilia }) {
+function Element({ element, refetch, create }: { element: ISubFamilia, refetch: () => void, create: () => void }) {
   const router = useRouter();
+  const { jwt } = useUserStore();
 
-  const deleteElement = () => {
-    console.log("delete");
-  }
   const Show = () => {
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
     console.log(currentUrl)
     router.push(`${currentUrl}/${element.id}`)
   }
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleClickDelete = () => {
+    setIsModalOpen(true);
+  };
+  const handleClickClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleClickYes = async () => {
+    try {
+      const dataDelete = await api_deleteSubFamilia(jwt, element.id);
+      if (dataDelete.status === 200) {
+        toast.success('Articulo eliminado con exito');
+        setIsModalOpen(false);
+        refetch();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Ha ocurrido un error');
+    }
+  };
+
+  const editSubFamilia = () => {
+    localStorage.setItem("editSubFamilia", JSON.stringify({ subFamilia: element }));
+    create();
+  };
+
+
   return (
     <>
       <div
@@ -182,31 +208,37 @@ function Element({ element }: { element: ISubFamilia }) {
         <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
           <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
           <div className="flex  flex-wrap justify-end space-x-4">
-            <a
-              onClick={Show}
-              className="flex items-center cursor-pointer hover:font-bold"
-            >
+            <a className="flex items-center cursor-pointer hover:font-bold" onClick={Show} >
               <span className="text-sm underline text-primary">Ver</span>
               <FaEye className="text-primary ml-2" />
             </a>
-            <a
-              onClick={() => { }}
-              className="flex items-center"
-            >
-              <span className="text-sm underline text-primary">Editar</span>
-              <FaEye className="text-primary ml-2" />
+            <a className="flex items-center cursor-pointer hover:font-bold" onClick={editSubFamilia} >
+              <span className="text-sm underline items-center text-primary">Editar</span>
+              <FaPenToSquare className="text-primary ml-2" />
             </a>
 
-            <a
-              onClick={deleteElement}
-              className="flex items-center"
-            >
+            <a className="flex items-center cursor-pointer hover:font-bold" onClick={handleClickDelete}>
               <span className="text-sm underline items-center text-error">Borrar</span>
               <FaCircleXmark className="text-error ml-2" />
             </a>
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <dialog open className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Articulo?</h3>
+            <div className="modal-action flex justify-center">
+              <button className="btn btn-outline btn-primary mr-2 w-20" onClick={handleClickClose}>
+                No
+              </button>
+              <button className="btn btn-outline btn-accent w-20" onClick={handleClickYes}>
+                Sí
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </>
   );
 }

@@ -2,11 +2,11 @@ import { FaPlus } from "react-icons/fa";
 import { Button, Modal } from "react-daisyui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ICuenta, IYears, SubFamiliaFormValues } from "@/interfaces/creation";
+import { ICuenta, IFamilia, ISubFamilia, IYears, SubFamiliaFormValues } from "@/interfaces/creation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import { api_postSubFamilias } from "@/services/bodega.service";
+import { api_getOneFamilias, api_postSubFamilias, api_putSubFamilias } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { toast } from "react-toastify";
 
@@ -98,12 +98,60 @@ export default function CreateSubFamily(props: props) {
     data: SubFamiliaFormValues
   ) => {
     try {
-      console.log(data);
-      await api_postSubFamilias(jwt, data);
-      reset();
-      toast.success("Sub-Familia guardada correctamente");
-    } catch (error) { }
+      if (!data.Id) {
+        await api_postSubFamilias(jwt, data);
+        toast.success("SubFamilia guardada correctamente");
+        reset();
+      } else {
+        await api_putSubFamilias(jwt, data);
+        toast.success("SubFamilia actualizado correctamente");
+      }
+      props.change();
+    } catch (error) {
+      console.log(error);
+      toast.error("Ocurrió un error al guardar la persona");
+    }
   };
+
+  const [show, setShow] = useState<boolean>(false);
+  const setSubFamiliaEdit = async () => {
+    const subFamiliaEditLs = localStorage.getItem("editSubFamilia")
+    if (!subFamiliaEditLs) {
+      setShow(false);
+      return
+    };
+    const editSubFamilia: { subFamilia: ISubFamilia } = JSON.parse(subFamiliaEditLs);
+    toast.info("Editando SubFamilia existente");
+    setValue("EmpresaId", editSubFamilia.subFamilia.empresaId);
+    setValue("AnoNumero", editSubFamilia.subFamilia.anoNumero);
+    setValue("Id", editSubFamilia.subFamilia.id);
+    setValue("Codigo", editSubFamilia.subFamilia.codigo);
+    setValue("FamiliaId", editSubFamilia.subFamilia.familiaId);
+    setValue("CuentaId", editSubFamilia.subFamilia.cuentaId);
+    setValue("CuentaObligacionId", editSubFamilia.subFamilia.cuentaObligacionId);
+    setValue("Nombre", editSubFamilia.subFamilia.nombre);
+    setValue("Descripcion", editSubFamilia.subFamilia.descripcion);
+    setValue("Eliminado", editSubFamilia.subFamilia.eliminado);
+    setShow(true);
+    localStorage.clear();
+  }
+  useEffect(
+    () => {
+      setSubFamiliaEdit();
+    }, []);
+
+
+
+  /*  const onSubmit: SubmitHandler<SubFamiliaFormValues> = async (
+     data: SubFamiliaFormValues
+   ) => {
+     try {
+       console.log(data);
+       await api_postSubFamilias(jwt, data);
+       reset();
+       toast.success("Sub-Familia guardada correctamente");
+     } catch (error) { }
+   }; */
 
   return (
     <>
@@ -232,25 +280,45 @@ export default function CreateSubFamily(props: props) {
                 {errors.Descripcion ? errors.Descripcion.message : ""}
               </label>
 
-              <div className="mt-2">
-                <div className="flex justify-center">
-                  <button
-                    className="px-16 btn btn-primary"
-                    type="submit"
-                  >
-                    Crear Sub-Familia <FaPlus />
-                  </button>
-                </div>
+              {show ? (
+                <div className="mt-2">
+                  <div className="flex justify-center">
+                    <button
+                      className="px-16 btn btn-primary"
+                      type="submit"
+                    >
+                      Modificar Sub-Familia <FaPlus />
+                    </button>
+                  </div>
 
-                <div className="my-2 flex justify-center">
-                  <button
-                    className="px-16 btn btn-outline btn-primary"
-                    onClick={() => props.change()}
-                  >
-                    Volver
-                  </button>
-                </div>
-              </div>
+                  <div className="my-2 flex justify-center">
+                    <button
+                      className="px-16 btn btn-outline btn-primary"
+                      onClick={() => props.change()}
+                    >
+                      Volver
+                    </button>
+                  </div>
+                </div>) : (
+                <div className="mt-2">
+                  <div className="flex justify-center">
+                    <button
+                      className="px-16 btn btn-primary"
+                      type="submit"
+                    >
+                      Crear Sub-Familia <FaPlus />
+                    </button>
+                  </div>
+
+                  <div className="my-2 flex justify-center">
+                    <button
+                      className="px-16 btn btn-outline btn-primary"
+                      onClick={() => props.change()}
+                    >
+                      Volver
+                    </button>
+                  </div>
+                </div>)}
             </form>
           </div>
         </FormProvider>

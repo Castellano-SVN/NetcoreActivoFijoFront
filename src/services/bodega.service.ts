@@ -108,6 +108,14 @@ export function api_postSubFamilias(bearer: string, data: any) {
   return api.post(`subFamilia`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_putSubFamilias(bearer: string, data: any) {
+  return api.put(`subFamilia`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_deleteSubFamilia(bearer: string, id: string) {
+  return api.delete(`subFamilia/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
 export function api_getArticulos(bearer: string, id: string, page: number) {
   return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
