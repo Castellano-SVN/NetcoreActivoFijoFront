@@ -102,7 +102,9 @@ export function api_postLocation(bearer: string, data: any) {
 export function api_getSubFamilias(bearer: string, id: string, page: number) {
   return api.get(`subFamilia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-
+export function api_getAllSubFamilias(bearer: string) {
+  return api.get(`subfamilia`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 export function api_getOneSubFamilias(bearer: string, id: string, familia: string) {
   return api.get(`subFamilia/${id}/${familia}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
