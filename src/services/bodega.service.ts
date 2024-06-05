@@ -147,6 +147,15 @@ export function api_getOneFamilias(bearer: string, id: string, empresa: string) 
 export function api_postFamilias(bearer: string, data: any) {
   return api.post(`familia`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+export function api_putFamilias(bearer: string, data: any) {
+  return api.put(`familia`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_deleteFamilias(bearer: string, id: string) {
+  return api.delete(`familia/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
 export function api_getYears(bearer: string) {
   return api.get(`ano`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

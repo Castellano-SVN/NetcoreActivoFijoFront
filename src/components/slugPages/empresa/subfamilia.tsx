@@ -191,7 +191,7 @@ function Element({ element, refetch, create }: { element: ISubFamilia, refetch: 
       <div
         className=" hover:shadow-md  border rounded-md  shadow"
       >
-        <div className="flex flex-row justify-between p-2">
+        <div className="flex flex-row justify-between p-2 tooltip tooltip-primary" data-tip={element.descripcion}>
           <div className="basis-1/2 flex flex-col justify-left text-left">
             <span className="font-bold mb-2">Nombre</span>
             <span className="text-sm align-left">
