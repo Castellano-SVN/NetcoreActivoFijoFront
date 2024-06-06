@@ -14,7 +14,7 @@ import { FaDolly, FaFilePen } from "react-icons/fa6";
 export default function index() {
 
 
-  
+
 
   const { setActive } = useContextStore()
   useEffect(() => {
@@ -129,42 +129,42 @@ function Element({ element }: { element: IEmpresa }) {
 
   return (
     <div
-    className=" hover:shadow-md  border rounded-md  shadow animate-fadein"
-  >
-    <div className="flex flex-row justify-between p-2">
-      <div className="basis-1/2 flex flex-col justify-left text-left">
-        <span className="font-bold mb-2">Razon social</span>
-        <span className="text-sm align-left">
-          {element.razonSocial}
-        </span>
+      className=" hover:shadow-md  border rounded-md  shadow animate-fadein"
+    >
+      <div className="flex flex-row justify-between p-2">
+        <div className="basis-1/2 flex flex-col justify-left text-left">
+          <span className="font-bold mb-2">Razon social</span>
+          <span className="text-sm align-left">
+            {element.razonSocial}
+          </span>
+        </div>
+        <div className="basis-1/2 flex flex-col justify-left text-right ">
+          <span className="font-bold mb-2">Giro</span>
+          <span className="text-sm align-left">
+            {element.giro ? element.giro : "No informado"}
+          </span>
+        </div>
       </div>
-      <div className="basis-1/2 flex flex-col justify-left text-right ">
-        <span className="font-bold mb-2">Giro</span>
-        <span className="text-sm align-left">
-         {element.giro ? element.giro : "No informado"}
-        </span>
-      </div>
-    </div>
-    <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
-      <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
-      <div className="flex  flex-wrap justify-end space-x-4">
-        <a
-          onClick={() => router.push(`/recepcion/cotizacion/${element.id}`)} 
-          className="flex items-center cursor-pointer hover:font-bold"
-        >
-          <span className="text-sm underline text-primary">Cotizaciones</span>
-          <FaFilePen className="text-primary ml-2" />
-        </a>
-        <a
-          onClick={() => {router.push(`/recepcion/${element.id}`)}}
-          className="flex items-center cursor-pointer hover:font-bold"
-        >
-          <span className="text-sm underline text-primary">Recepcion</span>
-        <FaDolly className="text-primary ml-2" />
-        </a>
+      <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
+        <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
+        <div className="flex  flex-wrap justify-end space-x-4">
+          <a
+            onClick={() => router.push(`/recepcion/cotizacion/${element.id}`)}
+            className="flex items-center cursor-pointer hover:font-bold"
+          >
+            <span className="text-sm underline text-primary">Cotizaciones</span>
+            <FaFilePen className="text-primary ml-2" />
+          </a>
+          <a
+            onClick={() => { router.push(`/recepcion/ingreso?empresa=${element.id}`) }}
+            className="flex items-center cursor-pointer hover:font-bold"
+          >
+            <span className="text-sm underline text-primary">Ingreso</span>
+            <FaDolly className="text-primary ml-2" />
+          </a>
 
+        </div>
       </div>
     </div>
-  </div>
   );
 }
