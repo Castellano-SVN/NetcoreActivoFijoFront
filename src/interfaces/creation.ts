@@ -341,6 +341,10 @@ interface IArticulo {
   eliminado: boolean;
   valor: number;
 }
+interface IArticuloIngreso extends IArticulo {
+  Familia: string;
+  subFamilia: string;
+}
 
 interface IAno {
   numero: number;
@@ -401,5 +405,5 @@ interface ITipoDocumento {
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor,
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor,IArticuloIngreso
 }
