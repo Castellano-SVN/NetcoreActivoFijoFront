@@ -342,8 +342,12 @@ interface IArticulo {
   valor: number;
 }
 interface IArticuloIngreso extends IArticulo {
-  Familia: string;
-  subFamilia: string;
+  subFamilium: {
+    nombre: string;
+    familium: {
+      nombre: string;
+    }
+  }
 }
 
 interface IAno {
