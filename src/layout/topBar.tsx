@@ -23,31 +23,11 @@ export default function TopBar(props: props) {
           <Menu horizontal className="px-1">
             {
               menus.map((e, index) => {
-                if (e.children.length === 0) {
-                  return (
-                    <Menu.Item key={index} className={e.active ? "font-extrabold" : ""}>
-                      <a onClick={() => router.push(e.href)}>{e.name}</a>
-                    </Menu.Item>
-                  );
-                } else {
-                  return (
-                    <Menu.Item>
-                      <details>
-                        <summary className={e.active ? "font-extrabold" : ""} >{e.name}</summary>
-                        <ul className="p-2 bg-primary">
-                          {
-                            e.children.map((children, index) => (
-                              <li key={index}>
-                                <a onClick={() => router.push(children.href)} className={children.active ? "font-extrabold" : ""}>{children.name}</a>
-                              </li>
-                            )
-                            )}
-
-                        </ul>
-                      </details>
-                    </Menu.Item>
-                  );
-                }
+                return (
+                  <Menu.Item key={index} className={e.active ? "font-extrabold" : ""}>
+                    <a onClick={() => router.push(e.href)}>{e.name}</a>
+                  </Menu.Item>
+                );
               })
             }
             {/* <Menu.Item className="font-extrabold	">

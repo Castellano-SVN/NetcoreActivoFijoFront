@@ -204,6 +204,22 @@ interface ICentroCosto {
   contabilizacion: boolean;
 }
 
+interface IPrograma {
+  empresaId: string;
+  anoNumero: number;
+  id: string;
+  numero: number;
+  nombre: string;
+  sigla?: string;
+  ambitoCodigo: number;
+  presupuestoMonto?: number;
+  presupuestoRestante?: number;
+  programaSEP: boolean;
+  programaPIE: boolean;
+  gastoCorriente: boolean;
+  departamentoId: string;
+  unidadId: string;
+}
 interface IPersona {
   id?: string;
   runCuerpo: number;
@@ -276,6 +292,16 @@ interface ArticuloFormValues {
   Eliminado: boolean;
   Valor: number;
 
+}
+
+interface RequerimientosFormValues {
+  Nombre: string;
+  Codigo?: string;
+  NombreArticulo: string;
+  Cantidad: number;
+  Glosa?: string;
+  ProgramaId: string;
+  Observaciones?: string;
 }
 
 interface ICuenta {
@@ -409,5 +435,6 @@ interface ITipoDocumento {
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor,IArticuloIngreso
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
+  RequerimientosFormValues,
 }
