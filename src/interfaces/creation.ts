@@ -293,15 +293,15 @@ interface ArticuloFormValues {
   Valor: number;
 
 }
-
+interface ArticleCuantity extends IArticuloIngreso {
+  Cantidad: number | undefined;
+  Glosa: string | undefined;
+}
 interface RequerimientosFormValues {
   Nombre: string;
-  Codigo?: string;
-  NombreArticulo: string;
-  Cantidad: number;
-  Glosa?: string;
   ProgramaId: string;
   Observaciones?: string;
+  Articulo: ArticleCuantity[]
 }
 
 interface ICuenta {
@@ -436,5 +436,5 @@ interface ITipoDocumento {
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues,
+  RequerimientosFormValues, ArticleCuantity
 }

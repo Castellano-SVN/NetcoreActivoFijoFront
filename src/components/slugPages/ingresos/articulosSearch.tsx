@@ -1,57 +1,59 @@
 import { z } from "zod";
 import { ArticuloFormValues, IArticulo, IArticuloIngreso, ICentroCosto, IFamilia, ISubFamilia } from "@/interfaces/creation";
-import { api_getAllCentroCostos, api_getAllFamilias, api_getAllSubFamilias } from "@/services/bodega.service";
 import { api_Ingresos } from "@/services/ingreso.service";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, FormProvider, useFormContext } from "react-hook-form";
+
 interface ISearch {
   Type: "Codigo" | "Nombre",
   Input: string | number,
   match?: string;
   CentroCosto?: string;
   Familia?: string;
-  SubFamilia?: string
+  SubFamilia?: string;
+  empresa: string;
 }
-
-const validationSchema = z.object({
-  Type: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }).optional().default("Codigo"),
-  CentroCosto: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }).optional(),
-  Input: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }),
-
-  match: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }).optional().default("comienza"),
-  Familia: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }).optional(),
-  SubFamilia: z.string({
-    required_error: "Campo requerido",
-    invalid_type_error: "Campo requerido",
-  }).optional(),
-
-});
-
 interface props {
   setList: Dispatch<SetStateAction<IArticuloIngreso[]>>
+  empresa: string;
+  subfamilia: ISubFamilia[];
+  familia: IFamilia[];
+  cc: ICentroCosto[]
 }
 export default function ArticulosSearch(props: props) {
+  const validationSchema = z.object({
+    Type: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional().default("Codigo"),
+    CentroCosto: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional(),
+    Input: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }),
+
+    match: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional().default("comienza"),
+    Familia: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional(),
+    SubFamilia: z.string({
+      required_error: "Campo requerido",
+      invalid_type_error: "Campo requerido",
+    }).optional(),
+
+  });
+
   const { jwt } = useUserStore();
-  const [dataCentroCosto, setDataCentroCosto] = useState<ICentroCosto[]>();
-  const [dataFamilia, setDataFamilia] = useState<IFamilia[]>();
-  const [dataSubFamilia, setDataSubFamilia] = useState<ISubFamilia[]>();
+
   const [searchBy, setSearchBy] = useState('codigo');
 
 
@@ -61,33 +63,10 @@ export default function ArticulosSearch(props: props) {
     }
     return value; // Mantener el valor original
   }
-  const getCentroCosto = async () => {
-    try {
-      const dataGet = await api_getAllCentroCostos(jwt);
-      setDataCentroCosto(dataGet.data.dataList);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getFamilia = async () => {
-    try {
-      const dataGet = await api_getAllFamilias(jwt);
-      setDataFamilia(dataGet.data.dataList);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getSubFamilia = async () => {
-    try {
-      const dataGet = await api_getAllSubFamilias(jwt);
-      setDataSubFamilia(dataGet.data.dataList);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const methods = useForm<ISearch>({
-    resolver: zodResolver(validationSchema),
-  });
+
+
+
+
   const {
     register,
     handleSubmit,
@@ -97,7 +76,7 @@ export default function ArticulosSearch(props: props) {
     setValue,
     watch,
     formState: { errors },
-  } = methods;
+  } = useFormContext<ISearch>();
   const [isLoading, SetisLoading] = useState<boolean>(false);
 
   const SearchArticulo: SubmitHandler<ISearch> = async (
@@ -106,6 +85,7 @@ export default function ArticulosSearch(props: props) {
     try {
       SetisLoading(true);
       // console.log(fil)
+      data.empresa = props.empresa;
       console.log(filteredSubFamilias?.find(e => e.id == data.SubFamilia));
       const dataClean = JSON.parse(JSON.stringify(data, removeUndefined));
       const articles = await api_Ingresos(jwt, dataClean);
@@ -116,14 +96,10 @@ export default function ArticulosSearch(props: props) {
       SetisLoading(false)
     }
   };
-  useEffect(() => {
-    getCentroCosto();
-    getFamilia();
-    getSubFamilia();
-  }, []);
+
 
   const family = watch("Familia")
-  const filteredSubFamilias = dataSubFamilia?.filter(
+  const filteredSubFamilias = props.subfamilia?.filter(
     (subfamilia) => subfamilia.familiaId === family
   );
 
@@ -256,7 +232,7 @@ export default function ArticulosSearch(props: props) {
                 className="mt-1 block w-3/4 py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
               >
                 <option key={0} value="">Seleccione un centro de costo</option>
-                {dataCentroCosto?.map((option: ICentroCosto, index) => (
+                {props.cc?.map((option: ICentroCosto, index) => (
                   <option key={index} value={option.id}>
                     {option.nombre}
                   </option>
@@ -274,7 +250,7 @@ export default function ArticulosSearch(props: props) {
                 })}
               >
                 <option value="">Seleccione una familia</option>
-                {dataFamilia?.map((familia) => (
+                {props.familia?.map((familia) => (
                   <option key={familia.id} value={familia.id}>
                     {familia.nombre}
                   </option>
