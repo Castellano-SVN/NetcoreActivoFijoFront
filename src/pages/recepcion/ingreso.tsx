@@ -1,23 +1,141 @@
 import Requerimiento from "@/components/slugPages/ingresos/requerimientos";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { IArticuloIngreso } from "../../interfaces/creation";
+import { ArticuloFormValues, IArticulo, IArticuloIngreso, ICentroCosto, IFamilia, ISubFamilia, RequerimientosFormValues } from "@/interfaces/creation";
+import { api_getAllCentroCostos, api_getAllFamilias, api_getAllSubFamilias } from "@/services/bodega.service";
+
 import ArticulosSearch from "../../components/slugPages/ingresos/articulosSearch";
 import ArticuloList from "../../components/slugPages/ingresos/articulosList";
+import { useSearchParams } from 'next/navigation'
+import { useUserStore } from "@/store/user.store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm, FormProvider, useFormContext, useFieldArray, useWatch, } from "react-hook-form";
+interface ArticleCuantity extends IArticuloIngreso {
+  Cantidad: number | undefined;
+  Glosa: string | undefined;
+}
+
+const ArticuloSchema = z.object({
+  Codigo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }).optional(),
+  NombreArticulo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
+  Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
+  Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
+})
+
+const RequerimientoSchema = z.object({
+  Nombre: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
+  Articulo: z.array(ArticuloSchema),
+  ProgramaId: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
+  Observaciones: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
+});
+
+
+
+const validationSchema = z.object({
+  Type: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }).optional().default("Codigo"),
+  CentroCosto: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }).optional(),
+  Input: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }),
+
+  match: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }).optional().default("comienza"),
+  Familia: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }).optional(),
+  SubFamilia: z.string({
+    required_error: "Campo requerido",
+    invalid_type_error: "Campo requerido",
+  }).optional(),
+
+});
+
+
 
 export default function Ingreso() {
+  interface ISearch {
+    Type: "Codigo" | "Nombre",
+    Input: string | number,
+    match?: string;
+    CentroCosto?: string;
+    Familia?: string;
+    SubFamilia?: string;
+    empresa: string;
+  }
+
+
+  const searchParams = useSearchParams()
+  const search = searchParams.get('empresa')
+
+  const methodsRequerimientos = useForm<RequerimientosFormValues>({ resolver: zodResolver(ArticuloSchema), defaultValues: { Articulo: [] } });
+  const { handleSubmit, register, getValues, formState: { errors }, control } = methodsRequerimientos;
+  const { fields, append, update } = useFieldArray({
+    control,
+    name: 'Articulo'
+  });
+
+
+  const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema) });
+
 
   const [showTable, setShowTable] = useState(false);
   const [ArticleList, SetArticleList] = useState<IArticuloIngreso[]>([]);
-  const [ArticleSelected, SetArticleSelected] = useState<IArticuloIngreso[]>([]);
+  const [ArticleSelected, SetArticleSelected] = useState<ArticleCuantity[]>([]);
   const [showRequerimiento, setShowRequerimiento] = useState(false);
+  const [dataCentroCosto, setDataCentroCosto] = useState<ICentroCosto[]>([]);
+  const [dataFamilia, setDataFamilia] = useState<IFamilia[]>([]);
+  const [dataSubFamilia, setDataSubFamilia] = useState<ISubFamilia[]>([]);
+  const { jwt } = useUserStore();
+
+  useEffect(() => {
+    if (!search) return;
+    getCentroCosto(search);
+    getFamilia(search);
+    getSubFamilia(search);
+  }, [search]);
+
+  const getCentroCosto = async (search: string) => {
+    try {
+      const dataGet = await api_getAllCentroCostos(jwt, search);
+      setDataCentroCosto(dataGet.data.dataList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getFamilia = async (search: string) => {
+    try {
+      const dataGet = await api_getAllFamilias(jwt, search);
+      setDataFamilia(dataGet.data.dataList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getSubFamilia = async (search: string) => {
+    try {
+      const dataGet = await api_getAllSubFamilias(jwt);
+      setDataSubFamilia(dataGet.data.dataList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const addArticle = (article: IArticuloIngreso) => {
-    SetArticleSelected(prevSelected => [...prevSelected, article]);
+    const articleReq: ArticleCuantity = { ...article, Glosa: '', Cantidad: 0 };
+    append(articleReq);
+
   };
 
   useEffect(() => {
-    console.log(ArticleSelected);
   }, [ArticleSelected]);
 
   const handleButtonClick = () => {
@@ -27,33 +145,38 @@ export default function Ingreso() {
     setShowRequerimiento(false);
   };
 
-  const removeArticle = (index: number) => {
-    SetArticleSelected(prevSelected => prevSelected.filter((_, i) => i !== index));
+  const removeArticle = (article: string) => {
+    console.log(fields)
+    const indice = fields.find(objeto => {
+      console.log({ id: objeto, click: article })
+    });
   };
+
+
+  if (!search) return '';
 
   return (
     <div className="flex flex-row justify-center w-full mx-auto">
-      <div className="shadow-md basis-1/2 border-2">
+      <div className="shadow-md basis-7/8 flex-grow ">
         {showRequerimiento === false ? (
-          <>
-            <ArticulosSearch setList={SetArticleList} />
-            <ArticuloList list={ArticleList} addArticulo={addArticle} />
+          <FormProvider {...methodsArticulo}>
+            <ArticulosSearch setList={SetArticleList} empresa={search} cc={dataCentroCosto} familia={dataFamilia} subfamilia={dataSubFamilia} />
+            <ArticuloList list={ArticleList} addArticulo={addArticle} articlesSelected={ArticleSelected} remove={removeArticle} />
             <div>
-              <button className="btn btn-outline btn-primary my-4" onClick={handleButtonClick}>Ver Requerimiento</button>
+              <button className="btn btn-outline btn-primary my-4" onClick={handleButtonClick}>Ver Requerimientos</button>
             </div>
-
-          </>
+          </FormProvider>
         ) :
           (
-            <>
-              <Requerimiento removeArticulo={removeArticle} selectArticle={ArticleSelected} />
+            <FormProvider {...methodsRequerimientos}>
+              <Requerimiento removeArticulo={removeArticle} selectArticle={ArticleSelected} empresa={search} />
               <div>
-                <button className="btn btn-outline btn-primary my-4" onClick={handleButtonBackClick}>Volver</button>
+                <button className="btn btn-outline btn-primary my-4" onClick={handleButtonBackClick}>Volver a articulos</button>
               </div>
-            </>
+            </FormProvider>
           )}
       </div>
 
-    </div>
+    </div >
   );
 }
