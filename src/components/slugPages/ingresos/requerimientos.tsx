@@ -1,12 +1,14 @@
 import WarningAlert from "@/components/alerts/warningAlert";
-import { IArticuloIngreso, IPrograma, RequerimientosFormValues, ArticleCuantity } from "@/interfaces/creation";
-import { api_getProgramaByEmpresa } from "@/services/bodega.service";
+import { IArticuloIngreso, IPrograma, RequerimientosFormValues, ArticleCuantity, CotizacionFormValues } from "@/interfaces/creation";
+import { api_getProgramaByEmpresa, api_postCotizacion } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { Table } from "react-daisyui";
 import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { FaFileExport } from "react-icons/fa";
 import { FaCircleXmark, FaPlus, FaRegFloppyDisk } from "react-icons/fa6";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 
@@ -27,19 +29,33 @@ export default function Requerimiento(props: props) {
             console.log(error);
         }
     };
+
+    const onSubmit: SubmitHandler<CotizacionFormValues> = async (
+        data: CotizacionFormValues
+    ) => {
+        try {
+            console.log(data)
+            // await api_postCotizacion(jwt, data);
+            toast.success("Cotización guardada correctamente");
+            //reset();
+        } catch (error) {
+            console.log(error);
+            toast.error("Ocurrió un error al crear la cotización");
+        }
+    };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const charCode = event.key;
-    
+
         // Permitir solo números (charCode 0-9)
         if (!/^[0-9]$/.test(charCode)) {
-          event.preventDefault();
+            event.preventDefault();
         }
-      };
-    
+    };
+
     useEffect(() => {
         getPrograma();
-        }, []);
-        
+    }, []);
+
     const {
         register,
         handleSubmit,
@@ -49,22 +65,22 @@ export default function Requerimiento(props: props) {
         setValue,
         watch,
         formState: { errors },
-        } = useFormContext<RequerimientosFormValues>();
-        const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-            control, // control props comes from useForm (optional: if you are using FormContext)
-            name: "Articulo", // unique name for your Field Array,
-            keyName: 'idKey'
-          });
-          const SearchArticulo: SubmitHandler<RequerimientosFormValues> = async (
-            data: RequerimientosFormValues
-          ) => {
-            console.log(data)
-          };
-        const listArticles = watch("Articulo");
-        return (
+    } = useFormContext<RequerimientosFormValues>();
+    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control, // control props comes from useForm (optional: if you are using FormContext)
+        name: "Articulo", // unique name for your Field Array,
+        keyName: 'idKey'
+    });
+    const SearchArticulo: SubmitHandler<RequerimientosFormValues> = async (
+        data: RequerimientosFormValues
+    ) => {
+        console.log(data)
+    };
+    const listArticles = watch("Articulo");
+    return (
         <>
             <div className="container mx-auto mt-2 sm:mt-4 rounded-lg">
-                <div className="max-w-3xl mx-auto bg-white p-8">
+                <div className="max-w-3xl mx-auto bg-white">
                     <form onSubmit={handleSubmit(SearchArticulo)}>
                         <h5 className="text-2xl font-bold mb-4">Requerimiento</h5>
                         <div className="mb-4">
@@ -79,53 +95,61 @@ export default function Requerimiento(props: props) {
                                 </label>
                             </div>
                         </div>
-                                {fields.length !== 0 ? (
-                                    <table className=" table-auto divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nro</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Glosa</th>
-                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {fields.map((element, index: number) => (
-                                            <tr key={element.idKey}>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{element.codigo}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{element.nombre}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" align="center">
-                                                    <input onKeyDown={handleKeyDown} {...register(`Articulo.${index}.Cantidad`, {
-                                                        valueAsNumber:true,
-                                                         setValueAs: (value) => value === "" ? undefined : value })}
-                                                        className="mt-1 block py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    />
-                                                    <label className="label text-error">
-                                                    {errors.Articulo?.[index]?.Cantidad ? errors.Articulo?.[index]?.Cantidad.message : ""}
-                                                    </label>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" align="center">
-                                                    <input {...register(`Articulo.${index}.Glosa`, { setValueAs: (value) => value === "" ? undefined : value })}
-                                                        className="mt-1 block w-4/4 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    />
-                                                    <label className="label text-error">
-                                                        {errors.Articulo?.[index]?.Glosa ? errors.Articulo?.[index]?.Glosa.message : ""}
-                                                    </label>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" align="center">
-                                                    <FaCircleXmark className="text-error cursor-pointer hover:font-bold"
-                                                        onClick={() => props.removeArticulo(element.idKey)}
-                                                    />
+                        <div className="grid grid-cols-1 gap-1 mx-4">
+                            {
+                                fields.length === 0 ? (<WarningAlert message="No hay productos seleccionados" />) : (
+                                    <>
+                                        <div className="">
+                                            <div className="overflow-x-auto">
+                                                <Table>
+                                                    <Table.Head>
+                                                        <span>Código</span>
+                                                        <span>Nombre</span>
+                                                        <span>Cantidad</span>
+                                                        <span>Glosa</span>
+                                                        <span>Eliminar</span>
+                                                    </Table.Head>
 
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>) : (<WarningAlert message="No hay productos seleccionados" />)}
+                                                    <Table.Body>
+                                                        {fields.map((element, index: number) => (
+                                                            <Table.Row>
+                                                                <span>{element.codigo}</span>
+                                                                <span>{element.nombre}</span>
+                                                                <span><><input onKeyDown={handleKeyDown} {...register(`Articulo.${index}.Cantidad`, {
+                                                                    valueAsNumber: true,
+                                                                    setValueAs: (value) => value === "" ? undefined : value
+                                                                })}
+                                                                    className="mt-1 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                />
+                                                                    <label className="label text-error">
+                                                                        {errors.Articulo?.[index]?.Cantidad ? errors.Articulo?.[index]?.Cantidad.message : ""}
+                                                                    </label></>
+                                                                </span>
+                                                                <span><><input {...register(`Articulo.${index}.Glosa`, { setValueAs: (value) => value === "" ? undefined : value })}
+                                                                    className="mt-1  py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                />
+                                                                    <label className="label text-error">
+                                                                        {errors.Articulo?.[index]?.Glosa ? errors.Articulo?.[index]?.Glosa.message : ""}
+                                                                    </label>
+                                                                </>
+                                                                </span>
+                                                                <span>
+                                                                    <FaCircleXmark className="text-error cursor-pointer hover:font-bold"
+                                                                        onClick={() => props.removeArticulo(element.idKey)}
+                                                                    />
 
+                                                                </span>
+                                                            </Table.Row>
+                                                        ))}
+                                                    </Table.Body>
+                                                </Table>
+                                            </div>
+
+                                        </div>
+                                    </>
+                                )
+                            }
+                        </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Programa</label>
                             <div className="flex justify-center">

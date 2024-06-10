@@ -18,7 +18,7 @@ interface ArticleCuantity extends IArticuloIngreso {
 const ArticuloSchema = z.object({
   Codigo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }).optional(),
   NombreArticulo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-  Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1,"Minimo de 1"),
+  Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1, "Minimo de 1"),
   Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
 })
 
@@ -79,14 +79,14 @@ export default function Ingreso() {
 
   const methodsRequerimientos = useForm<RequerimientosFormValues>({ resolver: zodResolver(RequerimientoSchema), defaultValues: { Articulo: [] } });
   const { handleSubmit, register, getValues, formState: { errors }, control } = methodsRequerimientos;
-  const { fields, append, update,remove } = useFieldArray({
+  const { fields, append, update, remove } = useFieldArray({
     control,
     name: 'Articulo',
     keyName: 'idKey'
   });
 
 
-  const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema),defaultValues: {Type: 'Nombre',Input: 'cua'} });
+  const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema) });
 
 
   const [showTable, setShowTable] = useState(false);
@@ -145,7 +145,7 @@ export default function Ingreso() {
 
   const removeArticle = (article: string) => {
     const indice = fields.findIndex(e => e.id === article);
-    console.log(fields,article)
+    console.log(fields, article)
     remove(indice)
 
   };

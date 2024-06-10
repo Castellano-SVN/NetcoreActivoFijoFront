@@ -8,7 +8,7 @@ import { useInfiniteQuery } from "react-query";
 import React from "react";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { IEmpresa } from "@/interfaces/creation";
-import { FaDolly, FaFilePen } from "react-icons/fa6";
+import { FaClipboardQuestion, FaDolly, FaFilePen } from "react-icons/fa6";
 
 
 export default function index() {
@@ -155,12 +155,21 @@ function Element({ element }: { element: IEmpresa }) {
             <span className="text-sm underline text-primary">Cotizaciones</span>
             <FaFilePen className="text-primary ml-2" />
           </a>
+
           <a
             onClick={() => { router.push(`/recepcion/ingreso?empresa=${element.id}`) }}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Ingreso</span>
             <FaDolly className="text-primary ml-2" />
+          </a>
+
+          <a
+            onClick={() => { router.push(`/recepcion/consulta?empresa=${element.id}`) }}
+            className="flex items-center cursor-pointer hover:font-bold"
+          >
+            <span className="text-sm underline text-primary">Consulta</span>
+            <FaClipboardQuestion className="text-primary ml-2" />
           </a>
 
         </div>
