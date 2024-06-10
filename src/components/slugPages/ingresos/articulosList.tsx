@@ -1,5 +1,5 @@
 import { FaPenToSquare, FaPlus, FaMinus } from "react-icons/fa6";
-import { IArticuloIngreso, ISearch } from "../../../interfaces/creation";
+import { IArticuloIngreso, RequerimientosFormValues } from "../../../interfaces/creation";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
@@ -9,24 +9,14 @@ interface Props {
   remove: (id: string) => void;
   articlesSelected: IArticuloIngreso[];
 }
-
+interface ArticleCuantity extends IArticuloIngreso {
+  Cantidad: number | undefined;
+  Glosa: string | undefined;
+}
 export default function ArticuloList(props: Props) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    getValues,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useFormContext<ISearch>();
 
-  const { fields, append, update } = useFieldArray({
-    control,
-    name: 'Articulo'
-  });
-  const filterSelectedExist = (id: string) => !!fields.find(e => e.id === id);
+  const filterSelectedExist = (element: IArticuloIngreso) => !!props.articlesSelected.find(e => e.id === element.id);
+  
 
   const handleAddArticle = (index: number, article: IArticuloIngreso) => {
     props.addArticulo(article);
@@ -79,12 +69,12 @@ export default function ArticuloList(props: Props) {
         </div>
       </div>
 
-      <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
+      <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around border mx">
         <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
         <div className="flex  flex-wrap justify-end space-x-4">
           <label className="swap swap-rotate text-sm">
 
-            <input type="checkbox" defaultChecked={filterSelectedExist(element.id) ? true : false} />
+            <input type="checkbox" defaultChecked={filterSelectedExist(element) ? true : false} />
 
             <FaMinus className="swap-on fill-current w-5 h-5 text-error" onClick={() => props.addArticulo(element)} />
 
@@ -97,7 +87,7 @@ export default function ArticuloList(props: Props) {
     </div>
   );
   const MobileView = () => (
-    <div className="grid md:hidden grid-cols-1 gap-4">
+    <div className="grid md:hidden grid-cols-1 gap-4 mx-1">
       {props.list.map((element: IArticuloIngreso, index: number) => (
         <MobileElement element={element} key={index} />
       ))}
@@ -121,25 +111,25 @@ export default function ArticuloList(props: Props) {
         <tbody className="text-center">
           {props.list.map((element: IArticuloIngreso, index: number) => (
             <tr
-              key={index}
+              key={element.id}
               className={`
             ${index % 2 === 0 && "bg-[#FAF6FF]"}`}
             >
-              <td>{element.codigo}  - {element.id}</td>
+              <td>{element.codigo} - {element.id}</td>
               <td>{element.subFamilium?.familium.nombre}</td>
               <td>{element.subFamilium?.nombre}</td>
               <td>{element.nombre}</td>
               <td className="text-sm">{element.descripcion}</td>
               <td align="center">
 
-                <label className="swap swap-rotate ">
+                <label className="swap swap-rotate1 ">
 
-                  <input type="checkbox" defaultChecked={filterSelectedExist(element.id) ? true : false} />
+                  <input type="checkbox" defaultChecked={filterSelectedExist(element) ? true : false} onChange={(e) => e.target.checked ? props.addArticulo(element) : props.remove(element.id)} 
+                  />
 
-                  <FaMinus className="swap-on swap-flip fill-current w-10 h-10 text-error" onClick={() => props.remove(element.id)} />
+                  <FaMinus className="swap-on swap-flip fill-current w-10 h-10 text-error"  />
 
-                  <FaPlus className="swap-off swap-flip fill-current w-10 h-10 text-primary" onClick={() => props.addArticulo(element)} />
-
+                  <FaPlus className="swap-off swap-flip fill-current w-10 h-10 text-primary" />
                 </label>
               </td>
             </tr>
@@ -155,7 +145,7 @@ export default function ArticuloList(props: Props) {
     <>
 
       <DesktopView />
-      {/* <MobileView /> */}
+      <MobileView />
 
     </>
   );

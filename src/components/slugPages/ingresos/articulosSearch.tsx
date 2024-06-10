@@ -86,7 +86,6 @@ export default function ArticulosSearch(props: props) {
       SetisLoading(true);
       // console.log(fil)
       data.empresa = props.empresa;
-      console.log(filteredSubFamilias?.find(e => e.id == data.SubFamilia));
       const dataClean = JSON.parse(JSON.stringify(data, removeUndefined));
       const articles = await api_Ingresos(jwt, dataClean);
       props.setList(articles.data.dataList)

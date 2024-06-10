@@ -44,6 +44,8 @@ function formatRut(rut:string) {
     return rut;
   }
 
+  const allowOnlyNumber=(value:string)=>{
+    return value.replace(/[^0-9]/g, '')
+ }
   
-  
-export {isValidRUT,formatRut,zodRut,nullableNumber}
+export {isValidRUT,formatRut,zodRut,nullableNumber,allowOnlyNumber}

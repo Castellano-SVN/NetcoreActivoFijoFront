@@ -18,7 +18,7 @@ interface ArticleCuantity extends IArticuloIngreso {
 const ArticuloSchema = z.object({
   Codigo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }).optional(),
   NombreArticulo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-  Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
+  Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1,"Minimo de 1"),
   Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
 })
 
@@ -77,15 +77,16 @@ export default function Ingreso() {
   const searchParams = useSearchParams()
   const search = searchParams.get('empresa')
 
-  const methodsRequerimientos = useForm<RequerimientosFormValues>({ resolver: zodResolver(ArticuloSchema), defaultValues: { Articulo: [] } });
+  const methodsRequerimientos = useForm<RequerimientosFormValues>({ resolver: zodResolver(RequerimientoSchema), defaultValues: { Articulo: [] } });
   const { handleSubmit, register, getValues, formState: { errors }, control } = methodsRequerimientos;
-  const { fields, append, update } = useFieldArray({
+  const { fields, append, update,remove } = useFieldArray({
     control,
-    name: 'Articulo'
+    name: 'Articulo',
+    keyName: 'idKey'
   });
 
 
-  const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema) });
+  const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema),defaultValues: {Type: 'Nombre',Input: 'cua'} });
 
 
   const [showTable, setShowTable] = useState(false);
@@ -132,11 +133,8 @@ export default function Ingreso() {
   const addArticle = (article: IArticuloIngreso) => {
     const articleReq: ArticleCuantity = { ...article, Glosa: '', Cantidad: 0 };
     append(articleReq);
-
   };
 
-  useEffect(() => {
-  }, [ArticleSelected]);
 
   const handleButtonClick = () => {
     setShowRequerimiento(true);
@@ -146,10 +144,10 @@ export default function Ingreso() {
   };
 
   const removeArticle = (article: string) => {
-    console.log(fields)
-    const indice = fields.find(objeto => {
-      console.log({ id: objeto, click: article })
-    });
+    const indice = fields.findIndex(e => e.id === article);
+    console.log(fields,article)
+    remove(indice)
+
   };
 
 
@@ -161,7 +159,7 @@ export default function Ingreso() {
         {showRequerimiento === false ? (
           <FormProvider {...methodsArticulo}>
             <ArticulosSearch setList={SetArticleList} empresa={search} cc={dataCentroCosto} familia={dataFamilia} subfamilia={dataSubFamilia} />
-            <ArticuloList list={ArticleList} addArticulo={addArticle} articlesSelected={ArticleSelected} remove={removeArticle} />
+            <ArticuloList list={ArticleList} addArticulo={addArticle} articlesSelected={fields} remove={removeArticle} />
             <div>
               <button className="btn btn-outline btn-primary my-4" onClick={handleButtonClick}>Ver Requerimientos</button>
             </div>
