@@ -16,7 +16,7 @@ interface ArticleCuantity extends IArticuloIngreso {
 export default function ArticuloList(props: Props) {
 
   const filterSelectedExist = (element: IArticuloIngreso) => !!props.articlesSelected.find(e => e.id === element.id);
-  
+
 
   const handleAddArticle = (index: number, article: IArticuloIngreso) => {
     props.addArticulo(article);
@@ -124,10 +124,10 @@ export default function ArticuloList(props: Props) {
 
                 <label className="swap swap-rotate1 ">
 
-                  <input type="checkbox" defaultChecked={filterSelectedExist(element) ? true : false} onChange={(e) => e.target.checked ? props.addArticulo(element) : props.remove(element.id)} 
+                  <input type="checkbox" defaultChecked={filterSelectedExist(element) ? true : false} onChange={(e) => e.target.checked ? props.addArticulo(element) : props.remove(element.id)}
                   />
 
-                  <FaMinus className="swap-on swap-flip fill-current w-10 h-10 text-error"  />
+                  <FaMinus className="swap-on swap-flip fill-current w-10 h-10 text-error" />
 
                   <FaPlus className="swap-off swap-flip fill-current w-10 h-10 text-primary" />
                 </label>

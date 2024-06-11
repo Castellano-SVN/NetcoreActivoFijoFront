@@ -132,29 +132,18 @@ interface FamiliaFormValues {
   Eliminado: boolean;
 }
 
-interface CotizacionFormValues {
+interface SolicitudFormValues {
   EmpresaId: string;
   AnoNumero: number;
-  id: string;
-  SolicitudId: string;
-  ProveedorId: string;
-  ContactoId?: string;
-  FormaPagoCodigo: number;
-  EstadoCotizacionCodigo: number;
+  Id: string;
+  CentroCostoId: string;
+  SolicitanteId: string;
+  ProgramaId: string;
+  EstadoSolicitudCodigo: number;
   Numero: number;
   Nombre: string;
-  FechaIngreso: string;
-  FechaEntrega: string;
-  ValorIvaIncluido: boolean;
-  Exenta: boolean;
-  ValorNeto: number;
-  Descuento?: number;
-  Impuesto: number;
-  ValorTotal: number;
-  Observaciones?: string;
-  DescuentoPorcentual: boolean;
-  Activa: boolean;
-  RedondeaImpuesto: boolean;
+  FechaIngreso: Date;
+  Observaciones: string;
 
 
 }
@@ -294,10 +283,14 @@ interface ArticuloFormValues {
 
 }
 interface ArticleCuantity extends IArticuloIngreso {
+  CentroCostoId: string;
+  EmpresaId: string;
   Cantidad: number | undefined;
   Glosa: string | undefined;
 }
 interface RequerimientosFormValues {
+  CentroCostoId: string;
+  EmpresaId: string;
   Nombre: string;
   ProgramaId: string;
   Observaciones?: string;

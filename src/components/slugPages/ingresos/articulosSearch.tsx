@@ -238,6 +238,9 @@ export default function ArticulosSearch(props: props) {
                 ))}
               </select>
             </div>
+            <label className=" block text-sm label text-error">
+              {errors.CentroCosto && <span> {errors.CentroCosto.message}</span>}
+            </label>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Familia</label>
