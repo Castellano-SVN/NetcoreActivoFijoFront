@@ -1,6 +1,6 @@
 import WarningAlert from "@/components/alerts/warningAlert";
-import { IArticuloIngreso, IPrograma, RequerimientosFormValues, ArticleCuantity, CotizacionFormValues } from "@/interfaces/creation";
-import { api_getProgramaByEmpresa, api_postCotizacion } from "@/services/bodega.service";
+import { IArticuloIngreso, IPrograma, RequerimientosFormValues, ArticleCuantity } from "@/interfaces/creation";
+import { api_getProgramaByEmpresa, api_postSolicitud } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { z } from "zod";
 interface props {
     selectArticle: ArticleCuantity[];
     removeArticulo: (index: string) => void;
-    empresa: string
+    empresa: string;
 }
 
 export default function Requerimiento(props: props) {
@@ -30,19 +30,6 @@ export default function Requerimiento(props: props) {
         }
     };
 
-    const onSubmit: SubmitHandler<CotizacionFormValues> = async (
-        data: CotizacionFormValues
-    ) => {
-        try {
-            console.log(data)
-            // await api_postCotizacion(jwt, data);
-            toast.success("Cotización guardada correctamente");
-            //reset();
-        } catch (error) {
-            console.log(error);
-            toast.error("Ocurrió un error al crear la cotización");
-        }
-    };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const charCode = event.key;
 
@@ -74,7 +61,15 @@ export default function Requerimiento(props: props) {
     const SearchArticulo: SubmitHandler<RequerimientosFormValues> = async (
         data: RequerimientosFormValues
     ) => {
-        console.log(data)
+        try {
+            console.log(data);
+            // await api_postSolicitud(jwt, data);
+            toast.success("Cotización guardada correctamente");
+            //reset();
+        } catch (error) {
+            console.log(error);
+            toast.error("Ocurrió un error al crear la cotización");
+        }
     };
     const listArticles = watch("Articulo");
     return (
@@ -122,14 +117,14 @@ export default function Requerimiento(props: props) {
                                                                     className="mt-1 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                                 />
                                                                     <label className="label text-error">
-                                                                        {errors.Articulo?.[index]?.Cantidad ? errors.Articulo?.[index]?.Cantidad.message : ""}
+                                                                        {errors.Articulo?.[index]?.Cantidad ? errors.Articulo?.[index]?.Cantidad?.message : ""}
                                                                     </label></>
                                                                 </span>
                                                                 <span><><input {...register(`Articulo.${index}.Glosa`, { setValueAs: (value) => value === "" ? undefined : value })}
                                                                     className="mt-1  py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                                 />
                                                                     <label className="label text-error">
-                                                                        {errors.Articulo?.[index]?.Glosa ? errors.Articulo?.[index]?.Glosa.message : ""}
+                                                                        {errors.Articulo?.[index]?.Glosa ? errors.Articulo?.[index]?.Glosa?.message : ""}
                                                                     </label>
                                                                 </>
                                                                 </span>
@@ -190,6 +185,7 @@ export default function Requerimiento(props: props) {
                                 <FaRegFloppyDisk />
                                 Guardar
                             </button>
+                            {/* {JSON.stringify(errors)} */}
                         </div>
                     </form>
                 </div>

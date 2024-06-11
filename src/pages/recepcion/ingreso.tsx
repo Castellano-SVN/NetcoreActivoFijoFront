@@ -11,18 +11,26 @@ import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm, FormProvider, useFormContext, useFieldArray, useWatch, } from "react-hook-form";
 interface ArticleCuantity extends IArticuloIngreso {
+  CentroCostoId: string;
+  EmpresaId: string;
   Cantidad: number | undefined;
   Glosa: string | undefined;
 }
 
 const ArticuloSchema = z.object({
+  EmpresaId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
+  CentroCostoId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
   Codigo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }).optional(),
-  NombreArticulo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
+  nombre: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
   Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1, "Minimo de 1"),
   Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
 })
 
+
+
 const RequerimientoSchema = z.object({
+  CentroCostoId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
+  EmpresaId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
   Nombre: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
   Articulo: z.array(ArticuloSchema),
   ProgramaId: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
@@ -39,7 +47,7 @@ const validationSchema = z.object({
   CentroCosto: z.string({
     required_error: "Campo requerido",
     invalid_type_error: "Campo requerido",
-  }).optional(),
+  }),
   Input: z.string({
     required_error: "Campo requerido",
     invalid_type_error: "Campo requerido",
@@ -78,7 +86,7 @@ export default function Ingreso() {
   const search = searchParams.get('empresa')
 
   const methodsRequerimientos = useForm<RequerimientosFormValues>({ resolver: zodResolver(RequerimientoSchema), defaultValues: { Articulo: [] } });
-  const { handleSubmit, register, getValues, formState: { errors }, control } = methodsRequerimientos;
+  const { handleSubmit, setValue, register, getValues, formState: { errors }, control } = methodsRequerimientos;
   const { fields, append, update, remove } = useFieldArray({
     control,
     name: 'Articulo',
@@ -87,7 +95,7 @@ export default function Ingreso() {
 
 
   const methodsArticulo = useForm<ISearch>({ resolver: zodResolver(validationSchema) });
-
+  const centroCostoWatcher = methodsArticulo.watch("CentroCosto");
 
   const [showTable, setShowTable] = useState(false);
   const [ArticleList, SetArticleList] = useState<IArticuloIngreso[]>([]);
@@ -103,7 +111,15 @@ export default function Ingreso() {
     getCentroCosto(search);
     getFamilia(search);
     getSubFamilia(search);
+    setValue('EmpresaId', search);
+
   }, [search]);
+
+  useEffect(() => {
+    remove();
+    if (!centroCostoWatcher) return;
+    methodsRequerimientos.setValue("CentroCostoId", centroCostoWatcher);
+  }, [centroCostoWatcher])
 
   const getCentroCosto = async (search: string) => {
     try {
@@ -131,9 +147,12 @@ export default function Ingreso() {
   };
 
   const addArticle = (article: IArticuloIngreso) => {
-    const articleReq: ArticleCuantity = { ...article, Glosa: '', Cantidad: 0 };
+    if (!search) return;
+    if (!centroCostoWatcher) return;
+    const articleReq: ArticleCuantity = { ...article, Glosa: '', Cantidad: 0, EmpresaId: search, CentroCostoId: centroCostoWatcher };
     append(articleReq);
   };
+
 
 
   const handleButtonClick = () => {
@@ -145,7 +164,6 @@ export default function Ingreso() {
 
   const removeArticle = (article: string) => {
     const indice = fields.findIndex(e => e.id === article);
-    console.log(fields, article)
     remove(indice)
 
   };
