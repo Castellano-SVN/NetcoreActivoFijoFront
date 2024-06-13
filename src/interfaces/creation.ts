@@ -297,6 +297,33 @@ interface RequerimientosFormValues {
   Articulo: ArticleCuantity[]
 }
 
+interface IConsulta {
+  centroCostoId: string;
+  empresaId: string;
+  fechaIngreso:string;
+  nombre: string;
+  numero: number;
+  observaciones?: string;
+  programaId: string;
+  solicitudDetalles: {
+    anoNumero: number;
+    articulo: {
+      codigo?: string;
+      id: string;
+      nombre: string;
+    }
+    articuloId: string;
+    cantidad: number;
+    cantidadAprobada?: number;
+    id: string;
+    observaciones?: string;
+    orden: number;
+    solicitudId: string;
+    subFamiliaId: string;
+  }[]
+}
+
+
 interface ICuenta {
   id: string;
   anoNumero: number;
@@ -429,5 +456,5 @@ interface ITipoDocumento {
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity
+  RequerimientosFormValues, ArticleCuantity, IConsulta
 }
