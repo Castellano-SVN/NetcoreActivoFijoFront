@@ -26,3 +26,8 @@ export function api_Ingresos(bearer: string, data: any) {
     const params = new URLSearchParams(data).toString();
     return api.get(`ingreso/articulos?${params}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+export function api_postSolicitud(bearer: string, data: any) {
+    return api.post(`ingreso/solicitud`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+  }
+  

@@ -1,6 +1,6 @@
 import WarningAlert from "@/components/alerts/warningAlert";
 import { IArticuloIngreso, IPrograma, RequerimientosFormValues, ArticleCuantity } from "@/interfaces/creation";
-import { api_getProgramaByEmpresa, api_postSolicitud } from "@/services/bodega.service";
+import { api_getProgramaByEmpresa } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { FaFileExport } from "react-icons/fa";
 import { FaCircleXmark, FaPlus, FaRegFloppyDisk } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import { api_postSolicitud } from "../../../services/ingreso.service";
 
 
 interface props {
@@ -63,7 +64,7 @@ export default function Requerimiento(props: props) {
     ) => {
         try {
             console.log(data);
-            // await api_postSolicitud(jwt, data);
+            await api_postSolicitud(jwt, data);
             toast.success("Cotización guardada correctamente");
             //reset();
         } catch (error) {

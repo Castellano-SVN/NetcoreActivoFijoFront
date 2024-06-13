@@ -165,7 +165,4 @@ export function api_getProgramaByEmpresa(bearer: string, empresa: string) {
   return api.get(`programa/${empresa}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_postSolicitud(bearer: string, data: any) {
-  return api.post(`solicitud`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
-}
 

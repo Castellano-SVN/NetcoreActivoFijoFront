@@ -24,6 +24,7 @@ const ArticuloSchema = z.object({
   nombre: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
   Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1, "Minimo de 1"),
   Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
+  id: z.string()
 })
 
 
