@@ -25,9 +25,7 @@ export default function Consulta() {
             if (numero !== null) {
                 const data = await api_getOneSolicitud(jwt, id as string, numero);
                 setDataSolicitud(data.data.dataList);
-                console.log(data.data.dataList)
                 setShowConsulta(true);
-                toast.success("Haga su consulta")
             } else {
                 toast.error("Ingrese un numero")
                 setShowConsulta(false);
@@ -43,11 +41,7 @@ export default function Consulta() {
             }
         }
     }
-
-    useEffect(() => {
-
-    }, []);
-
+    
     return (
         <>
 
@@ -78,12 +72,7 @@ export default function Consulta() {
                     ) :
                         (
                             <>
-                                <PropiedadesConsulta solicitud={dataSolicitud} />
-                                <div className="flex flex-col md:flex-row lg:flex-row justify-end w-full mt-2">
-                                    <button className="btn btn-outline btn-secondary" onClick={()=>setShowConsulta(false)}><FaArrowLeft />Atras</button>
-                                    <button className="btn btn-outline btn-accent my-2 md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
-                                    <button className="btn btn-outline btn-primary"><FaSave />Guardar</button>
-                                </div>
+                                <PropiedadesConsulta solicitud={dataSolicitud} volver={() => setShowConsulta(false)} />
                             </>
                         )
                     }
