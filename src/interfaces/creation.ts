@@ -139,7 +139,7 @@ interface SolicitudFormValues {
   CentroCostoId: string;
   SolicitanteId: string;
   ProgramaId: string;
-  EstadoSolicitudCodigo: number;
+  EstadoSolicitudCodigo?: number;
   Numero: number;
   Nombre: string;
   FechaIngreso: Date;
@@ -304,11 +304,13 @@ interface IConsulta {
   nombre: string;
   numero: number;
   observaciones?: string;
+  estadoSolicitudCodigo: number;
   programa: {
     nombre: string;
   }
   programaId: string;
   solicitudDetalles: {
+    empresaId: string;
     anoNumero: number;
     articulo: {
       codigo?: string;
@@ -321,7 +323,7 @@ interface IConsulta {
     centroCosto: {
       nombre: string;
     }
-    centroCostoId:string;
+    centroCostoId: string;
     id: string;
     observaciones?: string;
     orden: number;
@@ -336,11 +338,11 @@ interface ConsultaFormValues {
   Nombre: string;
   Numero: number;
   ProgramaId: string;
-  EstadoSolicitudCodigo:number;
+  EstadoSolicitudCodigo: number;
   Observaciones?: string;
   SolicitudDetalles: {
-    CentroCostoId:string;
-    EmpresaiId: string;
+    CentroCostoId: string;
+    EmpresaId: string;
     Articulo: {
       Codigo?: string;
       Id: string;
@@ -348,9 +350,6 @@ interface ConsultaFormValues {
     }
     Cantidad: number;
     CantidadAprobada?: number;
-    CentroCosto: {
-      Nombre: string;
-    }
     Id: string;
     Observaciones?: string;
     Orden: number;
@@ -358,6 +357,7 @@ interface ConsultaFormValues {
     SubFamiliaId: string;
   }[]
 }
+
 
 
 interface ICuenta {
@@ -492,5 +492,5 @@ interface ITipoDocumento {
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta,ConsultaFormValues
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues
 }

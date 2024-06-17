@@ -16,31 +16,30 @@ interface props {
 
 
 const SolicitudDetalleSchema = z.object({
-    EmpresaId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    SolicitudId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
-    Id: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    CentroCostoId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    SubFamiliaId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    ArticuloId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).min(1, "Minimo de 1").optional(),
-    Orden: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
-    Codigo: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    nombre: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    Glosa: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
-})
+    CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    Articulo: z.object({
+        Codigo: z.string().optional(),
+        Id: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+        Nombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" })
+    }),
+    Cantidad: z.number({ required_error: "Campo requerido", invalid_type_error: "Campo inválido" }).min(1, "Mínimo de 1"),
+    CantidadAprobada: z.number().optional(),
+    Id: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    Observaciones: z.string().optional(),
+    Orden: z.number({ required_error: "Campo requerido", invalid_type_error: "Campo inválido" }),
+    SolicitudId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+});
 
 const SolicitudConsultaSchema = z.object({
-    EmpresaId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    /* AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
-    Id: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    SolicitanteId:z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }), */
-    CentroCostoId: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    FechaIngreso: z.string({ required_error: "Opción inválida", invalid_type_error: "Campo inválido" }),
-    Nombre: z.string({ required_error: "Opción inválida", invalid_type_error: "Opción inválida" }),
-    Numero: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
-    ProgramaId: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }),
-    EstadoSolicitudCodigo: z.number({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
+    EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    FechaIngreso: z.string({ required_error: "Campo requerido", invalid_type_error: "Campo inválido" }),
+    Nombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Opción inválida" }),
+    Numero: z.number({ required_error: "Campo requerido", invalid_type_error: "Campo inválido" }),
+    ProgramaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Campo inválido" }),
+    EstadoSolicitudCodigo: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
     Observaciones: z.string({ required_error: "Campo inválido", invalid_type_error: "Campo inválido" }).optional(),
     SolicitudDetalles: z.array(SolicitudDetalleSchema)
 });
@@ -55,14 +54,45 @@ export default function PropiedadesConsulta(props: props) {
     const { handleSubmit, setValue, register, getValues, formState: { errors }, control } = methodsConsulta;
 
     const onSubmit = (data: ConsultaFormValues) => {
+        data.EstadoSolicitudCodigo = parseInt(data.EstadoSolicitudCodigo.toString()); 
         console.log(data);
     };
-    
+
+    useEffect(() => {
+        if (props.solicitud) {
+            const solicitudDetalles = props.solicitud.flatMap(consulta => consulta.solicitudDetalles.map(detalle => ({
+                CentroCostoId: detalle.centroCostoId,
+                EmpresaId: detalle.empresaId,
+                Articulo: {
+                    Codigo: detalle.articulo.codigo,
+                    Id: detalle.articulo.id,
+                    Nombre: detalle.articulo.nombre
+                },
+                Cantidad: detalle.cantidad,
+                CantidadAprobada: detalle.cantidadAprobada,
+                Id: detalle.id,
+                Observaciones: detalle.observaciones,
+                Orden: detalle.orden,
+                SolicitudId: detalle.solicitudId,
+                SubFamiliaId: detalle.subFamiliaId
+            })));
+            setValue('SolicitudDetalles', solicitudDetalles);
+            const solicitud = props.solicitud[0];
+            setValue('EmpresaId', solicitud.empresaId);
+            setValue('CentroCostoId', solicitud.centroCostoId);
+            setValue('Nombre', solicitud.nombre);
+            setValue('Numero', solicitud.numero);
+            setValue('ProgramaId', solicitud.programaId);
+            setValue('Observaciones', solicitud.observaciones);
+        }
+    }, [props.solicitud, setValue]);
+
     useEffect(() => {
         setValue('EmpresaId', id as string)
-        console.log(errors)
-    }, [errors,id]);
+        console.log("los errores son:" + errors)
+    }, [id, errors]);
 
+    const [searchBy, setSearchBy] = useState(1);
 
     return (
         <>
@@ -123,7 +153,7 @@ export default function PropiedadesConsulta(props: props) {
                                 <Select className="border-primary focus:border-primary active:border-primary" defaultValue={''}
                                     {...register("CentroCostoId", { setValueAs: (defaultValue) => defaultValue === "" ? undefined : defaultValue })} >
                                     {consulta.solicitudDetalles.map((detalle, detalleIndex) => (
-                                        <Select.Option key={detalleIndex} defaultValue={detalle.centroCostoId} selected>
+                                        <Select.Option key={detalleIndex} value={detalle.centroCostoId} selected>
                                             {detalle.centroCosto.nombre}
                                         </Select.Option>
                                     ))}
@@ -151,10 +181,9 @@ export default function PropiedadesConsulta(props: props) {
                                         <input
                                             type="radio"
                                             className="radio radio-xs radio-primary ml-2"
-                                            defaultValue={1}
-                                            {...register('EstadoSolicitudCodigo',
-                                                { setValueAs: (defaultValue) => defaultValue === "" ? undefined : Number(defaultValue) })}
-                                            name="estado"
+                                            value={1}
+                                            {...register('EstadoSolicitudCodigo', { setValueAs: (value) => value === '' ? undefined : value })}
+
                                         />
                                         <span className="ml-2">Aceptado</span>
                                     </label>
@@ -168,11 +197,9 @@ export default function PropiedadesConsulta(props: props) {
                                         <input
                                             type="radio"
                                             className="radio radio-xs radio-primary ml-2"
-                                            defaultValue={2}
-                                            {...register('EstadoSolicitudCodigo',
-                                                { setValueAs: (defaultValue) => defaultValue === "" ? undefined : Number(defaultValue) })}
-                                            name="estado"
-
+                                            value={2}
+                                            {...register('EstadoSolicitudCodigo', { setValueAs: (value) => value === '' ? undefined : value })}
+                                            defaultChecked
                                         />
                                         <span className="ml-2">Rechazado</span>
                                     </label>
