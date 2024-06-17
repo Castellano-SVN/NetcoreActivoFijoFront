@@ -1,4 +1,6 @@
 import { ConsultaFormValues, IConsulta } from "@/interfaces/creation";
+import { api_postCotizaciones } from "@/services/bodega.service";
+import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { register } from "module";
 import { useSearchParams } from "next/navigation";
@@ -7,6 +9,7 @@ import { Select, Table } from "react-daisyui";
 import { useForm } from "react-hook-form";
 import { FaArrowLeft, FaFilePdf, FaPlus, FaSave } from "react-icons/fa";
 import { FaCircleXmark } from "react-icons/fa6";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 interface props {
@@ -48,14 +51,25 @@ export default function PropiedadesConsulta(props: props) {
 
     const searchParams = useSearchParams();
     const id = searchParams.get('empresa');
+    const { jwt } = useUserStore();
 
 
     const methodsConsulta = useForm<ConsultaFormValues>({ resolver: zodResolver(SolicitudConsultaSchema), defaultValues: { SolicitudDetalles: [] } })
     const { handleSubmit, setValue, register, getValues, formState: { errors }, control } = methodsConsulta;
 
-    const onSubmit = (data: ConsultaFormValues) => {
+    const onSubmit = async (data: ConsultaFormValues) => {
         data.EstadoSolicitudCodigo = parseInt(data.EstadoSolicitudCodigo.toString()); 
         console.log(data);
+        try {
+   
+            await api_postCotizaciones(jwt, data);
+            toast.success("Cotización guardada correctamente");
+            //reset();
+
+        } catch (error) {
+            console.log(error);
+            toast.error("Ocurrió un error al guardar la cotización");
+        }
     };
 
     useEffect(() => {
@@ -92,7 +106,6 @@ export default function PropiedadesConsulta(props: props) {
         console.log("los errores son:" + errors)
     }, [id, errors]);
 
-    const [searchBy, setSearchBy] = useState(1);
 
     return (
         <>
