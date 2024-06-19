@@ -12,7 +12,7 @@ export default function Consulta() {
     const searchParams = useSearchParams();
     const id = searchParams.get('empresa'); //obtenemos la empresa
 
-    const [dataSolicitud, setDataSolicitud] = useState<IConsulta[]>();
+    const [dataSolicitud, setDataSolicitud] = useState<IConsulta>();
     const [numero, setNumero] = useState<number | null>(null);
     // Estado para el número ingresado
 
@@ -24,7 +24,7 @@ export default function Consulta() {
         try {
             if (numero !== null) {
                 const data = await api_getOneSolicitud(jwt, id as string, numero);
-                setDataSolicitud(data.data.dataList);
+                setDataSolicitud(data.data.dataList[0]);
                 setShowConsulta(true);
             } else {
                 toast.error("Ingrese un numero")
@@ -72,7 +72,7 @@ export default function Consulta() {
                     ) :
                         (
                             <>
-                                <PropiedadesConsulta solicitud={dataSolicitud} volver={() => setShowConsulta(false)} />
+                                {dataSolicitud && <PropiedadesConsulta solicitud={dataSolicitud} volver={() => setShowConsulta(false)} />}
                             </>
                         )
                     }

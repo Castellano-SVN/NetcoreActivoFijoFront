@@ -35,3 +35,7 @@ export function api_getOneSolicitud(bearer: string, id: string, numero: number) 
     return api.get(`ingreso/buscar/${id}/${numero}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_putSolicitud(bearer: string, data: any) {
+    return api.put(`ingreso/actualizar`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+  }
+

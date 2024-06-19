@@ -297,10 +297,11 @@ interface RequerimientosFormValues {
   Articulo: ArticleCuantity[]
 }
 
+
 interface IConsulta {
   centroCostoId: string;
   empresaId: string;
-  fechaIngreso: string;
+  fechaIngreso: Date;
   nombre: string;
   numero: number;
   observaciones?: string;
@@ -310,31 +311,27 @@ interface IConsulta {
   }
   programaId: string;
   solicitudDetalles: {
-    empresaId: string;
-    anoNumero: number;
+    CentroCostoId: string;
+    EmpresaId: string;
     articulo: {
-      codigo?: string;
-      id: string;
-      nombre: string;
+        codigo?: string;
+        id: string;
+        nombre: string;
     }
-    articuloId: string;
     cantidad: number;
-    cantidadAprobada?: number;
-    centroCosto: {
-      nombre: string;
-    }
-    centroCostoId: string;
-    id: string;
+    CantidadAprobada?: number;
+    Id: string;
     observaciones?: string;
-    orden: number;
-    solicitudId: string;
-    subFamiliaId: string;
+    Orden: number;
+    SolicitudId: string;
+    SubFamiliaId: string;
   }[]
 }
+
 interface ConsultaFormValues {
   EmpresaId: string;
   CentroCostoId: string;
-  FechaIngreso: string;
+  FechaIngreso: Date;
   Nombre: string;
   Numero: number;
   ProgramaId: string;
@@ -343,15 +340,15 @@ interface ConsultaFormValues {
   SolicitudDetalles: {
     CentroCostoId: string;
     EmpresaId: string;
-    Articulo: {
-      Codigo?: string;
-      Id: string;
-      Nombre: string;
+    articulo: {
+      codigo?: string;
+      id: string;
+      nombre: string;
     }
-    Cantidad: number;
+    cantidad: number;
     CantidadAprobada?: number;
     Id: string;
-    Observaciones?: string;
+    observaciones?: string;
     Orden: number;
     SolicitudId: string;
     SubFamiliaId: string;
@@ -491,6 +488,6 @@ interface ITipoDocumento {
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, CotizacionFormValues, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
+  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
   RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues
 }
