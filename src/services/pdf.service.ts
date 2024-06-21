@@ -1,11 +1,11 @@
 import axios from 'axios';
 import Cookies from "js-cookie";
-let token = Cookies.get("bearer")
 const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
     headers: {
+        'Content-Type': 'application/json',
     },
 });
-
 
 api.interceptors.response.use(
     (response) => response,
@@ -19,8 +19,4 @@ api.interceptors.response.use(
 );
 
 
-export function api_pdf_consulta(bearer: string,id:number,guid:string) {
-
-    return api.get(`/api/ingreso/pdf/consulta?id=${id}&guid=${guid}`, { headers: { "Authorization": `Bearer ${bearer}` } })
-}
 

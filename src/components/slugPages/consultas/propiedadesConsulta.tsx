@@ -1,6 +1,6 @@
 import { ConsultaFormValues, IConsulta } from "@/interfaces/creation";
 import { api_postCotizaciones } from "@/services/bodega.service";
-import { api_putSolicitud } from "@/services/ingreso.service";
+import { api_pdf_consulta, api_putSolicitud } from "@/services/ingreso.service";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { register } from "module";
@@ -14,7 +14,6 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 import Observaciones from "@/components/bodega/persona/observaciones";
 import Image from 'next/image'
-import { api_pdf_consulta } from "@/services/pdf.service";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PDFConsulta from "@/components/pdf/consulta";
@@ -103,10 +102,29 @@ export default function PropiedadesConsulta(props: props) {
         setValue('EmpresaId', id as string)
         console.log("los errores son:" + errors)
     }, [id, errors]);
+
     const getPDF = async (id:number,guid:string) => {
         // ReactPDF.renderToStream(<PDFConsulta />);
-        ReactPDF.render(<PDFConsulta />, `/consulta_${id}.pdf`);
+        try {
+            const response = await api_pdf_consulta(jwt, id, guid);
 
+            // Crear una URL para el Blob
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            
+            // Crear un enlace temporal y simular un clic para descargar el archivo
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `documento_${id}.pdf`); // Nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            
+            // Limpiar el enlace temporal y revocar la URL
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
+        } catch (error) {
+            console.error('Error al descargar el PDF:', error);
+
+        }
     }
     return (
         <>
