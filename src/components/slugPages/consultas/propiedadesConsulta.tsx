@@ -103,21 +103,21 @@ export default function PropiedadesConsulta(props: props) {
         console.log("los errores son:" + errors)
     }, [id, errors]);
 
-    const getPDF = async (id:number,guid:string) => {
+    const getPDF = async (id: number, guid: string) => {
         // ReactPDF.renderToStream(<PDFConsulta />);
         try {
             const response = await api_pdf_consulta(jwt, id, guid);
 
             // Crear una URL para el Blob
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-            
+
             // Crear un enlace temporal y simular un clic para descargar el archivo
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `documento_${id}.pdf`); // Nombre del archivo
             document.body.appendChild(link);
             link.click();
-            
+
             // Limpiar el enlace temporal y revocar la URL
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
@@ -164,20 +164,20 @@ export default function PropiedadesConsulta(props: props) {
                         <label className="py-2 px-3 ml-4">Fecha de ingreso: </label>
                         <Controller
                             control={control}
-                            name="FechaIngreso" 
+                            name="FechaIngreso"
                             render={({ field }) => (
-                            <DatePicker
-                                selected={field.value} 
-                                onChange={(date) => field.onChange(date)} 
-                                onBlur={field.onBlur} 
-                                className="input input-bordered focus:outline-offset-0 w-full"
-                                dropdownMode="select"
-                                yearDropdownItemNumber={15}
-                                peekNextMonth
-                                showYearDropdown
-                                showMonthDropdown
-                                dateFormat={"dd/MM/yyyy"}
-                            />
+                                <DatePicker
+                                    selected={field.value}
+                                    onChange={(date) => field.onChange(date)}
+                                    onBlur={field.onBlur}
+                                    className="input input-bordered focus:outline-offset-0 w-full"
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={15}
+                                    peekNextMonth
+                                    showYearDropdown
+                                    showMonthDropdown
+                                    dateFormat={"dd/MM/yyyy"}
+                                />
                             )}
                         />
                         {/* <input type="date"
@@ -266,7 +266,7 @@ export default function PropiedadesConsulta(props: props) {
                                     <Table.Row className="hover:bg-gray-100" key={index}>
                                         <span>{detalle.articulo.codigo}</span>
                                         <span>{detalle.articulo.nombre}</span>
-                                        
+
                                         <span>
                                             <input type="number"
                                                 {...register(`SolicitudDetalles.${index}.cantidad`, {
@@ -319,7 +319,7 @@ export default function PropiedadesConsulta(props: props) {
 
                 <div className="flex flex-col md:flex-row lg:flex-row justify-end w-full mt-2">
                     <button className="btn btn-outline btn-secondary" onClick={props.volver}><FaArrowLeft />Atras</button>
-                    {id && <button type="button" onClick={async () => {await getPDF(props.solicitud.numero,id)}} className="btn btn-outline btn-accent my-2 md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>}
+                    {id && <button type="button" onClick={async () => { await getPDF(props.solicitud.numero, id) }} className="btn btn-outline btn-accent my-2 md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>}
                     <button className="btn btn-outline btn-primary" type="submit"><FaSave />Guardar</button>
                 </div>
 
