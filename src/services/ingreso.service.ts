@@ -37,11 +37,11 @@ export function api_getOneSolicitud(bearer: string, id: string, numero: number) 
 
 export function api_putSolicitud(bearer: string, data: any) {
     return api.put(`ingreso/actualizar`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
-  }
+}
 
-  export function api_pdf_consulta(bearer: string,id:number,guid:string) {
+export function api_pdf_consulta(bearer: string, id: number, guid: string) {
 
-    return api.get(`ingreso/actualizar/pdf?id=${id}&guid=${guid}`, {responseType: 'blob' ,headers: { "Authorization": `Bearer ${bearer}` } })
+    return api.get(`ingreso/actualizar/pdf?id=${id}&guid=${guid}`, { responseType: 'blob', headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 
