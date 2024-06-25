@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useContextStore } from "../../store/context.store";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaClipboardCheck } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useUserStore } from "@/store/user.store";
 import { api_getEmpresas } from "@/services/bodega.service";
@@ -9,6 +9,7 @@ import React from "react";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { IEmpresa } from "@/interfaces/creation";
 import { FaClipboardQuestion, FaDolly, FaFilePen } from "react-icons/fa6";
+
 
 
 export default function index() {
@@ -148,12 +149,19 @@ function Element({ element }: { element: IEmpresa }) {
       <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
         <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
         <div className="flex  flex-wrap justify-end space-x-4">
-          <a
+        <a
             onClick={() => router.push(`/recepcion/cotizacion/${element.id}`)}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Cotizaciones</span>
             <FaFilePen className="text-primary ml-2" />
+          </a>
+          <a
+            onClick={() => router.push(`/recepcion/recepcion`)}
+            className="flex items-center cursor-pointer hover:font-bold"
+          >
+            <span className="text-sm underline text-primary">Recepción</span>
+            <FaClipboardCheck className="text-primary ml-2" />
           </a>
 
           <a
