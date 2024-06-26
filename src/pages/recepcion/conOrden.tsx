@@ -1,15 +1,63 @@
-import React from 'react';
+import PDFConOrden from '@/components/pdf/recepcionConOrden';
+import { api_pdf_recepcion } from '@/services/ingreso.service';
+import { useUserStore } from '@/store/user.store';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import { Table } from 'react-daisyui';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaFilePdf, FaPlus, FaTrash } from 'react-icons/fa';
 
-export default function ConOrden() {
+interface props {
+    valorPdf: boolean;
+}
+
+
+export default function ConOrden(props: props) {
+    const searchParams = useSearchParams();
+    const id = searchParams.get('empresa'); //obtenemos la empresa
+    const empresaId = id?.toString();
+
+    const estado = props.valorPdf;
+    const { jwt } = useUserStore();
+
+    // const getPDF = async (empresaId: string, estado: boolean) => {
+    //     /* ReactPDF.renderToStream(<PDFConsulta />); */
+    //     try {
+    //         //const response = await api_pdf_recepcion(jwt, empresaId, estado);
+
+    //         // Crear una URL para el Blob
+    //         //const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+
+
+    //         // Crear un enlace temporal y simular un clic para descargar el archivo
+    //         //const link = document.createElement('a');
+    //         //link.href = url;
+    //         //link.setAttribute('download', `documento_${valorEstado}.pdf`); // Nombre del archivo
+    //         //document.body.appendChild(link);
+    //         //link.click();
+
+    //         // Limpiar el enlace temporal y revocar la URL
+    //         //link.parentNode?.removeChild(link);
+    //         //window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
+    //     } catch (error) {
+    //         console.error('Error al descargar el PDF:', error);
+
+    //     }
+    // }
+
+    const guardarPdf = () => {
+        const valorEstado = estado == true ? "con_orden" : "sin_orden";
+
+        console.log('su estado es: ' + valorEstado);
+    };
+
     return (
-        <div className="flex justify-center items-cente">
+        <div className="flex justify-center items-center">
             <div className="p-6 bg-white rounded w-full max-w-3xl">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-4">
                     <div>
                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Número documento:</label>
-                        <input id="numeroDocumento" type="text" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        <input id="numeroDocumento" type="text" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                     </div>
                     <div>
                         <label className="block text-left mb-2" htmlFor="centroDeCosto">Centro de costo:</label>
@@ -22,7 +70,7 @@ export default function ConOrden() {
 
 
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">
                     <div>
                         <label className="block text-left mb-2" htmlFor="bodega">Bodega:</label>
                         <select id="bodega" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
@@ -39,8 +87,8 @@ export default function ConOrden() {
                 </div>
                 <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
-                        <label className="block text-left mb-2">Tipo de documento:</label>
-                        <div className="flex items-center">
+                        <label className="block mb-2 text-center">Tipo de documento:</label>
+                        <div className="flex justify-center">
                             <label className="mr-4">
                                 <input type="radio" name="tipoDocumento" value="tipo1" className="radio radio-xs radio-primary ml-2 mr-2" />
                                 Factura
@@ -53,8 +101,10 @@ export default function ConOrden() {
                     </div>
 
                 </div>
-                <div className="overflow-x-auto">
-                    <Table /* {...args} */>
+
+
+                <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
+                    <Table className='border shadow-lg'>
                         <Table.Head className="bg-primary text-white">
                             <span>Codigo</span>
                             <span>Nombre</span>
@@ -65,11 +115,11 @@ export default function ConOrden() {
                             <span>Por recepcionar</span>
                             <span>Cantidad recibida</span>
                             <span>Observaciones</span>
-
                         </Table.Head>
+
                         <Table.Body>
 
-                            <Table.Row className="hover:bg-gray-100">
+                            <Table.Row hover={true}>
                                 <span>534333</span>
                                 <span>APOSITO COLAGENO 10X11</span>
                                 <span>36,000</span>
@@ -77,7 +127,6 @@ export default function ConOrden() {
                                 <span>--</span>
                                 <span>36,00</span>
                                 <span>0.000</span>
-
                                 <span>
                                     <input type="number"
                                         placeholder="36,000"
@@ -87,10 +136,9 @@ export default function ConOrden() {
                                     <input type="text"
                                         className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                                 </span>
-
                             </Table.Row>
 
-                            <Table.Row className="hover:bg-gray-100">
+                            <Table.Row hover={true}>
                                 <span>43356</span>
                                 <span>TULL NO ADEHERENTE CON SILICONA</span>
                                 <span>100,000</span>
@@ -108,11 +156,22 @@ export default function ConOrden() {
                                         className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                                 </span>
 
-
                             </Table.Row>
+
                         </Table.Body>
                     </Table>
                 </div>
+                
+                <PDFDownloadLink document={<PDFConOrden />} fileName='prueba_pdf'>
+                    {
+                        ({ loading, url, error, blob }) => loading ? (
+                            "Cargando.."
+                        ) : (
+                            <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Guardar</button>
+                        )
+
+                    }
+                </PDFDownloadLink>
             </div>
         </div>
     );
