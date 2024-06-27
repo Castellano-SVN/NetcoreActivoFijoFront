@@ -13,7 +13,7 @@ export default function recepcion() {
     return (
         <React.Fragment>
             <div className="flex items-center justify-center">
-                <div className="container shadow">
+                <div className="container shadow-md border rounded-md">
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Recepción de Artículos</h1>
                         <div className="mb-2">

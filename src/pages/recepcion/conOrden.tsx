@@ -1,5 +1,4 @@
 import PDFConOrden from '@/components/pdf/recepcionConOrden';
-import { api_pdf_recepcion } from '@/services/ingreso.service';
 import { useUserStore } from '@/store/user.store';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { useSearchParams } from 'next/navigation';
@@ -162,7 +161,7 @@ export default function ConOrden(props: props) {
                     </Table>
                 </div>
                 
-                <PDFDownloadLink document={<PDFConOrden />} fileName='prueba_pdf'>
+                <PDFDownloadLink document={<PDFConOrden />} fileName='conOrdenDeCompra_pdf'>
                     {
                         ({ loading, url, error, blob }) => loading ? (
                             "Cargando.."

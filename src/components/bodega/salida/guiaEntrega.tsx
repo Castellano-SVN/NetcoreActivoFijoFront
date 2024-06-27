@@ -1,9 +1,10 @@
-import PDFGuiaDespacho from "@/components/pdf/guiaDespacho";
+
+import PDFGuiaEntrega from "@/components/pdf/guiaEntrega";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Table } from "react-daisyui";
 import { FaFilePdf } from "react-icons/fa";
 
-export default function GuiaDepacho() {
+export default function GuiaEntrega() {
     return (
         <div className="flex justify-center items-center">
             <div className="p-6 bg-white rounded w-full max-w-3xl">
@@ -71,7 +72,7 @@ export default function GuiaDepacho() {
                     </Table>
                 </div>
 
-                <PDFDownloadLink document={<PDFGuiaDespacho />} fileName='prueba_pdf'>
+                <PDFDownloadLink document={<PDFGuiaEntrega />} fileName='prueba_pdf'>
                     {
                         ({ loading, url, error, blob }) => loading ? (
                             "Cargando.."
