@@ -46,17 +46,26 @@ import { FaArchive, FaEye, FaPencilAlt, FaPlus } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { SlEye } from "react-icons/sl";
 import { FaPencil } from "react-icons/fa6";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
+  const {id} = router.query;
+  const idString = String(id); // Convertir a cadena
+
+  useEffect (()=>{
+    console.log(id);
+    console.log( idString);
+  },[id, idString]);
+  
   const { jwt } = useUserStore();
   const [tipoAlmacen, setTipoAlmacen] = useState<ItipoAlmacen[]>([]);
   const [dataCentroCosto, setDataCentroCosto] = useState<IcentroCosto>();
   const { isLoading, error, data, refetch } = useQuery(
     "CCbyID",
-    () => api_getOneCentroCosto(jwt, router.query.id as string),
+    () => api_getOneCentroCosto(jwt, idString),
     {
-      enabled: router.query.id !== undefined,
+      enabled: idString !== undefined,
       onSuccess: (data) => {
         if (data.data.dataList.length !== 1) {
           return router.back();
@@ -459,17 +468,17 @@ function BodegaList({
                     className="shadow border-collapse w-full responsive hidden md:table"
                     size="sm"
                   >
-                    <thead className="bg-gray-100">
+                    <thead className="bg-primary">
                       <tr>
-                        <th className="text-gray-600 font-extrabold">Codigo</th>
-                        <th className="text-gray-600 font-extrabold">
+                        <th className="text-base-100 font-extrabold">Codigo</th>
+                        <th className="text-base-100 font-extrabold">
                           Nombre almacen
                         </th>
-                        <th className="text-gray-600 font-bold">
+                        <th className="text-base-100 font-bold">
                           Tipo almacen
                         </th>
-                        <th className="text-gray-600 font-bold">Editar</th>
-                        <th className="text-gray-600 font-bold">Ver</th>
+                        <th className="text-base-100 font-bold">Editar</th>
+                        <th className="text-base-100 font-bold">Ver</th>
                       </tr>
                     </thead>
                     <tbody>

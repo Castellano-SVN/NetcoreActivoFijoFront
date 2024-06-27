@@ -1,14 +1,15 @@
-import { api_pdf_recepcion } from '@/services/ingreso.service';
+import PDFSinOrden from '@/components/pdf/recepcionSinOrden';
 import { useUserStore } from '@/store/user.store';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import React from 'react';
 import { Table } from 'react-daisyui';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaFilePdf, FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function SinOrden() {
     const { jwt } = useUserStore();
-    
-    
-    
+
+
+
     return (
         <div className="flex justify-center items-cente">
             <div className="p-6 bg-white rounded w-full max-w-3xl">
@@ -88,7 +89,7 @@ export default function SinOrden() {
                 </div>
 
 
-                <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
+                <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
                     <Table className='border shadow-lg'>
                         <Table.Head className="bg-primary text-white">
 
@@ -112,7 +113,12 @@ export default function SinOrden() {
                                 <span>200001</span>
                                 <span>INSUMOS MEDICOS</span>
                                 <span>11.500</span>
-                                <span>15</span>
+                                <span>
+                                    <input type="number"
+                                        placeholder='15'
+                                        value="15"
+                                        className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                </span>
                                 <span>
                                     <input type="text"
                                         className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
@@ -127,7 +133,12 @@ export default function SinOrden() {
                                 <span>200001</span>
                                 <span>INSUMOS MEDICOS</span>
                                 <span>4.200</span>
-                                <span>50</span>
+                                <span>
+                                    <input type="number"
+                                        placeholder='50'
+                                        value="50"
+                                        className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                </span>
                                 <span>
                                     <input type="text"
                                         className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
@@ -136,6 +147,16 @@ export default function SinOrden() {
                         </Table.Body>
                     </Table>
                 </div>
+                <PDFDownloadLink document={<PDFSinOrden />} fileName='sinOrdenDeCompra_pdf'>
+                    {
+                        ({ loading, url, error, blob }) => loading ? (
+                            "Cargando.."
+                        ) : (
+                            <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Guardar</button>
+                        )
+
+                    }
+                </PDFDownloadLink>
             </div>
         </div>
     );

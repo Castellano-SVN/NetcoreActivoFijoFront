@@ -55,7 +55,7 @@ export function api_getAllCentroCostos(bearer: string, id: string) {
   return api.get(`centrocosto?id=${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getOneCentroCosto(bearer: string, id: string) {
-  return api.get(`centrocosto`, { headers: { "Authorization": `Bearer ${bearer}` } })
+  return api.get(`centrocosto/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getEmpresas(bearer: string, page: number) {
   return api.get(`empresa?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })

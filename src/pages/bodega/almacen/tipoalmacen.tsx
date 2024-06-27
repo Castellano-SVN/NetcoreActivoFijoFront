@@ -116,12 +116,12 @@ export default function TipoAlmacen() {
       <div className="overflow-x-auto">
         {!loading ? (
           // listado almacen
-          <Table className="w-full border-collapse">
-            <Table.Head className="bg-gray-100">
-              <span className="text-gray-600 font-bold">No.</span>
-              <span className="text-gray-600 font-bold">Nombre</span>
-              <span className="text-gray-600 font-bold">Código</span>
-              <span className="text-gray-600 font-bold">Acciones</span>
+          <Table className="w-full border-collapse shadow-md">
+            <Table.Head className="bg-primary text-base-100">
+              <span className="font-bold">No.</span>
+              <span className="font-bold">Nombre</span>
+              <span className="font-bold">Código</span>
+              <span className="font-bold">Acciones</span>
             </Table.Head>
             <Table.Body>
               {data.map((item, index) => (
@@ -144,7 +144,7 @@ export default function TipoAlmacen() {
               <span>
                 
                 <Button onClick={createElement} shape="circle" size="sm" className="bg-white shadow-none hover:none">
-                  <CiCirclePlus className="h-6 w-6 text-blue-500" />
+                  <CiCirclePlus className="h-6 w-6 text-primary" />
                 </Button>
               </span>
               <span></span>
@@ -173,14 +173,14 @@ export default function TipoAlmacen() {
           <form onSubmit={handleSubmit((d) => newElement(d))} className="space-y-4">
             <div className="flex flex-col">
               <label className="label">
-                <span className={`label-text ${errors.Codigo ? "text-error" : "text-neutral"}`}>Código</span>
+                <span className={`label-text ${errors.Codigo ? "text-error" : "text-blackl"}`}>Código</span>
               </label>
               <Input {...register("Codigo")} color={errors.Codigo ? "error" : "neutral"} className="input-primary" />
               {errors.Codigo && <label className="label"><span className="label-text-alt text-error">{errors.Codigo.message}</span></label>}
             </div>
             <div className="flex flex-col">
               <label className="label">
-                <span className={`label-text ${errors.Nombre ? "text-error" : "text-neutral"}`}>Nombre</span>
+                <span className={`label-text ${errors.Nombre ? "text-error" : "text-black"}`}>Nombre</span>
               </label>
               <Input {...register("Nombre")} color={errors.Nombre ? "error" : "neutral"} className="input-primary" />
               {errors.Nombre && <label className="label"><span className="label-text-alt text-error">{errors.Nombre.message}</span></label>}
