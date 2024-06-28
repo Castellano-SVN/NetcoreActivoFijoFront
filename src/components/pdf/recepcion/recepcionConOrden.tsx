@@ -6,108 +6,107 @@ const LogoNetCoreBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAA
 
 const styles = StyleSheet.create({
     page: {
-        border: '2px solid #000'
+        border: '2px solid #000',
+        padding: 20 // Añade padding para que los elementos no estén pegados a los bordes
     },
     img: {
         width: 250,
-        height: 40
+        height: 40,
+        position: 'absolute',
+        top: 20,
+        left: 20,
     },
     br: {
         marginVertical: 10
     },
-    brpequeno: {
+    brBig: {
+        marginVertical: 25
+    },
+    brSmall: {
         marginVertical: 5
     },
     title: {
         fontSize: 17,
-        textAlign: "left",
         fontWeight: "bold",
-        marginVertical: 4,
-        marginRight: 10,
-        color: "#1C002F",
+        color: "#000",
         fontStyle: "Nunito Sans",
     },
-    title2: {
+    titleRight: {
         fontSize: 17,
-        textAlign: "right",
         fontWeight: "bold",
-        marginVertical: 4,
-        marginLeft: 10,
-        color: "#1C002F",
+        color: "#000",
         fontStyle: "Nunito Sans",
+        textAlign: 'right'
+    },
+    titleCenter: {
+        fontSize: 17,
+        fontWeight: "bold",
+        color: "#000",
+        fontStyle: "Nunito Sans",
+        textAlign: 'center'
+    },
+    titleLeft: {
+        fontSize: 17,
+        fontWeight: "bold",
+        color: "#000",
+        fontStyle: "Nunito Sans",
+        textAlign: 'left'
     },
     subTitle: {
         fontSize: 14,
         fontWeight: "bold",
-        color: "black",
-        fontStyle: "Nunito Sans"
-    },
-    sectionTitle: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        padding: 4
-    },
-    sectionSubTitle: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginHorizontal: 10,
-    },
-    columna: {
-        display: "flex",
-        flexDirection: "column",
-    },
-    fila: {
-        display: "flex",
-        flexDirection: "row",
-    },
-    parrafoSubTitle: {
-        fontSize: 12,
+        color: "#000",
         fontStyle: "Nunito Sans",
-        color: "black",
-        marginTop: 10,
-        marginRight: 13,
-
-    },
-    parrafoSubTitle2: {
-        fontSize: 12,
-        fontStyle: "Nunito Sans",
-        color: "black",
-        marginTop: 10,
-        marginLeft: 70,
-
     },
     parrafo: {
         fontSize: 12,
         fontStyle: "Nunito Sans",
         color: "black",
-        marginTop: 1.5
+        marginTop: '1.5',
     },
-    parrafoObservacion: {
-        fontSize: 12,
-        fontStyle: "Nunito Sans",
-        color: "black",
-        marginTop: 1.5,
-        width: '80%'
+    columna: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    columnaLeft: {
+        display: "flex",
+        flexDirection: "column",
+        textAlign: 'left',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: 10,
+        width: '50%',
+
+    },
+    columnaRight: {
+        display: "flex",
+        flexDirection: "column",
+        textAlign: 'right',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        padding: 10,
+        width: '50%',
+    },
+    fila: {
+        display: "flex",
+        flexDirection: "row",
     },
     table: {
-        width: '97%',
+        width: '100%',
         border: '1px solid #000',
-        margin: 10,
     },
     tableRow: {
         flexDirection: 'row',
         borderBottom: '1px solid #000',
-        width: 575
+        width: '100%'
     },
     tableColHeader: {
-        width: '14.28%',
+        width: '11.11%',
         borderRight: '1px solid #000',
         backgroundColor: '#f0f0f0',
     },
     tableCol: {
-        width: '14.28%',
+        width: '11.11%',
         borderRight: '1px solid #000',
     },
     tableCellHeader: {
@@ -119,30 +118,19 @@ const styles = StyleSheet.create({
         margin: 5,
         fontSize: 10,
     },
-    subTitle2: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginHorizontal: 10,
-    },
 
-    header: {
-        position: 'absolute',
-        top: 1,
-        right: 20,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
+    lineaLeft: {
+        borderBottom: '2px solid #000',
+        width: '70%',
+        alignSelf: 'flex-start',
+        marginVertical: 20
     },
-    columnaLeft: {
-        display: "flex",
-        flexDirection: "column",
+    textoDebajoLineaLeft: {
         textAlign: 'left',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        padding: 10,
-        width: '50%',
-
+        fontSize: 12,
+        fontStyle: 'Nunito Sans',
+        color: 'black',
+        marginTop: 2
     },
     lineaRight: {
         borderBottom: '2px solid #000',
@@ -157,156 +145,141 @@ const styles = StyleSheet.create({
         color: 'black',
         marginTop: 2
     },
-    lineaLeft: {
-        borderBottom: '2px solid #000',
-        width: '70%',
-        alignSelf: 'flex-start',
-        marginVertical: 20
-    },
-    textoDebajoLineaLeft: {
-        textAlign: 'left',
-        fontSize: 12,
-        fontStyle: 'Nunito Sans',
-        color: 'black',
-        marginTop: 2
-    },
-    columnaRight: {
-        display: "flex",
-        flexDirection: "column",
-        textAlign: 'right',
-        justifyContent: 'space-between',
+    header: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: 'flex-end',
-        padding: 10,
-        width: '50%',
     },
+
+
 });
 
-
-export default function PDFGuiaEntrega() {
+export default function PDFConOrden() {
 
     return (
-        <Document>
-            <Page>
-                <Image style={styles.img} src={LogoNetCoreBase64} />
-                <View style={styles.header} >
-                    <Text style={styles.parrafoSubTitle}>Guía N°1</Text>
-                    <Text style={styles.parrafoSubTitle}>Fecha: 27/06/2024</Text>
-                </View>
-                <View style={styles.sectionTitle} >
-                    <Text style={styles.title}>Guía de Entrega</Text>
-                </View>
-
-
-                <View style={styles.br}></View>
-
-                <View style={styles.sectionSubTitle}>
-                    <View style={styles.columna}>
-                        <Text style={styles.subTitle}>Información</Text>
-                        <View style={styles.fila}>
-                            <Text style={styles.parrafoSubTitle}>Bodega origen: Bodega central</Text>
-                        </View>
-                        <View style={styles.fila}>
-                            <Text style={styles.parrafoSubTitle}>Dirección origen: Av.carrascal 4747</Text>
-                        </View>
+        <>
+            <Document>
+                <Page style={styles.page}>
+                    <Image style={styles.img} src={LogoNetCoreBase64} />
+                    <View style={styles.header} >
+                        <Text style={styles.titleRight}>Folio Recepcion Nro: 123</Text>
+                        <Text style={styles.titleRight}>Fecha: 27/06/2024</Text>
                     </View>
+
+                    <View style={styles.brBig} />
 
                     <View style={styles.columna}>
-                        <Text style={styles.subTitle}> </Text>
+                        <Text style={styles.titleCenter}>Recepcion con orden de compra</Text>
+
+                        <View style={styles.br} />
+
                         <View style={styles.fila}>
-                            <Text style={styles.parrafoSubTitle}>Bodega destino: Bodega cesfam Dr. sotero del rio</Text>
+                            <View style={styles.columnaLeft}>
+                                <View style={styles.fila}>
+                                    <Text style={styles.subTitle}>CENTRO DE COSTO</Text>
+                                </View>
+                                <Text style={styles.parrafo}>Bodega Central</Text>
+                                <View style={styles.br}></View>
+
+                                <View style={styles.fila}>
+                                    <Text style={styles.subTitle}>TIPO DE DOCUMENTO</Text>
+                                </View>
+                                <Text style={styles.parrafo}>Factura Electronica</Text>
+                                <View style={styles.br}></View>
+
+                                <View style={styles.fila}>
+                                    <Text style={styles.subTitle}>FECHA DEL DOCUMENTO</Text>
+                                </View>
+                                <Text style={styles.parrafo}>01/05/2024</Text>
+                            </View>
+
+                            <View style={styles.columnaRight}>
+                                <View style={styles.fila}>
+                                    <Text style={styles.subTitle}>BODEGA</Text>
+                                </View>
+                                <Text style={styles.parrafo}>Bodega Central De Salud</Text>
+                                <View style={styles.br}></View>
+
+                                <View style={styles.fila}>
+                                    <Text style={styles.subTitle}>NUMERO DE DOCUMENTO</Text>
+                                </View>
+                                <Text style={styles.parrafo}>19791</Text>
+                                <View style={styles.br}></View>
+
+                            </View>
                         </View>
+
+                        <View style={styles.br} />
+
+                        <View style={styles.table}>
+                            <View style={styles.tableRow}>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Código</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Nombre</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Cantidad</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Precio</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Observacion</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Recepcionado</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Por Recepcionar</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Cantidad Recibida</Text>
+                                </View>
+                                <View style={styles.tableColHeader}>
+                                    <Text style={styles.tableCellHeader}>Observaciones</Text>
+                                </View>
+                            </View>
+                            {[...Array(3)].map((_, index) => (
+                                <View style={styles.tableRow} key={index}>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Código {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Nombre {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Cantidad {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Precio {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Observacion {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Recepcion {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Por recepcionar {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Cantidad Recibida {index + 1}</Text>
+                                    </View>
+                                    <View style={styles.tableCol}>
+                                        <Text style={styles.tableCell}>Observaciones {index + 1}</Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+
+                        <View style={styles.brBig}></View>
+
                         <View style={styles.fila}>
-                            <Text style={styles.parrafoSubTitle}>Dirección destino: Calle sargento urrutia n°125</Text>
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.br}></View>
-
-                <View style={styles.table}>
-                    <View style={styles.tableRow}>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Correlativo</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Código articulo</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Código familia</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Familia</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Código sub-familia</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Sub-familia</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Descripción articulo</Text>
-                        </View>
-                        <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Cantidad</Text>
-                        </View>
-                    </View>
-                    <View style={styles.tableRow} >
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>1</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>20001001</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200 CURACIONES Y EXAMENES</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200001</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>INSUMOS MEDICOS</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>APOSITO COLAGENO 10X11</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>20</Text>
-                        </View>
-                    </View>
-                    <View style={styles.tableRow} >
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>2</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>20001002</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200 CURACIONES Y EXAMENES</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200001</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>INSUMOS MEDICOS</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>CREMA HUMECTANTE</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>40</Text>
-                        </View>
-                    </View>
-
-                </View>
-
-                <View style={styles.br}></View>
-                <View style={styles.fila}>
                             <View style={styles.columnaLeft}>
 
                                 <View style={styles.fila}>
@@ -323,7 +296,11 @@ export default function PDFGuiaEntrega() {
                             </View>
                         </View>
 
-            </Page>
-        </Document>
+                    </View>
+
+
+                </Page>
+            </Document>
+        </>
     );
 }

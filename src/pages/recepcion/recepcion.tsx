@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
-import ConOrden from "./conOrden";
-import SinOrden from "./sinOrden";
-import React from "react";
-import { useSearchParams } from "next/navigation";
+import ConOrden from "@/components/slugPages/recepcion/conOrden";
+import SinOrden from "@/components/slugPages/recepcion/sinOrden";
+import { useContextStore } from "@/store/context.store";
+import React, { useEffect } from "react";
+import { useState } from "react";
+
 
 
 export default function recepcion() {
-   
-   
+    const { setActive } = useContextStore()
+    useEffect(() => {
+        setActive("Recepcion");
+    }, []);
+
+
     const [conOrden, setConOrden] = useState(true);
 
     return (
@@ -43,7 +48,7 @@ export default function recepcion() {
                         <div>
                             {conOrden ? (
                                 <div className="transition duration-300 opacity-100">
-                                    <ConOrden valorPdf={conOrden}/>
+                                    <ConOrden valorPdf={conOrden} />
                                 </div>
                             ) : (
                                 <div className="transition duration-300 opacity-100">

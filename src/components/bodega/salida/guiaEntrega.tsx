@@ -1,10 +1,17 @@
 
 import PDFGuiaEntrega from "@/components/pdf/guiaEntrega";
+import { useContextStore } from "@/store/context.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { useEffect } from "react";
 import { Table } from "react-daisyui";
 import { FaFilePdf } from "react-icons/fa";
 
 export default function GuiaEntrega() {
+    const { setActive } = useContextStore()
+    useEffect(() => {
+        setActive("Salidas");
+    }, []);
+    
     return (
         <div className="flex justify-center items-center">
             <div className="p-6 bg-white rounded w-full max-w-3xl">
