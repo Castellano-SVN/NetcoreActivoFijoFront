@@ -20,7 +20,7 @@ export default function index() {
   const { setActive } = useContextStore()
   useEffect(() => {
     setActive("Recepcion");
-  }, [])
+  }, []);
 
   const [meta, setMeta] = useState<{ total: number; pages: number }>({
     total: 0,

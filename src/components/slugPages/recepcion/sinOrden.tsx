@@ -1,11 +1,17 @@
-import PDFSinOrden from '@/components/pdf/recepcionSinOrden';
-import { useUserStore } from '@/store/user.store';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import React from 'react';
-import { Table } from 'react-daisyui';
-import { FaFilePdf, FaPlus, FaTrash } from 'react-icons/fa';
+import PDFSinOrden from "@/components/pdf/recepcion/recepcionSinOrden";
+import { useContextStore } from "@/store/context.store";
+import { useUserStore } from "@/store/user.store";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { useEffect } from "react";
+import { Table } from "react-daisyui";
+import { FaFilePdf } from "react-icons/fa";
+
 
 export default function SinOrden() {
+    const { setActive } = useContextStore()
+    useEffect(() => {
+        setActive("Recepcion");
+    }, []);
     const { jwt } = useUserStore();
 
 
