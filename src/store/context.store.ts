@@ -11,15 +11,18 @@ interface IMenu {
 interface IMenuChildren extends IMenu {
   children: IMenu[]
 }
+
 const Menus: IMenuChildren[] = [
-  {name:"Prestadores",active:false,href: "/empresa",children:[]},
-  {name:"Recepcion",active:false,href: "/recepcion",
-    children:[
-      {name:"Ingreso",active:false, href:'/recepcion/ingreso'}
+  { name: "Prestadores", active: false, href: "/empresa", children: [] },
+  {
+    name: "Recepcion", active: false, href: "/recepcion",
+    children: [
+      { name: "Ingreso", active: false, href: '/recepcion/ingreso' }
     ]
   },
-  {name:"Despacho",active:false,href: "/despacho",children:[]},
-  {name:"Salidas",active:false,href: "/salida",children:[]},
+  /* { name: "Despacho", active: false, href: "/despacho", children: [] }, */
+  { name: "Salidas", active: false, href: "/salida", children: [] },
+  { name: "Informes", active: false, href: "/informes", children: [] },
 ]
 interface State {
   bread: breadI[];
@@ -28,14 +31,14 @@ interface State {
 
 type Actions = {
   setBread(bread: breadI[]): void;
-  setActive(item: "Prestadores"| "Recepcion" | "Despacho" | "Salidas"): void;
+  setActive(item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas" | "Informes"): void;
 };
 
 export const useContextStore = create<State & Actions>()(
   devtools(
     (set) => ({
       bread: [],
-      menus:Menus,
+      menus: Menus,
       setActive: (item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas") =>
         set((state) => ({
           menus: state.menus.map(menu =>
@@ -44,7 +47,7 @@ export const useContextStore = create<State & Actions>()(
               : { ...menu, active: false }
           ),
         })),
-        setBread: (newBread: breadI[]) => set({ bread: newBread }),
+      setBread: (newBread: breadI[]) => set({ bread: newBread }),
     }),
     {
       name: 'bread-Store',

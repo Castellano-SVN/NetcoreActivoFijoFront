@@ -130,7 +130,7 @@ function Element({ element }: { element: IEmpresa }) {
 
   return (
     <div
-      className=" hover:shadow-md  border rounded-md  shadow animate-fadein"
+      className=" hover:shado-wmd  border rounded-md  shadow animate-fadein"
     >
       <div className="flex flex-row justify-between p-2">
         <div className="basis-1/2 flex flex-col justify-left text-left">
