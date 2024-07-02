@@ -314,9 +314,9 @@ interface IConsulta {
     CentroCostoId: string;
     EmpresaId: string;
     articulo: {
-        codigo?: string;
-        id: string;
-        nombre: string;
+      codigo?: string;
+      id: string;
+      nombre: string;
     }
     cantidad: number;
     CantidadAprobada?: number;
@@ -486,8 +486,49 @@ interface ITipoDocumento {
   descripcion: string;
   sigla: string;
 }
+
+interface IOrdenCompra {
+  empresaId: string;
+  cotizacionId: string;
+  anoNumero: number;
+  funcionarioId: string;
+  formaPagoCodigo: number;
+  fecha: string;
+  numero: number;
+  valorNeto: number;
+  valorNetoDescuento: number;
+  impuesto: number;
+  valorTotal: number;
+  nula: boolean;
+  direccionEnvio?: string;
+  observaciones?: string;
+}
+
+interface ICotizacion {
+  empresaId: string;
+  anoNumero: number;
+  solicitudId: string;
+  proveedorId: string;
+  contactoId?: string;
+  formaPagoCodigo: number;
+  estadoCotizacionCodigo:number;
+  numero: number;
+  nombre: string;
+  fechaIngreso: string;
+  fechaEntrega: string;
+  valorIvaIncluido: boolean;
+  exenta: boolean;
+  valorNeto: number;
+  descuento?: number;
+  impuesto: number;
+  valorTotal: number;
+  observaciones?: string;
+  descuentoPorcentual: boolean;
+  activa: boolean;
+  redondeaImpuesto: boolean;
+}
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues,IOrdenCompra,ICotizacion
 }

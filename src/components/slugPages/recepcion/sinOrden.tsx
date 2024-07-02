@@ -5,9 +5,12 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useEffect } from "react";
 import { Table } from "react-daisyui";
 import { FaFilePdf } from "react-icons/fa";
+import { ICotizacion } from "@/interfaces/creation";
+interface props {
+    dataSinOrdenCompra:ICotizacion;
+}
 
-
-export default function SinOrden() {
+export default function SinOrden(props: props) {
     const { setActive } = useContextStore()
     useEffect(() => {
         setActive("Recepcion");
