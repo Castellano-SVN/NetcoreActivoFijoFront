@@ -10,7 +10,7 @@ import { FaFilePdf } from "react-icons/fa";
 
 interface props {
     valorPdf: boolean;
-    dataConOrdenCompra:IOrdenCompra;
+    dataConOrdenCompra: IOrdenCompra[];
 }
 
 
@@ -76,30 +76,39 @@ export default function ConOrden(props: props) {
                     <div>
                         <label className="block text-left mb-2" htmlFor="centroDeCosto">Centro de costo:</label>
                         <select id="centroDeCosto" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                            <option value="">Seleccione una opción</option>
-                            <option value="1">Centro costo 1</option>
-                            <option value="2">Centro costo 2</option>
+                            <option key={0} value={0} selected disabled>Seleccione una opción</option>
+                            {props.dataConOrdenCompra.map((ordenCompra, index) => (
+                                ordenCompra.ordenCompraDetalles.map((centroCosto, detalleIndex) => (
+                                    <option key={index} value={centroCosto.cotizacionDetalle.solicitudDetalle.centroCosto.id}>
+                                        {centroCosto.cotizacionDetalle.solicitudDetalle.centroCosto.nombre}
+                                    </option>
+                                ))))}
                         </select>
                     </div>
 
                     <div>
                         <label className="block text-left mb-2" htmlFor="bodega">Bodega:</label>
                         <select id="bodega" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                            <option value="">Seleccione una opción</option>
-                            <option value="">Bodega 1</option>
-                            <option value="">Bodega 2</option>
+                            <option key={0} value={0} selected disabled>Seleccione una opción</option>
+                            {props.dataConOrdenCompra.map((ordenCompra, index) => (
+                                ordenCompra.ordenCompraDetalles.map((centroCosto, detalleIndex) => (
+                                    centroCosto.cotizacionDetalle.solicitudDetalle.centroCosto.bodegas.map((bodegas, bodegaindex) => (
+                                        <option key={bodegaindex} value={bodegas.id}>
+                                            {bodegas.nombre}
+                                        </option>
+                                    ))))))}
                         </select>
                     </div>
                 </div>
                 <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">
                     <div>
                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Número documento:</label>
-                        <input type="text" value={data.numero}className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        <input type="text" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                     </div>
-        
+
                     <div>
                         <label className="block text-left mb-2" htmlFor="fechaDocumento">Fecha de documento:</label>
-                        <input  type="text" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        <input type="text" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                     </div>
 
                 </div>
@@ -135,46 +144,29 @@ export default function ConOrden(props: props) {
                         </Table.Head>
 
                         <Table.Body>
-
-                            <Table.Row hover={true}>
-                                <span>534333</span>
-                                <span>APOSITO COLAGENO 10X11</span>
-                                <span>36,000</span>
-                                <span>11.043</span>
-                                <span>--</span>
-                                <span>36,00</span>
-                                <span>0.000</span>
-                                <span>
-                                    <input type="number"
-                                        placeholder="36,000"
-                                        className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                </span>
-                                <span>
-                                    <input type="text"
-                                        className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                </span>
-                            </Table.Row>
-
-                            <Table.Row hover={true}>
-                                <span>43356</span>
-                                <span>TULL NO ADEHERENTE CON SILICONA</span>
-                                <span>100,000</span>
-                                <span>2.242</span>
-                                <span>--</span>
-                                <span>0.000</span>
-                                <span>100.000</span>
-                                <span>
-                                    <input type="number"
-                                        placeholder='0,000'
-                                        className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                </span>
-                                <span>
-                                    <input type="text"
-                                        className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                </span>
-
-                            </Table.Row>
-
+                            {props.dataConOrdenCompra.map((ordenCompra) => (
+                                ordenCompra.ordenCompraDetalles.map((ordenDetalle, index) => (
+                                    <Table.Row key={index} hover={true}>
+                                        <span>{ordenDetalle.cotizacionDetalle.articulo.codigo}</span>
+                                        <span>{ordenDetalle.cotizacionDetalle.articulo.nombre}</span>
+                                        <span>{ordenDetalle.cotizacionDetalle.cantidad}</span>
+                                        <span>{ordenDetalle.cotizacionDetalle.valorUnitario}</span>
+                                        <span>{ordenDetalle.cotizacionDetalle.observaciones}</span>
+                                        <span>{ordenDetalle.cotizacionDetalle.solicitudDetalle.cantidadAprobada}</span>
+                                        <span>
+                                            <input type="number"
+                                                className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                        </span>
+                                        <span>
+                                            <input type="number"
+                                                className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                        </span>
+                                        <span>
+                                            <input type="text"
+                                                className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                        </span>
+                                    </Table.Row>
+                                ))))}
                         </Table.Body>
                     </Table>
                 </div>
@@ -185,6 +177,7 @@ export default function ConOrden(props: props) {
 
                 </div>
 
+                <div>
                 <PDFDownloadLink document={<PDFConOrden />} fileName='conOrdenDeCompra_pdf'>
                     {
                         ({ loading, url, error, blob }) => loading ? (
@@ -195,6 +188,8 @@ export default function ConOrden(props: props) {
 
                     }
                 </PDFDownloadLink>
+                </div>
+                
             </div>
         </div>
     );

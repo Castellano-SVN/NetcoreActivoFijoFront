@@ -502,6 +502,31 @@ interface IOrdenCompra {
   nula: boolean;
   direccionEnvio?: string;
   observaciones?: string;
+  ordenCompraDetalles: {
+    cotizacionDetalle: {
+      articulo:{
+        codigo?:string;
+        id:string;
+        nombre?:string;
+      }
+      cantidad:number;
+      id:string;
+      observaciones?:string;
+      solicitudDetalle: {
+        cantidadAprobada:number;
+        centroCosto: {
+          id: string;
+          nombre: string;
+          bodegas: {
+            id: string;
+            nombre: string;
+            sigla: string;
+          }[]
+        }
+      }
+      valorUnitario:number;
+    }
+  }[]
 }
 
 interface ICotizacion {
@@ -511,7 +536,7 @@ interface ICotizacion {
   proveedorId: string;
   contactoId?: string;
   formaPagoCodigo: number;
-  estadoCotizacionCodigo:number;
+  estadoCotizacionCodigo: number;
   numero: number;
   nombre: string;
   fechaIngreso: string;
@@ -526,9 +551,20 @@ interface ICotizacion {
   descuentoPorcentual: boolean;
   activa: boolean;
   redondeaImpuesto: boolean;
+  cotizacionDetalle: {
+    articulo:{
+      codigo?:string;
+      id:string;
+      nombre?:string;
+    }
+    cantidad:number;
+    id:string;
+    observaciones?:string;
+    valorUnitario:number;
+  }
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues,IOrdenCompra,ICotizacion
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion
 }
