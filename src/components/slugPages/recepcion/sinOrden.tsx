@@ -15,7 +15,7 @@ export default function SinOrden(props: props) {
     useEffect(() => {
         setActive("Recepcion");
     }, []);
-    const { jwt } = useUserStore();
+    const data = props.dataSinOrdenCompra
 
 
 
@@ -30,9 +30,8 @@ export default function SinOrden(props: props) {
                     <div>
                         <label className="block text-left mb-2" htmlFor="centroDeCosto">Centro de costo:</label>
                         <select id="centroDeCosto" className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                            <option value="">Seleccione una opción</option>
-                            <option value="1">Centro costo 1</option>
-                            <option value="2">Centro costo 2</option>
+                            {/* <option key={0} value={0} selected disabled>Seleccione una opción</option> */}
+
                         </select>
                     </div>
                 </div>

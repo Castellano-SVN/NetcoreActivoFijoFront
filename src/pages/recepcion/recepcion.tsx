@@ -26,7 +26,7 @@ export default function recepcion() {
 
 
     const [showConOrden, setShowConOrden] = useState(false);
-    const [dataOrdenCompra, setDataOrdenCompra] = useState<IOrdenCompra>();
+    const [dataOrdenCompra, setDataOrdenCompra] = useState<IOrdenCompra[]>();
     const [dataSinOrdenCompra, setDataSinOrdenCompra] = useState<ICotizacion>();
     
     
@@ -42,7 +42,7 @@ export default function recepcion() {
         try {
             if (numero !== null) {
                 const data = await api_getOneConOrdenCompra(jwt, idEmpresa, numero);
-                setDataOrdenCompra(data.data.dataList[0]);
+                setDataOrdenCompra(data.data.dataList);
                 setShowConOrden(true);
             } else {
                 toast.error("Ingrese un numero")
@@ -127,7 +127,7 @@ export default function recepcion() {
                                         <div className="flex flex-col shadow-md border rounded-md w-full p-6">
                                             {showConOrden === false ? (
                                                 <>
-                                                    <h5 className="text-2xl font-bold mb-4">Selección Recepcion con orden de compra</h5>
+                                                    <h5 className="text-2xl font-bold mb-4">Selección Recepción con orden de compra</h5>
                                                     <div className="flex flex-col w-full items-center">
                                                         <label className="py-2 px-3 ml-4">Ingrese número de la orden de compra</label>
                                                         <input
@@ -162,7 +162,7 @@ export default function recepcion() {
                                         <div className="flex flex-col shadow-md border rounded-md w-full p-6">
                                             {showSinOrden === false ? (
                                                 <>
-                                                    <h5 className="text-2xl font-bold mb-4">Selección Recepcin sin orden de compra</h5>
+                                                    <h5 className="text-2xl font-bold mb-4">Selección Recepción sin orden de compra</h5>
                                                     <div className="flex flex-col w-full items-center">
                                                         <label className="py-2 px-3 ml-4">Ingrese número de la cotización</label>
                                                         <input
