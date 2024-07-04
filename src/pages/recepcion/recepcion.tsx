@@ -27,7 +27,7 @@ export default function recepcion() {
 
     const [showConOrden, setShowConOrden] = useState(false);
     const [dataOrdenCompra, setDataOrdenCompra] = useState<IOrdenCompra[]>();
-    const [dataSinOrdenCompra, setDataSinOrdenCompra] = useState<ICotizacion>();
+    const [dataSinOrdenCompra, setDataSinOrdenCompra] = useState<ICotizacion[]>();
     
     
     const [showSinOrden, setShowSinOrden] = useState(false);
@@ -64,7 +64,7 @@ export default function recepcion() {
         try {
             if (numeroCotizacion !== null) {
                 const data = await api_getOneSinOrdenCompra(jwt, idEmpresa, numeroCotizacion);
-                setDataSinOrdenCompra(data.data.dataList[0]);
+                setDataSinOrdenCompra(data.data.dataList);
                 setShowSinOrden(true);
             } else {
                 toast.error("Ingrese un numero de cotización")
