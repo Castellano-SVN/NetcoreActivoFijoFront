@@ -528,6 +528,35 @@ interface IOrdenCompra {
     }
   }[]
 }
+interface FormValueRecepcionData {
+  Recepcion: {
+    CotizacionId: string;
+    EmpresaId: string;
+    AnoNumero: number;
+    Id: string;
+    CentroCostoId: string;
+    BodegaId: string;
+    FuncionarioId: string;
+    TipoDocumentoRecepcionCodigo: number;
+    NumeroDocumento: number;
+    FechaIngreso: Date;
+    FechaRecepcion: Date;
+    Observaciones: string;
+    NumeroRecepcion: number;
+    FechaDocumento: Date;
+    Nula: boolean;
+  };
+  RecepcionDetalles: {
+    RecepcionId: string;
+    CotizacionId: string;
+    EmpresaId: string;
+    CotizacionDetalleId: string;
+    AnoNumero: number;
+    Cantidad: number;
+    Observaciones: string;
+  }[];
+  
+}
 
 interface ICotizacion {
   empresaId: string;
@@ -551,20 +580,42 @@ interface ICotizacion {
   descuentoPorcentual: boolean;
   activa: boolean;
   redondeaImpuesto: boolean;
-  cotizacionDetalle: {
+  proveedor:{
+    nombreComercial?: string;
+  }
+  cotizacionDetalles: {
     articulo:{
-      codigo?:string;
       id:string;
+      codigo?:string;
       nombre?:string;
+      subFamilium:{
+        nombre: string;
+        codigo: number;
+        familium:{
+          nombre: string;
+          codigo: number;
+        }
+      }
     }
     cantidad:number;
     id:string;
     observaciones?:string;
+    solicitudDetalle: {
+      centroCosto: {
+        id: string;
+        nombre: string;
+        bodegas: {
+          id: string;
+          nombre: string;
+          sigla: string;
+        }[]
+      }
+    }
     valorUnitario:number;
-  }
+  }[]
 }
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion,FormValueRecepcionData
 }
