@@ -546,8 +546,7 @@ interface FormValueRecepcionData {
     FechaDocumento: Date;
     Nula: boolean;
   };
-  RecepcionDetalles: {
-    RecepcionId: string;
+  RecepcionDetalle: {
     CotizacionId: string;
     EmpresaId: string;
     CotizacionDetalleId: string;

@@ -43,7 +43,7 @@ export default function SinOrden(props: props) {
             FechaDocumento: z.date({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             Nula: z.boolean().default(false),
         }),
-        RecepcionDetalles: z.array(
+        RecepcionDetalle: z.array(
             z.object({
                 RecepcionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
                 CotizacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),

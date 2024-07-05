@@ -13,6 +13,8 @@ import { FaFilePdf } from "react-icons/fa";
 import { z } from "zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { api_postRecepcionYDetalle } from "@/services/bodega.service";
+import { toast } from "react-toastify";
 
 interface props {
     valorPdf: boolean;
@@ -76,14 +78,13 @@ export default function ConOrden(props: props) {
             FechaDocumento: z.date({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             Nula: z.boolean().default(false),
         }),
-        RecepcionDetalles: z.array(
+        RecepcionDetalle: z.array(
             z.object({
-                RecepcionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
                 CotizacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 CotizacionDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).int(),
-                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).min(1,{message:"campo debe ser mayor a 0"}),
+                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).min(1, { message: "campo debe ser mayor a 0" }),
                 Observaciones: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             })
         ),
@@ -98,12 +99,20 @@ export default function ConOrden(props: props) {
     const { register, handleSubmit, formState: { errors }, control, setValue } = methods;
 
     const onSubmit = async (data: FormValueRecepcionData) => {
-        console.log('onSubmit ejecutada!');
         try {
             data.Recepcion.TipoDocumentoRecepcionCodigo = parseInt(data.Recepcion.TipoDocumentoRecepcionCodigo.toString());
             console.log('Data del formulario:', data); // Nota la coma en lugar del +
+
+            // Hacer la solicitud al servicio
+            const response = await api_postRecepcionYDetalle(jwt, data);
+
+            // Mostrar el mensaje de éxito
+            if (response) {
+                toast.success("Articulo recepcionado correctamente")
+            }
         } catch (error) {
-            console.error('Error al guardar la data:', error);
+            console.error('Error al guardar: ', error);
+            toast.error('ha ocurrido un error');
         }
     };
 
@@ -119,8 +128,7 @@ export default function ConOrden(props: props) {
                     setValue('Recepcion.FechaIngreso', fecha);
                 });
 
-                const recepcionDetalles = props.dataConOrdenCompra.map((ordenCompra) => ({
-                    RecepcionId: '', // asigna un valor default o obtén el valor correcto
+                const recepcionDetalle = props.dataConOrdenCompra.map((ordenCompra) => ({
                     CotizacionId: ordenCompra.cotizacionId,
                     EmpresaId: ordenCompra.empresaId,
                     AnoNumero: ordenCompra.anoNumero,
@@ -131,7 +139,7 @@ export default function ConOrden(props: props) {
                     Observaciones: '',
                 }));
 
-                setValue('RecepcionDetalles', recepcionDetalles);
+                setValue('RecepcionDetalle', recepcionDetalle);
             }
         } catch (error) {
             console.log(error);
@@ -290,18 +298,18 @@ export default function ConOrden(props: props) {
                                             </span>
                                             <span>
                                                 <input type="number"
-                                                    {...register(`RecepcionDetalles.${index}.Cantidad`, { setValueAs: (value) => value === '' ? undefined : Number(value) })}
+                                                    {...register(`RecepcionDetalle.${index}.Cantidad`, { setValueAs: (value) => value === '' ? undefined : Number(value) })}
                                                     className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                                {errors.RecepcionDetalles && errors.RecepcionDetalles[index] && (
-                                                    <span className="text-red-600">{errors.RecepcionDetalles[index].Cantidad?.message}</span>
+                                                {errors.RecepcionDetalle && errors.RecepcionDetalle[index] && (
+                                                    <span className="text-red-600">{errors.RecepcionDetalle[index].Cantidad?.message}</span>
                                                 )}
                                             </span>
                                             <span>
                                                 <input type="text"
-                                                    {...register(`RecepcionDetalles.${index}.Observaciones`, { setValueAs: (value) => value === '' ? undefined : value })}
+                                                    {...register(`RecepcionDetalle.${index}.Observaciones`, { setValueAs: (value) => value === '' ? undefined : value })}
                                                     className="block w-auto py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                                                {errors.RecepcionDetalles && errors.RecepcionDetalles[index] && (
-                                                    <span className="text-red-600">{errors.RecepcionDetalles[index].Observaciones?.message}</span>
+                                                {errors.RecepcionDetalle && errors.RecepcionDetalle[index] && (
+                                                    <span className="text-red-600">{errors.RecepcionDetalle[index].Observaciones?.message}</span>
                                                 )}
                                             </span>
                                         </Table.Row>
@@ -328,7 +336,7 @@ export default function ConOrden(props: props) {
                         </button>
 
                         <div className="inline-block">
-                            <PDFDownloadLink document={<PDFConOrden />} fileName='conOrdenDeCompra_pdf'>
+                            <PDFDownloadLink document={<PDFConOrden />} fileName='Orden_De_Compra_Numero${props.dataConOrdenDeCompra.numero}_pdf'>
                                 {
                                     ({ loading, url, error, blob }) => loading ? (
                                         "Cargando.."
