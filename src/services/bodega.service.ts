@@ -175,3 +175,7 @@ export function api_getOneConOrdenCompra(bearer: string, empresaId: string, nume
 export function api_getOneSinOrdenCompra(bearer: string, empresaId: string, numero: number) {
   return api.get(`cotizacion/${empresaId}/${numero}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+export function api_postRecepcionYDetalle(bearer: string, data: any) {
+  return api.post(`recepcionydetalle`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}

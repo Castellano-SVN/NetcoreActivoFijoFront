@@ -333,7 +333,7 @@ export default function ConOrden(props: props) {
                                     ({ loading, url, error, blob }) => loading ? (
                                         "Cargando.."
                                     ) : (
-                                        <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />exportar</button>
+                                        <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
                                     )
 
                                 }
