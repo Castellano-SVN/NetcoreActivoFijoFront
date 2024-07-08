@@ -559,6 +559,7 @@ interface FormValueRecepcionData {
 
 interface ICotizacion {
   empresaId: string;
+  id: string;
   anoNumero: number;
   solicitudId: string;
   proveedorId: string;
