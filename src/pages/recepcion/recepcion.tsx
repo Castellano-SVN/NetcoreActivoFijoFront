@@ -36,7 +36,6 @@ export default function recepcion() {
     
 
     const [conOrden, setConOrden] = useState(true);
-    
 
     const getOrdenCompra = async () => {
         try {
@@ -149,7 +148,7 @@ export default function recepcion() {
                                             ) :
                                                 (
                                                     <>
-                                                        {dataOrdenCompra && <ConOrden valorPdf={conOrden} dataConOrdenCompra={dataOrdenCompra} />}
+                                                        {dataOrdenCompra && numero && <ConOrden valorPdf={conOrden} dataConOrdenCompra={dataOrdenCompra} numero={numero} setShowConOrden={setShowConOrden} setNumero={setNumero} />}
                                                     </>
                                                 )
                                             }

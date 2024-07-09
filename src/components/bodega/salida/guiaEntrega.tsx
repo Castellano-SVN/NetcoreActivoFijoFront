@@ -1,8 +1,11 @@
 
 import PDFGuiaEntrega from "@/components/pdf/guiaEntrega";
+import { IBodega, IEmpresa } from "@/interfaces/creation";
+import { api_getAllBodegas, api_getAllEmpresas} from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
+import { useUserStore } from "@/store/user.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Table } from "react-daisyui";
 import { FaFilePdf } from "react-icons/fa";
 
@@ -11,18 +14,55 @@ export default function GuiaEntrega() {
     useEffect(() => {
         setActive("Salidas");
     }, []);
+    const { jwt } = useUserStore();
+    const [dataBodega, setDataBodega] = useState<IBodega[]>([]);
+    const [dataEmpresa, setDataEmpresa] = useState<IEmpresa[]>([]);
+
+    // const getAllEmpresas = async () => {
+    //     try {
+    //         const data = await api_getAllEmpresas(jwt);
+    //         setDataEmpresa(data.data.dataList);
+
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+    // const getAllBodegas = async () => {
+    //     try {
+    //         const dataGet = await api_getAllBodegas(jwt);
+    //         setDataBodega(dataGet.data.dataList);
+
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
     
+    // useEffect(() => {
+    //     getAllBodegas();
+    //     getAllEmpresas();
+    // }, []);
+
     return (
         <div className="flex justify-center items-center">
             <div className="p-6 bg-white rounded w-full max-w-3xl">
                 <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-4">
                     <div>
                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
-                        <input id="numeroDocumento" type="text" value="BODEGA CENTRAL" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            <option key={0} value={0} disabled>Seleccione una opción</option>
+                            {dataBodega.map((bodega, index) => (
+                                <option key={index} value={bodega.id}>{bodega.nombre}</option>
+                            ))}
+                        </select>
                     </div>
                     <div>
                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega destino:</label>
-                        <input id="numeroDocumento" type="text" value="BODEGA CESFAM DR. SOTERO DEL RIO" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            <option key={0} value={0} disabled>Seleccione una opción</option>
+                            {dataBodega.map((bodega, index) => (
+                                <option key={index} value={bodega.id}>{bodega.nombre}</option>
+                            ))}
+                        </select>
                     </div>
 
 
@@ -43,7 +83,7 @@ export default function GuiaEntrega() {
                 <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
                     <Table className='border shadow-lg'>
                         <Table.Head className="bg-primary text-white">
-                            <span>Correlativo</span>
+                            <span>Selección</span>
                             <span>Código articulo</span>
                             <span>Código familia</span>
                             <span>Familia</span>
@@ -55,7 +95,7 @@ export default function GuiaEntrega() {
                         </Table.Head>
                         <Table.Body>
                             <Table.Row hover={true}>
-                                <span>1</span>
+                                <input type="checkbox" className="form-checkbox text-green-500" />
                                 <span>20001001</span>
                                 <span>200</span>
                                 <span>200 CURACIONES Y EXAMENES</span>
@@ -65,16 +105,6 @@ export default function GuiaEntrega() {
                                 <span>20</span>
                             </Table.Row>
 
-                            <Table.Row hover={true}>
-                                <span>2</span>
-                                <span>20001002</span>
-                                <span>200</span>
-                                <span>200 CURACIONES Y EXAMENES</span>
-                                <span>200001</span>
-                                <span>INSUMOS MEDICOS</span>
-                                <span>CREMA HUMECTANTE UREA</span>
-                                <span>40</span>
-                            </Table.Row>
                         </Table.Body>
                     </Table>
                 </div>

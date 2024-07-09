@@ -19,6 +19,9 @@ import { toast } from "react-toastify";
 interface props {
     valorPdf: boolean;
     dataConOrdenCompra: IOrdenCompra[];
+    numero: number;
+    setShowConOrden: (value: boolean) => void;  // define el tipo de la función
+    setNumero: (value: number | null) => void;
 }
 
 
@@ -67,7 +70,9 @@ export default function ConOrden(props: props) {
             AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).int(),
             Id: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
+            CentroCostoName: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+            BodegaName: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             FuncionarioId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             TipoDocumentoRecepcionCodigo: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
             NumeroDocumento: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).int(),
@@ -81,9 +86,15 @@ export default function ConOrden(props: props) {
         RecepcionDetalle: z.array(
             z.object({
                 CotizacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
+                ObservacionDetalle: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).optional(),
+                Codigo: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).optional(),
+                Nombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+                Precio: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+                Recepcionado: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
                 EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 CotizacionDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).int(),
+                CantidadPorRecepcionar: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
                 Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).min(1, { message: "campo debe ser mayor a 0" }),
                 Observaciones: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             })
@@ -96,8 +107,11 @@ export default function ConOrden(props: props) {
     });
 
 
-    const { register, handleSubmit, formState: { errors }, control, setValue } = methods;
+    const { register, handleSubmit, formState: { errors }, control, setValue, reset } = methods;
 
+    const [showPdf, setShowPdf] = useState(false);
+
+    const [dataPost, setDataPost] = useState<FormValueRecepcionData | null>(null);
     const onSubmit = async (data: FormValueRecepcionData) => {
         try {
             data.Recepcion.TipoDocumentoRecepcionCodigo = parseInt(data.Recepcion.TipoDocumentoRecepcionCodigo.toString());
@@ -108,13 +122,23 @@ export default function ConOrden(props: props) {
 
             // Mostrar el mensaje de éxito
             if (response) {
-                toast.success("Articulo recepcionado correctamente")
+                toast.success("Articulo recepcionado correctamente");
+                setShowPdf(true);
+                setDataPost(data);
             }
+
         } catch (error) {
             console.error('Error al guardar: ', error);
             toast.error('ha ocurrido un error');
+            setShowPdf(false);
         }
     };
+    
+   const volverHandleClick = () => {
+    props.setShowConOrden(false);
+    reset();
+    props.setNumero(null);
+   };
 
     useEffect(() => {
         try {
@@ -124,17 +148,39 @@ export default function ConOrden(props: props) {
                     setValue('Recepcion.EmpresaId', ordenCompra.empresaId);
                     setValue('Recepcion.AnoNumero', ordenCompra.anoNumero);
                     setValue('Recepcion.FuncionarioId', ordenCompra.funcionarioId);
+                    ordenCompra.ordenCompraDetalles.map((detalles) => {
+                        setValue('Recepcion.CentroCostoName', detalles.cotizacionDetalle.solicitudDetalle.centroCosto.nombre)
+                        detalles.cotizacionDetalle.solicitudDetalle.centroCosto.bodegas.map((bodegas) => {
+                            setValue('Recepcion.BodegaName', bodegas.nombre)
+                        })
+                    })
                     const fecha = new Date(ordenCompra.fecha);
                     setValue('Recepcion.FechaIngreso', fecha);
                 });
 
                 const recepcionDetalle = props.dataConOrdenCompra.map((ordenCompra) => ({
                     CotizacionId: ordenCompra.cotizacionId,
-                    EmpresaId: ordenCompra.empresaId,
-                    AnoNumero: ordenCompra.anoNumero,
+                    ObservacionDetalle: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.observaciones)
+                        .join(','),
                     CotizacionDetalleId: ordenCompra.ordenCompraDetalles
                         .map((detalle) => detalle.cotizacionDetalle.id)
                         .join(','),
+                    EmpresaId: ordenCompra.empresaId,
+                    AnoNumero: ordenCompra.anoNumero,
+                    Codigo: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.articulo.codigo)
+                        .join(','),
+                    Nombre: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.articulo.nombre)
+                        .join(','),
+                    Precio: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.valorUnitario)
+                        .join(','),
+                    Recepcionado: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.solicitudDetalle.cantidadAprobada)
+                        .join(','),
+                    CantidadPorRecepcionar: 0,
                     Cantidad: 0,
                     Observaciones: '',
                 }));
@@ -294,6 +340,7 @@ export default function ConOrden(props: props) {
                                             <span>{ordenDetalle.cotizacionDetalle.solicitudDetalle.cantidadAprobada}</span>
                                             <span>
                                                 <input type="number"
+                                                    {...register(`RecepcionDetalle.${index}.CantidadPorRecepcionar`, { setValueAs: (value) => value === '' ? undefined : Number(value) })}
                                                     className="block w-20 py-1 px-1 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                                             </span>
                                             <span>
@@ -329,25 +376,29 @@ export default function ConOrden(props: props) {
 
                     <div className="mb-4 flex justify-end">
                         <button
-                            className="btn btn-outline btn-secondary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"
-                            onClick={() => router.back()}
-                        >
+                            type="button"
+                            className="btn btn-outline btn-secondary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+                            onClick={volverHandleClick}>
                             Volver
                         </button>
 
-                        <div className="inline-block">
-                            <PDFDownloadLink document={<PDFConOrden />} fileName='Orden_De_Compra_Numero${props.dataConOrdenDeCompra.numero}_pdf'>
-                                {
-                                    ({ loading, url, error, blob }) => loading ? (
-                                        "Cargando.."
-                                    ) : (
-                                        <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
-                                    )
 
-                                }
-                            </PDFDownloadLink>
-                        </div>
-                        <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block">Guardar</button>
+                        {showPdf && dataPost ?
+                            <div className="inline-block">
+                                <PDFDownloadLink document={<PDFConOrden data={dataPost} />} fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}>
+                                    {
+                                        ({ loading, url, error, blob }) => loading ? (
+                                            "Cargando.."
+                                        ) : (
+                                            <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
+                                        )
+
+                                    }
+                                </PDFDownloadLink>
+                            </div>
+                            :
+                            <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block">Guardar</button>};
+
                     </div>
                 </form>
             </div >
