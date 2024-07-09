@@ -531,11 +531,13 @@ interface IOrdenCompra {
 interface FormValueRecepcionData {
   Recepcion: {
     CotizacionId: string;
+    CentroCostoName?:string;
     EmpresaId: string;
     AnoNumero: number;
     Id: string;
     CentroCostoId: string;
-    BodegaId: string;
+    BodegaId?: string;
+    BodegaName?: string;
     FuncionarioId: string;
     TipoDocumentoRecepcionCodigo: number;
     NumeroDocumento: number;
@@ -548,9 +550,15 @@ interface FormValueRecepcionData {
   };
   RecepcionDetalle: {
     CotizacionId: string;
+    ObservacionDetalle?: string;
+    Codigo?:string;
+    Nombre?:string;
+    Precio?:string;
+    Recepcionado?:string;
     EmpresaId: string;
     CotizacionDetalleId: string;
     AnoNumero: number;
+    CantidadPorRecepcionar: number;
     Cantidad: number;
     Observaciones: string;
   }[];
