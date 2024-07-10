@@ -22,4 +22,17 @@ interface ILocacion {
     descripcion?: string;
 }
 
-export type { IAlmacen, ILocacion } 
+interface IAlmacenArticulo {
+    empresaId: string;
+    centroCostoId?: string;
+    bodegaId: string;
+    almacenId: string;
+    anoNumeor:number;
+    subFamiliaId:string;
+    articuloId:string;
+    estadoArticuloCodigo:number;
+    locacionId: string;
+    cantidad:number;
+}
+
+export type { IAlmacen, ILocacion,IAlmacenArticulo } 

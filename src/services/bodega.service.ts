@@ -54,15 +54,14 @@ export function api_getCentroCostos(bearer: string, page: number) {
 export function api_getAllCentroCostos(bearer: string, id: string) {
   return api.get(`centrocosto?id=${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
 export function api_getOneCentroCosto(bearer: string, id: string) {
   return api.get(`centrocosto/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getEmpresas(bearer: string, page: number) {
   return api.get(`empresa?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getAllEmpresas(bearer: string) {
-  return api.get(`empresa`, { headers: { "Authorization": `Bearer ${bearer}` } })
-}
+
 export function api_getOneEmpresa(bearer: string, id: string) {
   return api.get(`empresa/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -184,4 +183,23 @@ export function api_getOneSinOrdenCompra(bearer: string, empresaId: string, nume
 
 export function api_postRecepcionYDetalle(bearer: string, data: any) {
   return api.post(`recepcionydetalle`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getAllEmpresas(bearer: string) {
+  return api.get(`empresas`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getAllCentroCostoByEmpresa(bearer: string, empresaId: string) {
+  return api.get(`centrocostos/${empresaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+export function api_getAllBodegaByEmpresaYCentroCosto(bearer: string, empresaId: string, centroCostoId: string) {
+  return api.get(`bodegas/${empresaId}/${centroCostoId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string) {
+  return api.get(`almacenes/${empresaId}/${centroCostoId}/${bodegaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string,almacenId: string) {
+  return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
