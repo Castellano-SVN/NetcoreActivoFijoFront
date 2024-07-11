@@ -149,13 +149,13 @@ function Element({ element }: { element: IEmpresa }) {
       <div className="flex flex-row p-3 bg-[#FAF6FF] justify-around">
         <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
         <div className="flex  flex-wrap justify-end space-x-4">
-        <a
+          {/* <a
             onClick={() => router.push(`/recepcion/cotizacion/${element.id}`)}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Cotizaciones</span>
             <FaFilePen className="text-primary ml-2" />
-          </a>
+          </a> */}
           <a
             onClick={() => router.push(`/recepcion/recepcion?empresa=${element.id}`)}
             className="flex items-center cursor-pointer hover:font-bold"
@@ -164,21 +164,21 @@ function Element({ element }: { element: IEmpresa }) {
             <FaClipboardCheck className="text-primary ml-2" />
           </a>
 
-          <a
+          {/* <a
             onClick={() => { router.push(`/recepcion/ingreso?empresa=${element.id}`) }}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Ingreso</span>
             <FaDolly className="text-primary ml-2" />
-          </a>
+          </a> */}
 
-          <a
+          {/* <a
             onClick={() => { router.push(`/recepcion/consulta?empresa=${element.id}`) }}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Consulta</span>
             <FaClipboardQuestion className="text-primary ml-2" />
-          </a>
+          </a> */}
 
         </div>
       </div>

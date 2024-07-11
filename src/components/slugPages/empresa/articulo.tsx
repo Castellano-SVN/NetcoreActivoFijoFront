@@ -11,7 +11,7 @@ import { useUserStore } from "@/store/user.store";
 import { api_deleteArticulo, api_getArticulos } from "@/services/bodega.service";
 import ErrorAlert from "@/components/alerts/errorAlert";
 import WarningAlert from "@/components/alerts/warningAlert";
-import { IArticulo } from "@/interfaces/creation";
+import {  } from "@/interfaces/creation";
 
 interface props {
     guid: string;

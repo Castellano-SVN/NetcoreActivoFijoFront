@@ -131,6 +131,7 @@ export default function Page() {
       handleCloseLocation();
       refetch();
     } catch (error) {
+      toast.error("Ha ocurrido un error.");
       console.log(error);
     }
   };

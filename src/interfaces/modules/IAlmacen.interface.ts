@@ -23,16 +23,36 @@ interface ILocacion {
 }
 
 interface IAlmacenArticulo {
-    empresaId: string;
-    centroCostoId?: string;
-    bodegaId: string;
     almacenId: string;
-    anoNumeor:number;
-    subFamiliaId:string;
-    articuloId:string;
-    estadoArticuloCodigo:number;
-    locacionId: string;
-    cantidad:number;
+    anoNumero: number;
+    articulo: {
+        codigo?: string;
+        nombre: string;
+        descripcion?: string;
+        id: string;
+        subFamilium: {
+            codigo: number;
+            id: string;
+            nombre: string;
+            familium: {
+                codigo: number;
+                id: string;
+                nombre: string;
+            }
+        }
+    }
+    articuloId: string;
+    bodegaId: string;
+    cantidad: number;
+    centroCostoId?: string;
+    empresaId: string;
+    estadoArticuloCodigo: number;
+    locacionId?: string;
+    locacion: {
+        descripcion?: string;
+        direccion: string;
+    }
+    subFamiliaId: string;
 }
 
-export type { IAlmacen, ILocacion,IAlmacenArticulo } 
+export type { IAlmacen, ILocacion, IAlmacenArticulo } 
