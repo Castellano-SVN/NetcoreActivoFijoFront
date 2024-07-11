@@ -93,7 +93,7 @@ export default function CreateArticulo(props: props) {
             props.change();
         } catch (error) {
             console.log(error);
-            toast.error("Ocurrió un error al guardar la persona");
+            toast.error("Ocurrió un error al guardar el articulo");
         }
     };
 

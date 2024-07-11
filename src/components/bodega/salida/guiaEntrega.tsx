@@ -1,14 +1,17 @@
 
 import PDFGuiaEntrega from "@/components/pdf/guiaEntrega";
-import { IBodega, ICentroCosto, IEmpresa } from "@/interfaces/creation";
+import { IArticulo, IBodega, ICentroCosto, IEmpresa, OutPutFormValues } from "@/interfaces/creation";
 import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
 import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas } from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
-import { FaFilePdf } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { FaFilePdf, FaSave } from "react-icons/fa";
+import { z } from "zod";
 
 export default function GuiaEntrega() {
     const { setActive } = useContextStore()
@@ -89,6 +92,7 @@ export default function GuiaEntrega() {
 
     const [dataBodega, setDataBodega] = useState<IBodega[]>([]);
     const [getDataBodega, setGetDataBodega] = useState('');
+    const [nameBodega, setNameBodega] = useState('');
     const getAllBodegasByEmpresaYCentroCosto = async () => {
         try {
             const data3 = await api_getAllBodegaByEmpresaYCentroCosto(jwt, getDataEmpresa, getDataCentroCosto);
@@ -151,7 +155,7 @@ export default function GuiaEntrega() {
     };
 
     useEffect(() => {
-        if (getDataEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '' && getDataAlmacen) {
+        if (getDataEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '' && getDataAlmacen !== '') {
             getAllAlmacenArticuloByEmpByCenByBodByAlm();
         }
     }, [getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
@@ -162,186 +166,248 @@ export default function GuiaEntrega() {
         ref.current?.showModal();
     }, [ref]);
 
+    const ref3 = useRef<HTMLDialogElement>(null);
+    const handleShow3 = useCallback(() => {
+        ref3.current?.showModal();
+    }, [ref3]);
+
+
+    const OutPutSchema = z.object({
+        ParteSalida: z.array(
+            z.object({
+                EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
+                CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
+                BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
+                SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                EstadoArticuloCodigo: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
+                Fecha: z.date({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+                Numero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
+                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" })
+            })
+        ),
+
+        AlmacenArticulo: z.array(
+            z.object({
+                BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
+            })
+        ),
+    });
+
+
+
+    const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema) })
+
+    const { register, handleSubmit, formState: { errors }, setValue, reset, control } = metodos;
+
     return (
         <div className="flex justify-center items-center">
-            <div className="p-6 bg-white rounded w-full max-w-3xl">
-                <div className="flex flex-col md:grid md:grid-cols-6 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
-                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            onChange={(e) => {
-                                setGetDataEmpresa(e.target.value);
-                            }}>
-                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                            {dataEmpresa.map((empresa, index) => (
-                                <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
-                            ))}
-                        </select>
-                    </div>
+            <form /* onSubmit={} */>
+                <div className="p-6 bg-white rounded w-full max-w-3xl">
+                    <div className="flex flex-col md:grid md:grid-cols-6 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                        <div className="col-span-2">
+                            <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
 
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Centro de costo:</label>
-                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            onChange={(e) => {
-                                setGetDataCentroCosto(e.target.value);
-                            }}>
-                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                            {dataCentroCosto.map((centroCosto, index) => (
-                                <option key={index} value={centroCosto.id}>{centroCosto.nombre}</option>
-                            ))}
-                        </select>
-                    </div>
+                            <input type="text" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                value={nameBodega}
+                                readOnly />
+                            <button type="button" className="btn btn-outline btn-accent w-1/2 mt-2" onClick={handleShow3}>Seleccione Bodega Origen</button>
+                        </div>
+                        <Modal ref={ref3}>
+                            <Modal.Header className="font-bold">Seleccione la bodega y almacen de Origen</Modal.Header>
+                            <Modal.Body>
+                                <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataEmpresa(e.target.value);
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataEmpresa.map((empresa, index) => (
+                                                <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
+                                            ))}
+                                        </select>
+                                    </div>
 
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
-                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            onChange={(e) => {
-                                setGetDataBodega(e.target.value);
-                            }}>
-                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                            {dataBodega.map((bodega, index) => (
-                                <option key={index} value={bodega.id}>{bodega.nombre}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega destino:</label>
-                        <input type="text" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            value={nameBodegaModal}
-                            readOnly />
-                        <button type="button" className="btn btn-outline btn-accent w-1/2 mt-2" onClick={handleShow}>Seleccione Bodega</button>
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Centro de costo:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataCentroCosto(e.target.value);
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataCentroCosto.map((centroCosto, index) => (
+                                                <option key={index} value={centroCosto.id}>{centroCosto.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
 
-                    </div>
-                    <Modal ref={ref}>
-                        <Modal.Header className="font-bold">Seleccione la bodega de destino</Modal.Header>
-                        <Modal.Body>
-                            <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
-                                <div className="col-span-2">
-                                    <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
-                                    <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                        onChange={(e) => {
-                                            setGetDataEmpresaModal(e.target.value);
-                                        }}>
-                                        <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                                        {dataEmpresaModal.map((empresaModal, index) => (
-                                            <option key={index} value={empresaModal.id}>{empresaModal.razonSocial}</option>
-                                        ))}
-                                    </select>
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataBodega(e.target.value);
+                                                const selectedBodegaOrigen = dataBodega.find((bodegaOrigen) => bodegaOrigen.id === e.target.value);
+                                                if (selectedBodegaOrigen) {
+                                                    setNameBodega(selectedBodegaOrigen.nombre);
+                                                }
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataBodega.map((bodega, index) => (
+                                                <option key={index} value={bodega.id}>{bodega.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Almacenes:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataAlmacen(e.target.value);
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataAlmacen.map((almacen, index) => (
+                                                <option key={index} value={almacen.id}>{almacen.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
+                            </Modal.Body>
+                            <Modal.Actions>
+                                <form method="dialog">
+                                    <Button className="btn btn-outline btn-primary">Cerrar</Button>
+                                </form>
+                            </Modal.Actions>
+                        </Modal>
+                        <div className="col-span-2">
+                            <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega destino:</label>
 
-                                <div className="col-span-2">
-                                    <label className="block text-left mb-2" htmlFor="numeroDocumento">CentroCosto:</label>
-                                    <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                        onChange={(e) => {
-                                            setGetDataCentroCostoModal(e.target.value);
-                                        }}>
-                                        <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                                        {dataCentroCostoModal.map((centroCostoModal, index) => (
-                                            <option key={index} value={centroCostoModal.id}>{centroCostoModal.nombre}</option>
-                                        ))}
-                                    </select>
+                            <input type="text" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                value={nameBodegaModal}
+                                readOnly />
+
+                            <button type="button" className="btn btn-outline btn-accent w-1/2 mt-2" onClick={handleShow}>Seleccione Bodega Destino</button>
+                        </div>
+                        <Modal ref={ref}>
+                            <Modal.Header className="font-bold">Seleccione la bodega de destino</Modal.Header>
+                            <Modal.Body>
+                                <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataEmpresaModal(e.target.value);
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataEmpresaModal.map((empresaModal, index) => (
+                                                <option key={index} value={empresaModal.id}>{empresaModal.razonSocial}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">CentroCosto:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataCentroCostoModal(e.target.value);
+                                            }}>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataCentroCostoModal.map((centroCostoModal, index) => (
+                                                <option key={index} value={centroCostoModal.id}>{centroCostoModal.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega:</label>
+                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            onChange={(e) => {
+                                                setGetDataBodegaModal(e.target.value);
+                                                const selectedBodega = dataBodegaModal.find((bodega) => bodega.id === e.target.value);
+                                                if (selectedBodega) {
+                                                    setNameBodegaModal(selectedBodega.nombre);
+                                                }
+                                            }}
+                                        >
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            {dataBodegaModal.map((bodegaModal, index) => (
+                                                <option key={index} value={bodegaModal.id}>{bodegaModal.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
+                            </Modal.Body>
+                            <Modal.Actions>
+                                <form method="dialog">
+                                    <Button className="btn btn-outline btn-primary">Cerrar</Button>
+                                </form>
+                            </Modal.Actions>
+                        </Modal>
+                    </div>
+                    <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                        <div className="col-span-2">
+                            <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección de origen:</label>
+                            <input id="numeroDocumento" type="text"
+                                className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección de destino:</label>
+                            <input id="numeroDocumento" type="text"
+                                className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                        </div>
 
-                                <div className="col-span-2">
-                                    <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega:</label>
-                                    <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                        onChange={(e) => {
-                                            setGetDataBodegaModal(e.target.value);
-                                            const selectedBodega = dataBodegaModal.find((bodega) => bodega.id === e.target.value);
-                                            if (selectedBodega) {
-                                                setNameBodegaModal(selectedBodega.nombre);
-                                            }
-                                        }}
-                                    >
-                                        <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                                        {dataBodegaModal.map((bodegaModal, index) => (
-                                            <option key={index} value={bodegaModal.id}>{bodegaModal.nombre}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </Modal.Body>
-                        <Modal.Actions>
-                            <form method="dialog">
-                                <Button className="btn btn-outline btn-primary">Cerrar</Button>
-                            </form>
-                        </Modal.Actions>
-                    </Modal>
+                    </div>
+
+                    <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
+                        <Table className='border shadow-lg'>
+                            <Table.Head className="bg-primary text-white">
+                                <span>Selección</span>
+                                <span>Código articulo</span>
+                                <span>Código familia</span>
+                                <span>Familia</span>
+                                <span>Código sub-familia</span>
+                                <span>Sub-familia</span>
+                                <span>Descripción articulo</span>
+                                <span>Cantidad salida</span>
+
+                            </Table.Head>
+                            <Table.Body>
+                                {dataAlmacenArticulo.map((almacenArticulo, index) => (
+                                    <Table.Row key={index} hover={true}>
+                                        <input type="checkbox" className="form-checkbox text-green-500" />
+                                        <span>{almacenArticulo.articulo.codigo}</span>
+                                        <span>{almacenArticulo.articulo.subFamilium.familium.codigo}</span>
+                                        <span>{almacenArticulo.articulo.subFamilium.familium.nombre}</span>
+                                        <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
+                                        <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
+                                        <span>{almacenArticulo.articulo.descripcion}</span>
+                                        <input type="number" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" ></input>
+                                    </Table.Row>
+                                ))}
+
+                            </Table.Body>
+                        </Table>
+                    </div>
+
+                    <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaSave />Guardar</button>
+
+                    <PDFDownloadLink document={<PDFGuiaEntrega />} fileName='prueba_pdf'>
+                        {
+                            ({ loading, url, error, blob }) => loading ? (
+                                "Cargando.."
+                            ) : (
+                                <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
+                            )
+
+                        }
+                    </PDFDownloadLink>
                 </div>
-                <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Almacenes:</label>
-                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            onChange={(e) => {
-                                setGetDataAlmacen(e.target.value);
-                            }}>
-                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                            {dataAlmacen.map((almacen, index) => (
-                                <option key={index} value={almacen.id}>{almacen.nombre}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Almacen del articulo:</label>
-                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                        >
-                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-
-                            <option></option>
-
-                        </select>
-                    </div>
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección origen:</label>
-                        <input id="numeroDocumento" type="text" value="AV.CARRASCAL 4747" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                    </div>
-                    <div className="col-span-2">
-                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección destino:</label>
-                        <input id="numeroDocumento" type="text" value="CALLE SARGENTO URRUTIA N*125" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
-                    <Table className='border shadow-lg'>
-                        <Table.Head className="bg-primary text-white">
-                            <span>Selección</span>
-                            <span>Código articulo</span>
-                            <span>Código familia</span>
-                            <span>Familia</span>
-                            <span>Código sub-familia</span>
-                            <span>Sub-familia</span>
-                            <span>Descripción articulo</span>
-                            <span>Cantidad</span>
-
-                        </Table.Head>
-                        <Table.Body>
-                            <Table.Row hover={true}>
-                                <input type="checkbox" className="form-checkbox text-green-500" />
-                                <span>20001001</span>
-                                <span>200</span>
-                                <span>200 CURACIONES Y EXAMENES</span>
-                                <span>200001</span>
-                                <span>INSUMOS MEDICOS</span>
-                                <span>APOSITO COLAGENO 10X11</span>
-                                <span>20</span>
-                            </Table.Row>
-
-                        </Table.Body>
-                    </Table>
-                </div>
-
-                <PDFDownloadLink document={<PDFGuiaEntrega />} fileName='prueba_pdf'>
-                    {
-                        ({ loading, url, error, blob }) => loading ? (
-                            "Cargando.."
-                        ) : (
-                            <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Guardar</button>
-                        )
-
-                    }
-                </PDFDownloadLink>
-            </div>
+            </form>
         </div>
     );
 }

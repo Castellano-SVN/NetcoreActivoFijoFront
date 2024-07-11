@@ -504,16 +504,16 @@ interface IOrdenCompra {
   observaciones?: string;
   ordenCompraDetalles: {
     cotizacionDetalle: {
-      articulo:{
-        codigo?:string;
-        id:string;
-        nombre?:string;
+      articulo: {
+        codigo?: string;
+        id: string;
+        nombre?: string;
       }
-      cantidad:number;
-      id:string;
-      observaciones?:string;
+      cantidad: number;
+      id: string;
+      observaciones?: string;
       solicitudDetalle: {
-        cantidadAprobada:number;
+        cantidadAprobada: number;
         centroCosto: {
           id: string;
           nombre: string;
@@ -524,14 +524,14 @@ interface IOrdenCompra {
           }[]
         }
       }
-      valorUnitario:number;
+      valorUnitario: number;
     }
   }[]
 }
 interface FormValueRecepcionData {
   Recepcion: {
     CotizacionId: string;
-    CentroCostoName?:string;
+    CentroCostoName?: string;
     EmpresaId: string;
     AnoNumero: number;
     Id: string;
@@ -551,10 +551,10 @@ interface FormValueRecepcionData {
   RecepcionDetalle: {
     CotizacionId: string;
     ObservacionDetalle?: string;
-    Codigo?:string;
-    Nombre?:string;
-    Precio?:string;
-    Recepcionado?:string;
+    Codigo?: string;
+    Nombre?: string;
+    Precio?: string;
+    Recepcionado?: string;
     EmpresaId: string;
     CotizacionDetalleId: string;
     AnoNumero: number;
@@ -562,7 +562,7 @@ interface FormValueRecepcionData {
     Cantidad: number;
     Observaciones: string;
   }[];
-  
+
 }
 
 interface ICotizacion {
@@ -588,26 +588,26 @@ interface ICotizacion {
   descuentoPorcentual: boolean;
   activa: boolean;
   redondeaImpuesto: boolean;
-  proveedor:{
+  proveedor: {
     nombreComercial?: string;
   }
   cotizacionDetalles: {
-    articulo:{
-      id:string;
-      codigo?:string;
-      nombre?:string;
-      subFamilium:{
+    articulo: {
+      id: string;
+      codigo?: string;
+      nombre?: string;
+      subFamilium: {
         nombre: string;
         codigo: number;
-        familium:{
+        familium: {
           nombre: string;
           codigo: number;
         }
       }
     }
-    cantidad:number;
-    id:string;
-    observaciones?:string;
+    cantidad: number;
+    id: string;
+    observaciones?: string;
     solicitudDetalle: {
       centroCosto: {
         id: string;
@@ -619,12 +619,36 @@ interface ICotizacion {
         }[]
       }
     }
-    valorUnitario:number;
+    valorUnitario: number;
   }[]
 }
+
+
+interface OutPutFormValues {
+  ParteSalida: {
+    EmpresaId: string;
+    CentroCostoId: string;
+    BodegaId: string;
+    AlmacenId: string;
+    AnoNumero: string;
+    SubFamiliaId: string;
+    ArticuloId: string;
+    EstadoArticuloCodigo: number;
+    Id: string;
+    Fecha: Date;
+    Numero: number;
+    Cantidad: number;
+  }[];
+  AlmacenArticulo: {
+    ArticuloId: string;
+    Cantidad: number;
+  }[];
+
+}
+
 
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion,FormValueRecepcionData
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues
 }
