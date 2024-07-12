@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { FaFilePdf, FaSave } from "react-icons/fa";
 import { z } from "zod";
 
@@ -172,41 +172,48 @@ export default function GuiaEntrega() {
     }, [ref3]);
 
 
-    const OutPutSchema = z.object({
-        ParteSalida: z.array(
-            z.object({
-                EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
-                CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
-                BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                AnoNumero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
-                SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                EstadoArticuloCodigo: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
-                Fecha: z.date({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
-                Numero: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
-                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" })
-            })
-        ),
 
-        AlmacenArticulo: z.array(
-            z.object({
-                BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-                Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
-            })
-        ),
+    const ParteSalidaSchema = z.array(z.object({
+        AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" })
+    }));
+
+    const RequiredSchema = z.object({
+        EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        Direccion: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
     });
 
+    const OutPutSchema = z.object({
+        ParteSalida: ParteSalidaSchema,
+        Required: RequiredSchema,
 
+    });
 
-    const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema) })
-
+    const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema) });
     const { register, handleSubmit, formState: { errors }, setValue, reset, control } = metodos;
+
+  /*   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control, 
+        name: "ParteSalida",
+    }); */
+
+
+    const onSubmit = async (data: OutPutFormValues) => {
+        try {
+            console.log('formulario data: ', data);
+        } catch (error) {
+
+        }
+    };
+
+
 
     return (
         <div className="flex justify-center items-center">
-            <form /* onSubmit={} */>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="p-6 bg-white rounded w-full max-w-3xl">
                     <div className="flex flex-col md:grid md:grid-cols-6 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                         <div className="col-span-2">
@@ -224,6 +231,7 @@ export default function GuiaEntrega() {
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            {...register('Required.EmpresaId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataEmpresa(e.target.value);
                                             }}>
@@ -232,11 +240,13 @@ export default function GuiaEntrega() {
                                                 <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
                                             ))}
                                         </select>
+                                        {errors.Required?.EmpresaId && <span className="text-red-600">{errors.Required?.EmpresaId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Centro de costo:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            {...register('Required.CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataCentroCosto(e.target.value);
                                             }}>
@@ -245,11 +255,13 @@ export default function GuiaEntrega() {
                                                 <option key={index} value={centroCosto.id}>{centroCosto.nombre}</option>
                                             ))}
                                         </select>
+                                        {errors.Required?.CentroCostoId && <span className="text-red-600">{errors.Required.CentroCostoId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            {...register('Required.BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataBodega(e.target.value);
                                                 const selectedBodegaOrigen = dataBodega.find((bodegaOrigen) => bodegaOrigen.id === e.target.value);
@@ -262,6 +274,7 @@ export default function GuiaEntrega() {
                                                 <option key={index} value={bodega.id}>{bodega.nombre}</option>
                                             ))}
                                         </select>
+                                        {errors.Required?.BodegaId && <span className="text-red-600">{errors.Required.BodegaId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">

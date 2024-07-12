@@ -624,27 +624,22 @@ interface ICotizacion {
 }
 
 
-interface OutPutFormValues {
-  ParteSalida: {
-    EmpresaId: string;
-    CentroCostoId: string;
-    BodegaId: string;
-    AlmacenId: string;
-    AnoNumero: string;
-    SubFamiliaId: string;
-    ArticuloId: string;
-    EstadoArticuloCodigo: number;
-    Id: string;
-    Fecha: Date;
-    Numero: number;
-    Cantidad: number;
-  }[];
-  AlmacenArticulo: {
-    ArticuloId: string;
-    Cantidad: number;
-  }[];
-
+interface ParteSalida {
+  AlmacenId: string;
+  ArticuloId: string;
+  Cantidad: number;
+}[]
+interface RequiredGuiaEntrega{
+  EmpresaId:string;
+  CentroCostoId:string;
+  BodegaId:string;
+  Direccion:string;
 }
+interface OutPutFormValues {
+  ParteSalida: ParteSalida;
+  Required:RequiredGuiaEntrega;
+}
+
 
 
 export type {

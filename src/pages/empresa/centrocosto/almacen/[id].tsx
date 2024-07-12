@@ -332,7 +332,7 @@ function Locations({ locacions }: { locacions: ILocacion[] }) {
                 <td>{element.direccion}</td>
                 <td>{element.descripcion}</td>
                 <td>
-                  <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/location/${element.id}`)} />
+                  {/* <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/location/${element.id}`)} /> */}
                 </td>
               </tr>
             ))
