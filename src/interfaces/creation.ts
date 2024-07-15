@@ -623,22 +623,20 @@ interface ICotizacion {
   }[]
 }
 
-
-interface ParteSalida {
-  AlmacenId: string;
-  ArticuloId: string;
-  Cantidad: number;
-}[]
-interface RequiredGuiaEntrega{
-  EmpresaId:string;
-  CentroCostoId:string;
-  BodegaId:string;
-  Direccion:string;
-}
 interface OutPutFormValues {
-  ParteSalida: ParteSalida;
-  Required:RequiredGuiaEntrega;
-}
+  EmpresaId: string;
+  CentroCostoId: string;
+  BodegaId: string;
+  AlmacenId:string
+  DireccionOrigen: string;
+  DireccionDestino: string;
+  ParteSalida: {
+    AlmacenId: string;
+    ArticuloId: string;
+    Cantidad: number;
+  }[]
+};
+
 
 
 

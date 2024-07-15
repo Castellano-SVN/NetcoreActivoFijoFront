@@ -27,6 +27,7 @@ export function api_getPersonas(bearer: string, page: number) {
 export function api_postPersonas(bearer: string, data: any) {
   return api.post(`persona`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
 export function api_putPersonas(bearer: string, data: any) {
   return api.put(`persona`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -202,4 +203,8 @@ export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: stri
 
 export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string,almacenId: string) {
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getMovimientoArticulo(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
+  return api.get(`movimientoarticulo/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

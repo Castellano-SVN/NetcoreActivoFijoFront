@@ -3,6 +3,7 @@ import PDFGuiaEntrega from "@/components/pdf/guiaEntrega";
 import { IArticulo, IBodega, ICentroCosto, IEmpresa, OutPutFormValues } from "@/interfaces/creation";
 import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
 import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas } from "@/services/bodega.service";
+import { api_postGuiaEntrega } from "@/services/salidas.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FaFilePdf, FaSave } from "react-icons/fa";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 export default function GuiaEntrega() {
@@ -161,6 +163,7 @@ export default function GuiaEntrega() {
     }, [getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
 
 
+
     const ref = useRef<HTMLDialogElement>(null);
     const handleShow = useCallback(() => {
         ref.current?.showModal();
@@ -171,41 +174,51 @@ export default function GuiaEntrega() {
         ref3.current?.showModal();
     }, [ref3]);
 
-
-
-    const ParteSalidaSchema = z.array(z.object({
+    const ParteSalidaSchema = z.object({
         AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" })
-    }));
-
-    const RequiredSchema = z.object({
-        EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        Direccion: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
     });
 
     const OutPutSchema = z.object({
-        ParteSalida: ParteSalidaSchema,
-        Required: RequiredSchema,
-
+        EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        DireccionOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        DireccionDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        ParteSalida: z.array(ParteSalidaSchema)
     });
 
-    const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema) });
+    const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema), defaultValues: { ParteSalida: [], } });
     const { register, handleSubmit, formState: { errors }, setValue, reset, control } = metodos;
 
-  /*   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-        control, 
-        name: "ParteSalida",
-    }); */
 
+    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control,
+        name: "ParteSalida",
+    });
+
+    useEffect(() => {
+        dataAlmacenArticulo.map((almacenArticulo) => {
+            append({
+                AlmacenId: almacenArticulo.almacenId,
+                ArticuloId: almacenArticulo.articuloId,
+                Cantidad: 0,
+            });
+        });
+    }, [dataAlmacenArticulo]);
 
     const onSubmit = async (data: OutPutFormValues) => {
         try {
-            console.log('formulario data: ', data);
+            const response = await api_postGuiaEntrega(jwt, data)
+            if (response) {
+                toast.success('salida creada correctamente')
+            }else {
+                toast.error('ha ocurrido un error en generar la salida');
+            }
         } catch (error) {
-
+            toast.error('ha ocurrido un error');
         }
     };
 
@@ -231,37 +244,37 @@ export default function GuiaEntrega() {
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                            {...register('Required.EmpresaId', { setValueAs: (value) => value === '' ? undefined : value })}
+                                            {...register('EmpresaId', { setValueAs: (value) => value === 0 ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataEmpresa(e.target.value);
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataEmpresa.map((empresa, index) => (
                                                 <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
                                             ))}
                                         </select>
-                                        {errors.Required?.EmpresaId && <span className="text-red-600">{errors.Required?.EmpresaId.message}</span>}
+                                        {errors.EmpresaId && <span className="text-red-600">{errors.EmpresaId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Centro de costo:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                            {...register('Required.CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}
+                                            {...register('CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataCentroCosto(e.target.value);
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataCentroCosto.map((centroCosto, index) => (
                                                 <option key={index} value={centroCosto.id}>{centroCosto.nombre}</option>
                                             ))}
                                         </select>
-                                        {errors.Required?.CentroCostoId && <span className="text-red-600">{errors.Required.CentroCostoId.message}</span>}
+                                        {errors.CentroCostoId && <span className="text-red-600">{errors.CentroCostoId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Bodega origen:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                            {...register('Required.BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}
+                                            {...register('BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataBodega(e.target.value);
                                                 const selectedBodegaOrigen = dataBodega.find((bodegaOrigen) => bodegaOrigen.id === e.target.value);
@@ -269,21 +282,22 @@ export default function GuiaEntrega() {
                                                     setNameBodega(selectedBodegaOrigen.nombre);
                                                 }
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataBodega.map((bodega, index) => (
                                                 <option key={index} value={bodega.id}>{bodega.nombre}</option>
                                             ))}
                                         </select>
-                                        {errors.Required?.BodegaId && <span className="text-red-600">{errors.Required.BodegaId.message}</span>}
+                                        {errors.BodegaId && <span className="text-red-600">{errors.BodegaId.message}</span>}
                                     </div>
 
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Almacenes:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            {...register('AlmacenId', { setValueAs: (value) => value === '' ? undefined : value })}
                                             onChange={(e) => {
                                                 setGetDataAlmacen(e.target.value);
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataAlmacen.map((almacen, index) => (
                                                 <option key={index} value={almacen.id}>{almacen.nombre}</option>
                                             ))}
@@ -316,7 +330,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataEmpresaModal(e.target.value);
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataEmpresaModal.map((empresaModal, index) => (
                                                 <option key={index} value={empresaModal.id}>{empresaModal.razonSocial}</option>
                                             ))}
@@ -329,7 +343,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataCentroCostoModal(e.target.value);
                                             }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataCentroCostoModal.map((centroCostoModal, index) => (
                                                 <option key={index} value={centroCostoModal.id}>{centroCostoModal.nombre}</option>
                                             ))}
@@ -347,7 +361,7 @@ export default function GuiaEntrega() {
                                                 }
                                             }}
                                         >
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
+                                            <option key={0} value={0}>Seleccione una opción</option>
                                             {dataBodegaModal.map((bodegaModal, index) => (
                                                 <option key={index} value={bodegaModal.id}>{bodegaModal.nombre}</option>
                                             ))}
@@ -365,13 +379,21 @@ export default function GuiaEntrega() {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                         <div className="col-span-2">
                             <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección de origen:</label>
-                            <input id="numeroDocumento" type="text"
+                            <input type="text"
+                                {...register('DireccionOrigen', {
+                                    setValueAs: (value) => value === "" ? undefined : value
+                                })}
                                 className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                            {errors.DireccionOrigen && <span className="text-red-600">{errors.DireccionOrigen.message}</span>}
                         </div>
                         <div className="col-span-2">
                             <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección de destino:</label>
                             <input id="numeroDocumento" type="text"
+                                {...register('DireccionDestino', {
+                                    setValueAs: (value) => value === "" ? undefined : value
+                                })}
                                 className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                            {errors.DireccionDestino && <span className="text-red-600">{errors.DireccionDestino.message}</span>}
                         </div>
 
                     </div>
@@ -392,17 +414,41 @@ export default function GuiaEntrega() {
                             <Table.Body>
                                 {dataAlmacenArticulo.map((almacenArticulo, index) => (
                                     <Table.Row key={index} hover={true}>
-                                        <input type="checkbox" className="form-checkbox text-green-500" />
+                                        <input
+                                            type="checkbox"
+                                            defaultChecked={true}
+                                            onChange={(e) => {
+                                                const index = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                                if (e.target.checked) {
+                                                    append({
+                                                        AlmacenId: almacenArticulo.almacenId,
+                                                        ArticuloId: almacenArticulo.articuloId,
+                                                        Cantidad: 0,
+                                                    });
+                                                } else {
+                                                    remove(index);
+                                                }
+                                            }}
+                                        />
                                         <span>{almacenArticulo.articulo.codigo}</span>
                                         <span>{almacenArticulo.articulo.subFamilium.familium.codigo}</span>
                                         <span>{almacenArticulo.articulo.subFamilium.familium.nombre}</span>
                                         <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
                                         <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
                                         <span>{almacenArticulo.articulo.descripcion}</span>
-                                        <input type="number" className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" ></input>
+                                        {fields.find((field, fieldIndex) => fieldIndex === index) ? (
+                                            <input
+                                                type="number"
+                                                {...register(`ParteSalida.${index}.Cantidad`, {
+                                                    setValueAs: (value) => value === "" ? undefined : Number(value)
+                                                })}
+                                                className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            />
+                                        ) : (
+                                            <></>
+                                        )}
                                     </Table.Row>
                                 ))}
-
                             </Table.Body>
                         </Table>
                     </div>
@@ -419,6 +465,8 @@ export default function GuiaEntrega() {
 
                         }
                     </PDFDownloadLink>
+
+
                 </div>
             </form>
         </div>
