@@ -2,12 +2,15 @@ import TableMoveArticle from "@/components/bodega/informes/tablemovartic";
 import PDFMovimientoArticulo from "@/components/pdf/informes/pdfmovimientoarticulo";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FaFilePdf } from "react-icons/fa";
-import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas } from "@/services/bodega.service";
+import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas, api_getMovimientoArticulo } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IBodega, ICentroCosto, IEmpresa } from "@/interfaces/creation";
 import { Button, Modal, Table } from "react-daisyui";
 import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
+import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function MovimientoArticulos() {
     const ref = useRef<HTMLDialogElement>(null);
@@ -106,6 +109,33 @@ export default function MovimientoArticulos() {
         }
     }, [getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
 
+    const methods = useForm();
+    const { handleSubmit, control, watch } = methods;
+
+    const [idArticulo, setIdArticulo] = useState('');
+    const fechaDesde = watch('fechaDesde');
+    const fechaHasta = watch('fechaHasta');
+
+    const getMovimientoArticulo = async () => {
+        if (!idArticulo || !fechaDesde || !fechaHasta) return;
+        const formattedFechaDesde = fechaDesde.toISOString().split('T')[0];
+        const formattedFechaHasta = fechaHasta.toISOString().split('T')[0];
+        try{
+            const queryParams = {
+                fechaDesde: formattedFechaDesde,
+                fechaHasta: formattedFechaHasta
+            };
+            console.log(idArticulo)
+            console.log(fechaDesde)
+            console.log(fechaHasta)
+            const Filter = await api_getMovimientoArticulo(jwt, idArticulo, formattedFechaDesde, formattedFechaHasta );
+        }catch (error){
+            console.log(error)
+        }
+    }
+    useEffect(()=> {
+        getMovimientoArticulo();
+    },[idArticulo,fechaDesde,fechaHasta])
     return (
         <div className="flex flex-col">
             <div className="flex flex-col items-center justify-center">
@@ -175,6 +205,7 @@ export default function MovimientoArticulos() {
                                     setGetDataAlmacenArticulo(e.target.value);
                                     const selectedArticulo = dataAlmacenArticulo.find((almacenAarticulo) => almacenAarticulo.articulo.id === e.target.value);
                                     if (selectedArticulo) {
+                                        setIdArticulo(selectedArticulo.articulo.id);
                                         setNameArticulo(selectedArticulo.articulo.nombre);
                                         setCodigoArticulo(selectedArticulo.articulo.codigo || '');
                                         setDescripcionArticulo(selectedArticulo.articulo.descripcion || '');
@@ -196,89 +227,122 @@ export default function MovimientoArticulos() {
                 </Modal.Actions>
             </Modal>
             {getDataAlmacenArticulo !== '' && (
-                <div className="transition duration-1000 ease-in-out">
-                    <div className="flex flex-col md:flex-row lg:flex-row md:justify-around lg:justify-around w-full">
-                        <div className="flex flex-col mr-4">
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center lg:text-left">Codigo Articulo:</label>
-                                <div className="flex flex-col lg:flex-col w-full">
-                                    <input
-                                        type="text"
-                                        value={codigoArticulo}
-                                        className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                        readOnly
-                                    />
+                <FormProvider {...methods}>
+                        <div className="transition duration-1000 ease-in-out">
+                            <div className="flex flex-col md:flex-row lg:flex-row md:justify-around lg:justify-around w-full">
+                                <div className="flex flex-col mr-4">
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center lg:text-left">Codigo Articulo:</label>
+                                        <div className="flex flex-col lg:flex-col w-full">
+                                            <input
+                                                type="text"
+                                                value={codigoArticulo}
+                                                className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                                readOnly
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center lg:text-left">Nombre Articulo:</label>
+                                        <input
+                                            type="text"
+                                            value={nameArticulo}
+                                            className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            readOnly
+                                        />
+                                    </div>
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center lg:text-left">Descripcion Articulo:</label>
+                                        <input
+                                            type="text"
+                                            value={DescripcionArticulo}
+                                            className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            readOnly
+                                        />
+                                    </div>
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center lg:text-left">Stock Critico:</label>
+                                        <input
+                                            type="number"
+                                            value={35}
+                                            className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            readOnly
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center">Desde:</label>
+                                        <Controller
+                                            control={methods.control}
+                                            name="fechaDesde"
+                                            defaultValue={new Date()}
+                                            render={({ field }) => (
+                                                <DatePicker
+                                                    selected={field.value}
+                                                    onChange={(date) => field.onChange(date)}
+                                                    onBlur={field.onBlur}
+                                                    className="block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                                    dropdownMode="select"
+                                                    yearDropdownItemNumber={15}
+                                                    peekNextMonth
+                                                    showYearDropdown
+                                                    showMonthDropdown
+                                                    dateFormat={"dd/MM/yyyy"}
+                                                    selectsStart
+                                                    startDate={fechaDesde}
+                                                    endDate={fechaHasta}
+                                                />
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col lg:flex-row items-center mb-2">
+                                        <label className="w-full lg:w-40 text-center">Hasta:</label>
+                                        <Controller
+                                            control={methods.control}
+                                            name="fechaHasta"
+                                            defaultValue={new Date()}
+                                            render={({ field }) => (
+                                                <DatePicker
+                                                    selected={field.value}
+                                                    onChange={(date) => field.onChange(date)}
+                                                    onBlur={field.onBlur}
+                                                    className="block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                                    dropdownMode="select"
+                                                    yearDropdownItemNumber={15}
+                                                    peekNextMonth
+                                                    showYearDropdown
+                                                    showMonthDropdown
+                                                    dateFormat={"dd/MM/yyyy"}
+                                                    selectsEnd
+                                                    startDate={fechaDesde}
+                                                    endDate={fechaHasta}
+                                                    minDate={fechaDesde}
+                                                />
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center lg:text-left">Nombre Articulo:</label>
-                                <input
-                                    type="text"
-                                    value={nameArticulo}
-                                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                    readOnly
-                                />
+                            <div className="overflow-x-auto">
+                                <TableMoveArticle />
                             </div>
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center lg:text-left">Descripcion Articulo:</label>
-                                <input
-                                    type="text"
-                                    value={DescripcionArticulo}
-                                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                    readOnly
-                                />
-                            </div>
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center lg:text-left">Stock Critico:</label>
-                                <input
-                                    type="number"
-                                    value={35}
-                                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                    readOnly
-                                />
+                            <div className="mt-4">
+                                <PDFDownloadLink document={<PDFMovimientoArticulo />} fileName='Movimiento_Articulo_pdf'>
+                                    {
+                                        ({ loading, url, error, blob }) => loading ? (
+                                            "Cargando.."
+                                        ) : (
+                                            <button type="button" className="btn btn-outline btn-accent"><FaFilePdf />Exportar</button>
+                                        )
+
+                                    }
+                                </PDFDownloadLink>
                             </div>
                         </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center">Desde:</label>
-                                <input
-                                    type="text"
-                                    value="01-07-2024"
-                                    className="mt-1 block w-2/4 py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                    readOnly
-                                />
-                            </div>
-                            <div className="flex flex-col lg:flex-row items-center mb-2">
-                                <label className="w-full lg:w-40 text-center">Hasta:</label>
-                                <input
-                                    type="text"
-                                    value="02-07-2024"
-                                    className="mt-1 block w-2/4 py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <TableMoveArticle />
-                    </div>
-                    <div className="mt-4">
-                        <PDFDownloadLink document={<PDFMovimientoArticulo />} fileName='Movimiento_Articulo_pdf'>
-                            {
-                                ({ loading, url, error, blob }) => loading ? (
-                                    "Cargando.."
-                                ) : (
-                                    <button type="button" className="btn btn-outline btn-accent"><FaFilePdf />Exportar</button>
-                                )
-
-                            }
-                        </PDFDownloadLink>
-                    </div>
-                </div>
+                </FormProvider>
             )}
-
-
 
         </div>
     );
