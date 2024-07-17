@@ -628,6 +628,8 @@ interface OutPutFormValues {
   CentroCostoId: string;
   BodegaId: string;
   AlmacenId:string
+  BodegaOrigen: string;
+  BodegaDestino: string;
   DireccionOrigen: string;
   DireccionDestino: string;
   ParteSalida: {
@@ -637,11 +639,43 @@ interface OutPutFormValues {
   }[]
 };
 
+interface IParteSalida {
+  empresaId: string;
+  centroCostoId:  string;
+  bodegaId: string;
+  almacenId: string;
+  anoNumero: number;
+  subFamiliaId: string;
+  articuloId: string;
+  estadoArticuloCodigo: number;
+  id: string;
+  fecha: Date;
+  numero: number;
+  cantidad: number;
+}
+interface IParteEntrada {
+  empresaId: string;
+  centroCostoId:  string;
+  bodegaId: string;
+  almacenId: string;
+  anoNumero: number;
+  subFamiliaId: string;
+  articuloId: string;
+  estadoArticuloCodigo: number;
+  id: string;
+  recepcionId: string;
+  cotizacionId: string;
+  cotizacionDetalleId: string;
+  fecha: Date;
+  numero: number;
+  cantidad: number;
+}
+
 
 
 
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada
 }

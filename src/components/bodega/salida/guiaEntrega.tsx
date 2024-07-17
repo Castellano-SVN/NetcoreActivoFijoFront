@@ -8,6 +8,7 @@ import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import router from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -142,8 +143,9 @@ export default function GuiaEntrega() {
     useEffect(() => {
         if (getDataEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '') {
             getAllAlmacenByEmpByCenByBod();
+
         }
-    }, [getDataEmpresa, getDataCentroCosto, getDataBodega]);
+    }, [getDataEmpresa, getDataCentroCosto, getDataBodega, nameBodega, nameBodegaModal]);
 
     const [dataAlmacenArticulo, setDataAlmacenArticulo] = useState<IAlmacenArticulo[]>([]);
     const [getDataAlmacenArticulo, setGetDataAlmacenArticulo] = useState('');
@@ -180,11 +182,15 @@ export default function GuiaEntrega() {
         Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" })
     });
 
+
+
     const OutPutSchema = z.object({
         EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        BodegaOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        BodegaDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         DireccionOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         DireccionDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         ParteSalida: z.array(ParteSalidaSchema)
@@ -209,16 +215,29 @@ export default function GuiaEntrega() {
         });
     }, [dataAlmacenArticulo]);
 
+    const [showPdf, setShowPdf] = useState(false);
+    const [dataPost, setDataPost] = useState<OutPutFormValues | null>(null);
+
     const onSubmit = async (data: OutPutFormValues) => {
         try {
             const response = await api_postGuiaEntrega(jwt, data)
             if (response) {
-                toast.success('salida creada correctamente')
-            }else {
-                toast.error('ha ocurrido un error en generar la salida');
+                toast.success('Salida creada correctamente');
+                setShowPdf(true);
+                setDataPost(data);
+            } else {
+                toast.error('ha ocurrido un error en generar la Salida');
+                setShowPdf(true);
             }
-        } catch (error) {
-            toast.error('ha ocurrido un error');
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message);
+                setShowPdf(true);
+            } else {
+                toast.error('Ha ocurrido un error inesperado');
+                setShowPdf(true);
+            }
+
         }
     };
 
@@ -280,6 +299,7 @@ export default function GuiaEntrega() {
                                                 const selectedBodegaOrigen = dataBodega.find((bodegaOrigen) => bodegaOrigen.id === e.target.value);
                                                 if (selectedBodegaOrigen) {
                                                     setNameBodega(selectedBodegaOrigen.nombre);
+                                                    setValue('BodegaOrigen', selectedBodegaOrigen.nombre);
                                                 }
                                             }}>
                                             <option key={0} value={0}>Seleccione una opción</option>
@@ -358,6 +378,7 @@ export default function GuiaEntrega() {
                                                 const selectedBodega = dataBodegaModal.find((bodega) => bodega.id === e.target.value);
                                                 if (selectedBodega) {
                                                     setNameBodegaModal(selectedBodega.nombre);
+                                                    setValue('BodegaDestino', selectedBodega.nombre);
                                                 }
                                             }}
                                         >
@@ -412,43 +433,45 @@ export default function GuiaEntrega() {
 
                             </Table.Head>
                             <Table.Body>
-                                {dataAlmacenArticulo.map((almacenArticulo, index) => (
-                                    <Table.Row key={index} hover={true}>
-                                        <input
-                                            type="checkbox"
-                                            defaultChecked={true}
-                                            onChange={(e) => {
-                                                const index = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
-                                                if (e.target.checked) {
-                                                    append({
-                                                        AlmacenId: almacenArticulo.almacenId,
-                                                        ArticuloId: almacenArticulo.articuloId,
-                                                        Cantidad: 0,
-                                                    });
-                                                } else {
-                                                    remove(index);
-                                                }
-                                            }}
-                                        />
-                                        <span>{almacenArticulo.articulo.codigo}</span>
-                                        <span>{almacenArticulo.articulo.subFamilium.familium.codigo}</span>
-                                        <span>{almacenArticulo.articulo.subFamilium.familium.nombre}</span>
-                                        <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
-                                        <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
-                                        <span>{almacenArticulo.articulo.descripcion}</span>
-                                        {fields.find((field, fieldIndex) => fieldIndex === index) ? (
+                                {dataAlmacenArticulo.map((almacenArticulo, index) => {
+                                    const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                    return (
+                                        <Table.Row key={index} hover={true}>
                                             <input
-                                                type="number"
-                                                {...register(`ParteSalida.${index}.Cantidad`, {
-                                                    setValueAs: (value) => value === "" ? undefined : Number(value)
-                                                })}
-                                                className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                                type="checkbox"
+                                                defaultChecked={true}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        append({
+                                                            AlmacenId: almacenArticulo.almacenId,
+                                                            ArticuloId: almacenArticulo.articuloId,
+                                                            Cantidad: 0,
+                                                        });
+                                                    } else {
+                                                        remove(fieldsIndex);
+                                                    }
+                                                }}
                                             />
-                                        ) : (
-                                            <></>
-                                        )}
-                                    </Table.Row>
-                                ))}
+                                            <span>{almacenArticulo.articulo.codigo}</span>
+                                            <span>{almacenArticulo.articulo.subFamilium.familium.codigo}</span>
+                                            <span>{almacenArticulo.articulo.subFamilium.familium.nombre}</span>
+                                            <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
+                                            <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
+                                            <span>{almacenArticulo.articulo.descripcion}</span>
+                                            {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                <input
+                                                    type="number"
+                                                    {...register(`ParteSalida.${fieldsIndex}.Cantidad`, {
+                                                        setValueAs: (value) => value === "" ? undefined : Number(value)
+                                                    })}
+                                                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                                />
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </Table.Row>
+                                    );
+                                })}
                             </Table.Body>
                         </Table>
                     </div>
@@ -465,6 +488,23 @@ export default function GuiaEntrega() {
 
                         }
                     </PDFDownloadLink>
+
+                    {/* {showPdf && dataPost ?
+                        <div className="inline-block">
+                            <PDFDownloadLink document={<PDFGuiaEntrega data={dataPost} />} fileName={`Orden_De_Compra_Numero_${}_pdf`}>
+                                {
+                                    ({ loading, url, error, blob }) => loading ? (
+                                        "Cargando.."
+                                    ) : (
+                                        <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
+                                    )
+
+                                }
+                            </PDFDownloadLink>
+                        </div>
+                        :
+                        <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block">Guardar</button>
+                    }; */}
 
 
                 </div>
