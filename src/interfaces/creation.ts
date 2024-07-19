@@ -624,10 +624,14 @@ interface ICotizacion {
 }
 
 interface OutPutFormValues {
-  EmpresaId: string;
-  CentroCostoId: string;
-  BodegaId: string;
-  AlmacenId:string
+  EmpresaIdOrigen: string;
+  EmpresaIdDestino: string;
+  CentroCostoIdOrigen: string;
+  CentroCostoIdDestino: string;
+  BodegaIdOrigen: string;
+  BodegaIdDestino: string;
+  AlmacenIdOrigen: string
+  AlmacenIdDestino: string
   BodegaOrigen: string;
   BodegaDestino: string;
   DireccionOrigen: string;
@@ -636,12 +640,18 @@ interface OutPutFormValues {
     AlmacenId: string;
     ArticuloId: string;
     Cantidad: number;
+    CodigoArticulo?: string;
+    CodigoFamilia: number;
+    Familia: string;
+    CodigoSubFamilia: number;
+    SubFamilia: string;
+    DescripcionArticulo?:string;
   }[]
 };
 
 interface IParteSalida {
   empresaId: string;
-  centroCostoId:  string;
+  centroCostoId: string;
   bodegaId: string;
   almacenId: string;
   anoNumero: number;
@@ -652,10 +662,37 @@ interface IParteSalida {
   fecha: Date;
   numero: number;
   cantidad: number;
+  almacenArticulo:{
+    cantidad: number;
+    almacen:{
+      bodega:{
+        nombre: string;
+        empresa:{
+          rut: string;
+          recepcions:{
+            tipoDocumentoRecepcionCodigoNavigation:{
+              codigo: number;
+              nombre: string;
+            }
+          }[]
+          funcionarioEmpresas:{
+            funcionario:{
+              idNavigation:{
+               run: string;
+               nombre: string;
+               nombres: string;
+               apellidoPaterno: string;
+            }
+           }
+          }[]
+        }
+      }
+    }
+  }
 }
 interface IParteEntrada {
   empresaId: string;
-  centroCostoId:  string;
+  centroCostoId: string;
   bodegaId: string;
   almacenId: string;
   anoNumero: number;
@@ -669,6 +706,38 @@ interface IParteEntrada {
   fecha: Date;
   numero: number;
   cantidad: number;
+  recepcionDetalle:{
+    recepcion:{
+      cotizacion:{
+        proveedor:{
+           id: string;
+           rut: string;
+           razonSocial: string;
+           nombreComercial: string;
+        }
+        cotizacionDetalles:{
+          valorUnitario: number;
+        }[]
+      },
+      tipoDocumentoRecepcionCodigoNavigation:{
+       codigo: number;
+       nombre: string;
+      },
+      funcionarioEmpresa:{
+        funcionario:{
+          idNavigation:{
+           run: string;
+           nombre: string;
+           nombres: string;
+           apellidoPaterno: string;
+        }
+       }
+      }
+    }
+  }
+  almacenArticulo:{
+    cantidad: number;
+  }
 }
 
 
