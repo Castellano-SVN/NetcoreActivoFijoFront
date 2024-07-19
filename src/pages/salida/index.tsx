@@ -14,8 +14,11 @@ export default function Index() {
                 <div className="container shadow-md border rounded-md">
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Guía de Entrega</h1>
-
-                        <GuiaEntrega />
+                    </div>
+                    <div className="flex flex-row justify-center mb-4">
+                        <div className="flex flex-col w-full">
+                             <GuiaEntrega />
+                        </div>
                     </div>
                 </div>
             </div>

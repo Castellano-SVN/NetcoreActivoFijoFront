@@ -7,7 +7,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useSearchParams } from "next/navigation";
 import router from "next/router";
 import { useEffect, useState } from "react";
-import { Modal, Table, Textarea } from "react-daisyui";
+import { Button, Modal, Table, Textarea } from "react-daisyui";
 import { Controller, useForm } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa";
 import { z } from "zod";
@@ -133,12 +133,12 @@ export default function ConOrden(props: props) {
             setShowPdf(false);
         }
     };
-    
-   const volverHandleClick = () => {
-    props.setShowConOrden(false);
-    reset();
-    props.setNumero(null);
-   };
+
+    const volverHandleClick = () => {
+        props.setShowConOrden(false);
+        reset();
+        props.setNumero(null);
+    };
 
     useEffect(() => {
         try {
@@ -374,30 +374,41 @@ export default function ConOrden(props: props) {
 
                     </div>
 
-                    <div className="mb-4 flex justify-end">
+                    <div className="mb-4 flex flex-col md:flex-row lg:flex-row justify-end">
                         <button
                             type="button"
-                            className="btn btn-outline btn-secondary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+                            className="btn btn-outline btn-secondary mb-3 md:mb-0 lg:mb-0 md:my-0 lg:my-0 md:mx-2 lg:mx-2"
                             onClick={volverHandleClick}>
                             Volver
                         </button>
 
 
                         {showPdf && dataPost ?
-                            <div className="inline-block">
-                                <PDFDownloadLink document={<PDFConOrden data={dataPost} />} fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}>
-                                    {
-                                        ({ loading, url, error, blob }) => loading ? (
-                                            "Cargando.."
-                                        ) : (
-                                            <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
-                                        )
-
-                                    }
-                                </PDFDownloadLink>
-                            </div>
+                            <Modal open={showPdf}>
+                                <Modal.Header>¿Desea crear un reporte de la Recepcion?</Modal.Header>
+                                <Modal.Body>
+                                    <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                                        <div className="col-span-2">
+                                            <PDFDownloadLink document={<PDFConOrden data={dataPost} />} fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}>
+                                                {
+                                                    ({ loading, url, error, blob }) => loading ? (
+                                                        "Cargando.."
+                                                    ) : (
+                                                        <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
+                                                    )
+                                                }
+                                            </PDFDownloadLink>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <Button type="button" className="btn btn-outline btn-secondary w-1/2 mt-2" onClick={() => router.reload()}>
+                                                salir
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </Modal.Body>
+                            </Modal>
                             :
-                            <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block">Guardar</button>};
+                            <button type="submit" className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block">Guardar</button>}
 
                     </div>
                 </form>

@@ -280,7 +280,7 @@ export default function MovimientoArticulos() {
                             </div>
 
                             <div className="flex flex-col">
-                                <div className="flex flex-col lg:flex-row items-center mb-2">
+                                <div className="flex flex-col lg:flex-row items-center mb-2 col-span-2">
                                     <label className="w-full lg:w-40 text-center">Desde:</label>
                                     <Controller
                                         control={methods.control}
@@ -305,7 +305,7 @@ export default function MovimientoArticulos() {
                                         )}
                                     />
                                 </div>
-                                <div className="flex flex-col lg:flex-row items-center mb-2">
+                                <div className="flex flex-col lg:flex-row items-center mb-2 col-span-2">
                                     <label className="w-full lg:w-40 text-center">Hasta:</label>
                                     <Controller
                                         control={methods.control}

@@ -1,6 +1,12 @@
+import { IParteEntrada, IParteSalida } from "@/interfaces/creation";
+import { useState } from "react";
 import { Table } from "react-daisyui";
 
-export default function TablaTarjetaExistencia() {
+interface props {
+    dataEntrada: IParteEntrada[];
+    dataSalida: IParteSalida[];
+}
+export default function TablaTarjetaExistencia(props: props) {
     return (
         <>
             <Table className="shadow-md border rounded-md" >
@@ -22,56 +28,42 @@ export default function TablaTarjetaExistencia() {
                 </Table.Head>
 
                 <Table.Body>
-                    <Table.Row hover>
-                        <span>Encargado 1</span>
-                        <span>Fecha 1</span>
-                        <span>Rut Proveedor 1</span>
-                        <span>Proveedor 1</span>
-                        <span>Concepto 1</span>
-                        <span>Tipo Documento 1</span>
-                        <span>N° Documento 1</span>
-                        <span>Precio Compra 1</span>
-                        <span>UN Entradas 1</span>
-                        <span>UN Salidas 1</span>
-                        <span>UN Saldo 1</span>
-                        <span>VAL Entradas 1</span>
-                        <span>VAL Salidas 1</span>
-                        <span>VAL Saldo 1</span>
+                {props.dataEntrada.map((entrada, indexEntrada) => (
+                    <Table.Row hover key={indexEntrada}>
+                        <span>{entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.nombres} {entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.apellidoPaterno}</span>
+                        <span>{new Date(entrada.fecha).toLocaleDateString()}</span>
+                        <span>{entrada.recepcionDetalle.recepcion.cotizacion.proveedor.rut}</span>
+                        <span>{entrada.recepcionDetalle.recepcion.cotizacion.proveedor.razonSocial}</span>
+                        <span>Compra</span>
+                        <span>{entrada.recepcionDetalle.recepcion.tipoDocumentoRecepcionCodigoNavigation.nombre}</span>
+                        <span>{entrada.numero}</span>
+                        <span>{entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario}</span>
+                        <span>{entrada.cantidad}</span>
+                        <span>-</span>
+                        <span>{entrada.almacenArticulo.cantidad}</span>
+                        <span>{entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad}</span>
+                        <span>-</span>
+                        <span>{entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad}</span>
                     </Table.Row>
-
-                    <Table.Row hover>
-                        <span>Encargado 2</span>
-                        <span>Fecha 2</span>
-                        <span>Rut Proveedor 2</span>
-                        <span>Proveedor 2</span>
-                        <span>Concepto 2</span>
-                        <span>Tipo Documento 2</span>
-                        <span>N° Documento 2</span>
-                        <span>Precio Compra 2</span>
-                        <span>UN Entradas 2</span>
-                        <span>UN Salidas 2</span>
-                        <span>UN Saldo 2</span>
-                        <span>VAL Entradas 2</span>
-                        <span>VAL Salidas 2</span>
-                        <span>VAL Saldo 2</span>
+                ))}
+                {props.dataSalida.map((salida, indexSalida) => (
+                    <Table.Row hover key={indexSalida}>
+                        <span>{salida.almacenArticulo.almacen.bodega.empresa.funcionarioEmpresas[0].funcionario.idNavigation.nombres} {salida.almacenArticulo.almacen.bodega.empresa.funcionarioEmpresas[0].funcionario.idNavigation.apellidoPaterno}</span>
+                        <span>{new Date(salida.fecha).toLocaleDateString()}</span>
+                        <span>{salida.almacenArticulo.almacen.bodega.empresa.rut}</span>
+                        <span>{salida.almacenArticulo.almacen.bodega.nombre}</span>
+                        <span>Depacho Mercaderia</span>
+                        <span>Guia de salida interna</span>
+                        <span>{salida.numero}</span>
+                        <span>-</span>
+                        <span>-</span>
+                        <span>{salida.cantidad}</span>
+                        <span>{salida.almacenArticulo.cantidad}</span>
+                        <span>-</span>
+                        <span>30000</span>
+                        <span>40000</span>
                     </Table.Row>
-
-                    <Table.Row hover>
-                        <span>Encargado 3</span>
-                        <span>Fecha 3</span>
-                        <span>Rut Proveedor 3</span>
-                        <span>Proveedor 3</span>
-                        <span>Concepto 3</span>
-                        <span>Tipo Documento 3</span>
-                        <span>N° Documento 3</span>
-                        <span>Precio Compra 3</span>
-                        <span>UN Entradas 2</span>
-                        <span>UN Salidas 2</span>
-                        <span>UN Saldo 2</span>
-                        <span>VAL Entradas 2</span>
-                        <span>VAL Salidas 2</span>
-                        <span>VAL Saldo 2</span>
-                    </Table.Row>
+                ))}
                 </Table.Body>
             </Table>
         </>
