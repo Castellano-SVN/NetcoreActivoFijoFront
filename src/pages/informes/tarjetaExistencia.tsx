@@ -2,7 +2,7 @@ import TablaTarjetaExistencia from "@/components/bodega/informes/tablatarjetaexi
 import PDFTarjetaExistencia from "@/components/pdf/informes/pdftarjetaexistencia";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FaFilePdf } from "react-icons/fa";
-import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas, api_getMovimientoArticuloSalida, api_getMovimientoArticuloEntrada } from "@/services/bodega.service";
+import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas, api_getArticuloSalida, api_getArticuloEntrada } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IBodega, ICentroCosto, IEmpresa, IParteEntrada, IParteSalida } from "@/interfaces/creation";
@@ -125,14 +125,14 @@ export default function TarjetaExistencia() {
     const [dataSalida, setDataSalida] = useState<IParteSalida[]>([])
     const [dataEntrada, setDataEntrada] = useState<IParteEntrada[]>([])
 
-    const getMovimientoArticulo = async () => {
+    const getTarjetaExistencia = async () => {
         if (!idArticulo || !fechaDesde || !fechaHasta) return;
         const formattedFechaDesde = fechaDesde.toISOString().split('T')[0];
         const formattedFechaHasta = fechaHasta.toISOString().split('T')[0];
         try {
-            const salida = await api_getMovimientoArticuloSalida(jwt, idArticulo, formattedFechaDesde, formattedFechaHasta);
+            const salida = await api_getArticuloSalida(jwt, idArticulo, formattedFechaDesde, formattedFechaHasta);
             setDataSalida(salida.data.dataList)
-            const entrada = await api_getMovimientoArticuloEntrada(jwt, idArticulo, formattedFechaDesde, formattedFechaHasta);
+            const entrada = await api_getArticuloEntrada(jwt, idArticulo, formattedFechaDesde, formattedFechaHasta);
             setDataEntrada(entrada.data.dataList)
         } catch (error) {
             console.log(error)
@@ -141,17 +141,17 @@ export default function TarjetaExistencia() {
 
     useEffect(() => {
         if(idArticulo !== ''){
-            getMovimientoArticulo();
+            getTarjetaExistencia();
         }
     }, [idArticulo, fechaDesde, fechaHasta])
     return (
         <div className="flex flex-col">
             <div className="flex flex-col items-center justify-center">
                 <h1 className="text-2xl font-bold mb-4">Tarjeta Existencia</h1>
-                <button type="button" className="btn btn-outline btn-accent mt-2" onClick={handleShow}>Seleccione un articulo</button>
+                <button type="button" className="btn btn-outline btn-accent mt-2" onClick={handleShow}>Seleccione un artículo</button>
             </div>
             <Modal ref={ref}>
-                <Modal.Header className="font-bold">Seleccione el articulo</Modal.Header>
+                <Modal.Header className="font-bold">Seleccione el artículo</Modal.Header>
                 <Modal.Body>
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                         <div className="col-span-2">

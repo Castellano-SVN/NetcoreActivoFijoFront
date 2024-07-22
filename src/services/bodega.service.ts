@@ -205,9 +205,9 @@ export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, em
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getMovimientoArticuloSalida(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
-  return api.get(`movimientoarticulosalida/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getArticuloSalida(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
+  return api.get(`articulosalida/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getMovimientoArticuloEntrada(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
-  return api.get(`movimientoarticuloentrada/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getArticuloEntrada(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
+  return api.get(`articuloentrada/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

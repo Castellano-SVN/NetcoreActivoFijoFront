@@ -197,7 +197,7 @@ export default function PDFInventarioFisico() {
                                     <Text style={styles.tableCellHeader}>Correlativo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>Codigo Articulo</Text>
+                                    <Text style={styles.tableCellHeader}>Codigo Artículo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
                                     <Text style={styles.tableCellHeader}>Codigo Familia</Text>
@@ -212,7 +212,7 @@ export default function PDFInventarioFisico() {
                                     <Text style={styles.tableCellHeader}>SubFamilia</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>Descripcion Articulo</Text>
+                                    <Text style={styles.tableCellHeader}>Descripcion Artículo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
                                     <Text style={styles.tableCellHeader}>Cantidad Registro Sistema</Text>
@@ -231,7 +231,7 @@ export default function PDFInventarioFisico() {
                                         <Text style={styles.tableCell}>Correlativo {index + 1}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>Codigo Articulo {index + 1}</Text>
+                                        <Text style={styles.tableCell}>Codigo Artículo {index + 1}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
                                         <Text style={styles.tableCell}>Codigo Familia {index + 1}</Text>
@@ -246,7 +246,7 @@ export default function PDFInventarioFisico() {
                                         <Text style={styles.tableCell}>SubFamilia {index + 1}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>Descripcion Articulo {index + 1}</Text>
+                                        <Text style={styles.tableCell}>Descripcion Artículo {index + 1}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
                                         <Text style={styles.tableCell}>Cantidad Registro Sistema {index + 1}</Text>
