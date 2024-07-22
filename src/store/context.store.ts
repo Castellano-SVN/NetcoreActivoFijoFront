@@ -22,6 +22,7 @@ const Menus: IMenuChildren[] = [
   },
   /* { name: "Despacho", active: false, href: "/despacho", children: [] }, */
   { name: "Salidas", active: false, href: "/salida", children: [] },
+  { name: "Toma inventario", active: false, href: "/inventario", children: [] },
   { name: "Informes", active: false, href: "/informes", children: [] },
 ]
 interface State {
@@ -31,7 +32,7 @@ interface State {
 
 type Actions = {
   setBread(bread: breadI[]): void;
-  setActive(item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas" | "Informes"): void;
+  setActive(item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas" | "Toma inventario" | "Informes"): void;
 };
 
 export const useContextStore = create<State & Actions>()(
@@ -39,7 +40,7 @@ export const useContextStore = create<State & Actions>()(
     (set) => ({
       bread: [],
       menus: Menus,
-      setActive: (item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas") =>
+      setActive: (item: "Prestadores" | "Recepcion" | "Despacho" | "Salidas" | "Toma inventario" | "Informes") =>
         set((state) => ({
           menus: state.menus.map(menu =>
             menu.name === item

@@ -306,7 +306,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataEmpresa(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataEmpresa.map((empresa, index) => (
                                                 <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
                                             ))}
@@ -321,7 +321,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataCentroCosto(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataCentroCosto.map((centroCosto, index) => (
                                                 <option key={index} value={centroCosto.id}>{centroCosto.nombre}</option>
                                             ))}
@@ -341,7 +341,7 @@ export default function GuiaEntrega() {
                                                     setValue('BodegaOrigen', selectedBodegaOrigen.nombre);
                                                 }
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataBodega.map((bodega, index) => (
                                                 <option key={index} value={bodega.id}>{bodega.nombre}</option>
                                             ))}
@@ -356,7 +356,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataAlmacen(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataAlmacen.map((almacen, index) => (
                                                 <option key={index} value={almacen.id}>{almacen.nombre}</option>
                                             ))}
@@ -391,7 +391,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataEmpresaModal(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataEmpresaModal.map((empresaModal, index) => (
                                                 <option key={index} value={empresaModal.id}>{empresaModal.razonSocial}</option>
                                             ))}
@@ -406,7 +406,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataCentroCostoModal(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataCentroCostoModal.map((centroCostoModal, index) => (
                                                 <option key={index} value={centroCostoModal.id}>{centroCostoModal.nombre}</option>
                                             ))}
@@ -428,7 +428,7 @@ export default function GuiaEntrega() {
                                                 }
                                             }}
                                         >
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataBodegaModal.map((bodegaModal, index) => (
                                                 <option key={index} value={bodegaModal.id}>{bodegaModal.nombre}</option>
                                             ))}
@@ -443,7 +443,7 @@ export default function GuiaEntrega() {
                                             onChange={(e) => {
                                                 setGetDataAlmacenModal(e.target.value);
                                             }}>
-                                            <option key={0} value={0}>Seleccione una opción</option>
+                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
                                             {dataAlmacenModal.map((almacenModal, index) => (
                                                 <option key={index} value={almacenModal.id}>{almacenModal.nombre}</option>
                                             ))}
@@ -487,12 +487,12 @@ export default function GuiaEntrega() {
                             <Table className='border shadow-lg'>
                                 <Table.Head className="bg-primary text-white">
                                     <span>Selección</span>
-                                    <span>Código articulo</span>
+                                    <span>Código artículo</span>
                                     <span>Código familia</span>
                                     <span>Familia</span>
                                     <span>Código sub-familia</span>
                                     <span>Sub-familia</span>
-                                    <span>Descripción articulo</span>
+                                    <span>Descripción artículo</span>
                                     <span>Cantidad salida</span>
 
                                 </Table.Head>
@@ -545,7 +545,7 @@ export default function GuiaEntrega() {
                                 </Table.Body>
                             </Table>
                         ) : getDataAlmacen !== '' && dataAlmacenArticulo.length === 0 ? (
-                            <WarningAlert message={"No hay articulos disponibles en este almacén"} />
+                            <WarningAlert message={"No hay artículos disponibles en este almacén"} />
                         ) : (
                             <></>
                         )}

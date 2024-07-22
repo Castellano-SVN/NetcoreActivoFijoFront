@@ -253,7 +253,7 @@ export default function PDFGuiaEntrega(props: props) {
                             <Text style={styles.tableCellHeader}>Sub-familia</Text>
                         </View>
                         <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Descripción articulo</Text>
+                            <Text style={styles.tableCellHeader}>Descripción artículo</Text>
                         </View>
                         <View style={styles.tableColHeader}>
                             <Text style={styles.tableCellHeader}>Cantidad</Text>
