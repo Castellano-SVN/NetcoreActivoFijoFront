@@ -28,12 +28,12 @@ export default function recepcion() {
     const [showConOrden, setShowConOrden] = useState(false);
     const [dataOrdenCompra, setDataOrdenCompra] = useState<IOrdenCompra[]>();
     const [dataSinOrdenCompra, setDataSinOrdenCompra] = useState<ICotizacion[]>();
-    
-    
+
+
     const [showSinOrden, setShowSinOrden] = useState(false);
     const [numero, setNumero] = useState<number | null>(null);
     const [numeroCotizacion, setNumeroCotizacion] = useState<number | null>(null);
-    
+
 
     const [conOrden, setConOrden] = useState(true);
 
@@ -92,30 +92,32 @@ export default function recepcion() {
                     <div className="p-6">
                         {!(showConOrden || showSinOrden) && (
                             <>
-                                <h1 className="text-2xl font-bold mb-4">Recepción de Artículos</h1>
-                                <div className="mb-2">
-                                    <label className="mr-4">
-                                        <input
-                                            type="radio"
-                                            name="orden"
-                                            value="conOrden"
-                                            checked={conOrden}
-                                            onChange={() => setConOrden(true)}
-                                            className="radio radio-xs radio-primary ml-2 mr-2"
-                                        />
-                                        Con orden de compra
-                                    </label>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name="orden"
-                                            value="sinOrden"
-                                            checked={!conOrden}
-                                            onChange={() => setConOrden(false)}
-                                            className="radio radio-xs radio-primary ml-2 mr-2"
-                                        />
-                                        Sin orden de compra
-                                    </label>
+                                <div className="mb-2 flex justify-center">
+                                    <fieldset className="border rounded-md w-1/2 p-2 flex flex-col lg:flex-row lg:justify-center ">
+                                        <legend><h1 className="text-2xl font-bold">Recepción de Artículos</h1></legend>
+                                        <label className="mr-4">
+                                            <input
+                                                type="radio"
+                                                name="orden"
+                                                value="conOrden"
+                                                checked={conOrden}
+                                                onChange={() => setConOrden(true)}
+                                                className="radio radio-xs radio-primary ml-2 mr-2"
+                                            />
+                                            Con orden de compra
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="orden"
+                                                value="sinOrden"
+                                                checked={!conOrden}
+                                                onChange={() => setConOrden(false)}
+                                                className="radio radio-xs radio-primary ml-2 mr-2"
+                                            />
+                                            Sin orden de compra
+                                        </label>
+                                    </fieldset>
                                 </div>
                             </>
                         )}
@@ -183,7 +185,7 @@ export default function recepcion() {
                                             ) :
                                                 (
                                                     <>
-                                                        {dataSinOrdenCompra && <SinOrden dataSinOrdenCompra={dataSinOrdenCompra}/>} 
+                                                        {dataSinOrdenCompra && <SinOrden dataSinOrdenCompra={dataSinOrdenCompra} />}
                                                     </>
                                                 )
                                             }

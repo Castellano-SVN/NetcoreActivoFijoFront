@@ -42,7 +42,7 @@ import {
   IAlmacen,
   ILocacion,
 } from "../../../interfaces/modules/IAlmacen.interface";
-import { FaArchive, FaEye, FaPencilAlt, FaPlus } from "react-icons/fa";
+import { FaArchive, FaArrowLeft, FaEye, FaPencilAlt, FaPlus } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { SlEye } from "react-icons/sl";
 import { FaPencil } from "react-icons/fa6";

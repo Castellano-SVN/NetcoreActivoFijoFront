@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { ItipoAlmacen } from "../../../../schemas/tipo_almacen.schema";
 import { FiPlus } from "react-icons/fi";
-import { FaArchive, FaEye } from "react-icons/fa";
+import { FaArchive, FaArrowLeft, FaEye } from "react-icons/fa";
 import {
   Button,
   Divider,
@@ -95,7 +95,7 @@ export default function Page() {
     total: 0,
     pages: 0,
   });
-  
+
   const [almacen, setAlmacen] = useState<IAlmacenTA>();
 
   const { isLoading, error, data, refetch } = useQuery(
@@ -234,22 +234,22 @@ export default function Page() {
           </form>
         </Modal.Body>
       </Modal>
-      <div className="w-full rounded-lg border border-gray-400 shadow-md hover:shadow-xl transition duration-300 ease-in-out">
-        <div className="flex flex-col bg-gray-300">
-          <div className="flex flex-row justify-between bg-gray-300 px-6 py-4 rounded-t-lg">
-            <h3 className="text-large font-bold text-gray-700 text-center">
+      <div className="w-full rounded-lg border shadow-md hover:shadow-xl transition duration-300 ease-in-out">
+        <div className="flex flex-col bg-primary">
+          <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
+            <h3 className="text-large font-bold text-base-100 text-center">
               Almacen
             </h3>
-            <h3 className="text-large font-bold text-gray-700 text-center">
+            <h3 className="text-large font-bold text-base-100 text-center">
               Tipo
             </h3>
           </div>
           <div>
-            <div className="flex flex-row justify-between bg-gray-300 px-6 py-4  rounded-b-lg">
-              <h3 className="text-large font-bold text-gray-700">
+            <div className="flex flex-row justify-between bg-primary px-6 py-4  rounded-b-lg">
+              <h3 className="text-large font-bold text-base-100">
                 {almacen ? almacen?.nombre.toUpperCase() : ""}
               </h3>
-              <h3 className="text-large font-bold text-gray-700">
+              <h3 className="text-large font-bold text-base-100">
                 {almacen ? almacen?.tipoAlmacen.nombre.toUpperCase() : ""}
               </h3>
             </div>
@@ -257,17 +257,18 @@ export default function Page() {
         </div>
 
         <div className="flex md:flex-row lg:flex-row flex-col-reverse justify-around items-center mt-4 md:mt-0 lg:mt-0">
+          <button type="button" className="btn btn-primary mt-2" onClick={() => router.back()}><FaArrowLeft/>Volver</button>
           <div className="join">
             {!isLoading && (
               <button
                 onClick={handleShowLocation}
-                className="btn join-item animate-fadein"
+                className="btn btn-primary join-item animate-fadein"
               >
                 <FiPlus />
                 Crear locacion
               </button>
             )}
-            <button onClick={() => router.push(`/empresa/centrocosto/almacen/tipolocacion/${almacen?.empresaId}`)} className="btn join-item">
+            <button onClick={() => router.push(`/empresa/centrocosto/almacen/tipolocacion/${almacen?.empresaId}`)} className="btn btn-primary join-item">
               <FiPlus /> Tipo Locacion
             </button>
           </div>
@@ -319,8 +320,8 @@ function Locations({ locacions }: { locacions: ILocacion[] }) {
         <thead>
           <tr>
             <th></th>
-            <th>Direccion</th>
-            <th>Descripcion</th>
+            <th>Dirección</th>
+            <th>Descripción</th>
             <th></th>
           </tr>
         </thead>
@@ -332,7 +333,7 @@ function Locations({ locacions }: { locacions: ILocacion[] }) {
                 <td>{element.direccion}</td>
                 <td>{element.descripcion}</td>
                 <td>
-                  {/* <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/location/${element.id}`)} /> */}
+                  <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/locacion/${element.id}`)} />
                 </td>
               </tr>
             ))
