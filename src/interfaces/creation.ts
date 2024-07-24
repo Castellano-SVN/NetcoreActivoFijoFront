@@ -355,6 +355,10 @@ interface ConsultaFormValues {
   }[]
 }
 
+interface InventarioFormValues {
+  NombreEncargado: string;
+  FechaInventario: Date;
+}
 
 
 interface ICuenta {
@@ -645,7 +649,23 @@ interface OutPutFormValues {
     Familia: string;
     CodigoSubFamilia: number;
     SubFamilia: string;
-    DescripcionArticulo?:string;
+    DescripcionArticulo?: string;
+  }[]
+};
+
+interface OutPutQuiebreStockFormValues {
+  FechInforme: Date;
+  QuiebreStock: {
+    Correlativo: number;
+    CodigoArticulo?: string;
+    CodigoFamilia: number;
+    Familia: string;
+    CodigoSubFamilia: number;
+    SubFamilia: string;
+    DescripcionArticulo?: string;
+    CantidadSistema: number;
+    StockCritico: number;
+    ProcesoCompra: string;
   }[]
 };
 
@@ -662,28 +682,28 @@ interface IParteSalida {
   fecha: Date;
   numero: number;
   cantidad: number;
-  almacenArticulo:{
+  almacenArticulo: {
     cantidad: number;
-    almacen:{
-      bodega:{
+    almacen: {
+      bodega: {
         nombre: string;
-        empresa:{
+        empresa: {
           rut: string;
-          recepcions:{
-            tipoDocumentoRecepcionCodigoNavigation:{
+          recepcions: {
+            tipoDocumentoRecepcionCodigoNavigation: {
               codigo: number;
               nombre: string;
             }
           }[]
-          funcionarioEmpresas:{
-            funcionario:{
-              idNavigation:{
-               run: string;
-               nombre: string;
-               nombres: string;
-               apellidoPaterno: string;
+          funcionarioEmpresas: {
+            funcionario: {
+              idNavigation: {
+                run: string;
+                nombre: string;
+                nombres: string;
+                apellidoPaterno: string;
+              }
             }
-           }
           }[]
         }
       }
@@ -706,36 +726,36 @@ interface IParteEntrada {
   fecha: Date;
   numero: number;
   cantidad: number;
-  recepcionDetalle:{
-    recepcion:{
-      cotizacion:{
-        proveedor:{
-           id: string;
-           rut: string;
-           razonSocial: string;
-           nombreComercial: string;
+  recepcionDetalle: {
+    recepcion: {
+      cotizacion: {
+        proveedor: {
+          id: string;
+          rut: string;
+          razonSocial: string;
+          nombreComercial: string;
         }
-        cotizacionDetalles:{
+        cotizacionDetalles: {
           valorUnitario: number;
         }[]
       },
-      tipoDocumentoRecepcionCodigoNavigation:{
-       codigo: number;
-       nombre: string;
+      tipoDocumentoRecepcionCodigoNavigation: {
+        codigo: number;
+        nombre: string;
       },
-      funcionarioEmpresa:{
-        funcionario:{
-          idNavigation:{
-           run: string;
-           nombre: string;
-           nombres: string;
-           apellidoPaterno: string;
+      funcionarioEmpresa: {
+        funcionario: {
+          idNavigation: {
+            run: string;
+            nombre: string;
+            nombres: string;
+            apellidoPaterno: string;
+          }
         }
-       }
       }
     }
   }
-  almacenArticulo:{
+  almacenArticulo: {
     cantidad: number;
   }
 }
@@ -746,5 +766,6 @@ interface IParteEntrada {
 export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada
+  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
+  OutPutQuiebreStockFormValues
 }
