@@ -205,7 +205,7 @@ export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, em
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getAllAlmacenArticuloBylocacion(bearer: string, locacionId: string) {
-  return api.get(`almacenarticulos/${locacionId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+  return api.get(`almacenarticulosbylocacionid/${locacionId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_getArticuloSalida(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {

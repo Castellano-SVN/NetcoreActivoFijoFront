@@ -257,7 +257,7 @@ export default function Page() {
         </div>
 
         <div className="flex md:flex-row lg:flex-row flex-col-reverse justify-around items-center mt-4 md:mt-0 lg:mt-0">
-          <button type="button" className="btn btn-primary mt-2" onClick={() => router.back()}><FaArrowLeft/>Volver</button>
+          <button type="button" className="btn btn-primary mt-2" onClick={() => router.back()}><FaArrowLeft />Volver</button>
           <div className="join">
             {!isLoading && (
               <button
@@ -333,7 +333,9 @@ function Locations({ locacions }: { locacions: ILocacion[] }) {
                 <td>{element.direccion}</td>
                 <td>{element.descripcion}</td>
                 <td>
-                  <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/locacion/${element.id}`)} />
+                  <button type="button">
+                    <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/locacion/${element.id}`)} />
+                  </button>
                 </td>
               </tr>
             ))
