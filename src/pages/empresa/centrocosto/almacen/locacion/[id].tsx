@@ -104,9 +104,9 @@ export default function Page() {
                         <div className="stat">
                             <div className="stat-title">
                                 {isLoading ? (
-                                    <span style={{ color: "transparent" }}>asd</span>
+                                    <span style={{ color: "transparent" }}></span>
                                 ) : (
-                                    "Total almacenes de artículos"
+                                    "Total artículos"
                                 )}
                             </div>
                             <div className="stat-value text-center">
@@ -128,20 +128,18 @@ export default function Page() {
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Dirección</th>
-                                        <th>Cantidad Articulos</th>
-                                        <th></th>
+                                        <th>Nombre Artículo</th>
+                                        <th>Descripción Artículo</th>
+                                        <th>Cantidad Artículo</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {almacenArticulo.map((almacenArticulo, index) => (
                                         <tr className="hover">
                                             <th className="text-bold">{index + 1}</th>
-                                            <td>{almacenArticulo.articuloId}</td>
+                                            <td>{almacenArticulo.articulo.nombre}</td>
+                                            <td>{almacenArticulo.articulo.descripcion}</td>
                                             <td>{almacenArticulo.cantidad}</td>
-                                            <td>
-                                                {/* <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/locacion/${element.id}`)} /> */}
-                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
