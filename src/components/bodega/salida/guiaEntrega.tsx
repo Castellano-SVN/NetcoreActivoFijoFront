@@ -219,8 +219,8 @@ export default function GuiaEntrega() {
         AlmacenIdDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         BodegaOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         BodegaDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        DireccionOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        DireccionDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        /* DireccionOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        DireccionDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }), */
         ParteSalida: z.array(ParteSalidaSchema)
     });
 
@@ -233,7 +233,7 @@ export default function GuiaEntrega() {
         name: "ParteSalida",
     });
 
-    useEffect(() => {
+  /*   useEffect(() => {
         dataAlmacenArticulo.map((almacenArticulo) => {
             append({
                 AlmacenId: almacenArticulo.almacenId,
@@ -247,7 +247,7 @@ export default function GuiaEntrega() {
                 DescripcionArticulo: almacenArticulo.articulo.descripcion
             });
         });
-    }, [dataAlmacenArticulo]);
+    }, [dataAlmacenArticulo]); */
 
     const [showPdf, setShowPdf] = useState(false);
     const [dataPost, setDataPost] = useState<OutPutFormValues | null>(null);
@@ -273,7 +273,6 @@ export default function GuiaEntrega() {
                 toast.error('Ha ocurrido un error inesperado');
                 setShowPdf(false);
             }
-
         }
 
         console.log(data);
@@ -459,7 +458,7 @@ export default function GuiaEntrega() {
                             </Modal.Actions>
                         </Modal>
                     </div>
-                    <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                   {/*  <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                         <div className="col-span-2">
                             <label className="block text-left mb-2" htmlFor="numeroDocumento">Dirección de origen:</label>
                             <input type="text"
@@ -479,8 +478,7 @@ export default function GuiaEntrega() {
                                 className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
                             {errors.DireccionDestino && <span className="text-red-600">{errors.DireccionDestino.message}</span>}
                         </div>
-
-                    </div>
+                    </div> */}
 
                     <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-2">
                         {getDataAlmacen !== '' && dataAlmacenArticulo.length > 0 ? (
@@ -493,6 +491,7 @@ export default function GuiaEntrega() {
                                     <span>Código sub-familia</span>
                                     <span>Sub-familia</span>
                                     <span>Descripción artículo</span>
+                                    <span>Cantidad sistema</span>
                                     <span>Cantidad salida</span>
 
                                 </Table.Head>
@@ -503,7 +502,7 @@ export default function GuiaEntrega() {
                                             <Table.Row key={index} hover={true}>
                                                 <input
                                                     type="checkbox"
-                                                    defaultChecked={true}
+                                                    defaultChecked={false}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
                                                             append({
@@ -528,6 +527,7 @@ export default function GuiaEntrega() {
                                                 <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
                                                 <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
                                                 <span>{almacenArticulo.articulo.descripcion}</span>
+                                                <span>{almacenArticulo.cantidad}</span>
                                                 {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
                                                     <input
                                                         type="number"
