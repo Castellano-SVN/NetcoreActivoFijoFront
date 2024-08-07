@@ -5,7 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useEffect } from "react";
 import { Table } from "react-daisyui";
 import { FaFilePdf } from "react-icons/fa";
-import { FormValueRecepcionData, ICotizacion } from "@/interfaces/creation";
+import { FormValueRecepcionData, FormValueRecepcionSoData, ICotizacion } from "@/interfaces/creation";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,13 +27,17 @@ export default function SinOrden(props: props) {
     const searchParams = useSearchParams();
     const idEmpresa = searchParams.get('empresa');
     const { jwt } = useUserStore();
+    
+
+    useEffect(()=>{
+        console.log(jwt);
+    },[])
 
     const RecepcionDataSchema = z.object({
         Recepcion: z.object({
             CotizacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             AnoNumero: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).int(),
-            Id: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             FuncionarioId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
@@ -57,7 +61,7 @@ export default function SinOrden(props: props) {
             })
         ),
     });
-    const methods = useForm<FormValueRecepcionData>({
+    const methods = useForm<FormValueRecepcionSoData>({
         resolver: zodResolver(RecepcionDataSchema),
     });
 
@@ -70,10 +74,10 @@ export default function SinOrden(props: props) {
                     setValue('Recepcion.CotizacionId', cotizacion.id);
                     setValue('Recepcion.EmpresaId', cotizacion.empresaId);
                     setValue('Recepcion.AnoNumero', cotizacion.anoNumero);
-                    setValue('Recepcion.FuncionarioId', "369E37CB-4095-452C-B65A-20988A24D894");
+                    setValue('Recepcion.FuncionarioId', cotizacion.cotizacionDetalles[0].solicitudDetalle.solicitud.funcionarioEmpresa.funcionarioId);
                     const fecha = new Date(cotizacion.fechaIngreso);
                     setValue('Recepcion.FechaIngreso', fecha);
-                    setValue('Recepcion.Observaciones', "hola, prueba");
+                    setValue('Recepcion.Observaciones', "");
                 });
 
                 const recepcionDetalle = data.map((cotizacion) => ({
@@ -94,7 +98,7 @@ export default function SinOrden(props: props) {
         };
     }, [data, setValue]);
 
-    const onSubmit = async (data: FormValueRecepcionData) => {
+    const onSubmit = async (data: FormValueRecepcionSoData) => {
         try {
             data.Recepcion.TipoDocumentoRecepcionCodigo = parseInt(data.Recepcion.TipoDocumentoRecepcionCodigo.toString());
             console.log('Datos enviados:', data);
@@ -107,6 +111,7 @@ export default function SinOrden(props: props) {
             toast.error('ha ocurrido un al recepcionar');
         }
     };
+
     return (
         <div className="flex justify-center items-cente">
             <form onSubmit={handleSubmit(onSubmit)}>

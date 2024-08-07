@@ -7,6 +7,14 @@ import { useUserStore } from "@/store/user.store";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
 import { FaPlus } from "react-icons/fa";
+import { FaCircleXmark } from "react-icons/fa6";
+import { toast } from "react-toastify";
+interface SelectedArticles {
+    id: string;
+    codigo?: string | null;
+    nombre: string;
+    descripcion?: string | null;
+}
 
 export default function Index() {
     const { setActive } = useContextStore()
@@ -111,13 +119,41 @@ export default function Index() {
         }
     }, [getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
 
+    const [selectedArticulos, setSelectedArticulos] = useState<SelectedArticles[]>([]);
+
+    const handleSelectArticulo = () => {
+        if (idArticulo && nameArticulo) {
+            const selectedArticulo = {
+                id: idArticulo,
+                nombre: nameArticulo,
+                codigo: codigoArticulo,
+                descripcion: DescripcionArticulo,
+            };
+            if (!selectedArticulos.some(articulo => articulo.id === selectedArticulo.id)) {
+                setSelectedArticulos([...selectedArticulos, selectedArticulo]);
+                toast.success('Artículo Agregado');
+            } else {
+                toast.error('Ya has seleccionado este artículo.');
+            }
+            ref.current?.close();
+
+        }
+    }
+
+    const handleDeleteArticulo = (index: number) => {
+        setSelectedArticulos(selectedArticulos.filter((articulo, i) => i !== index));
+        toast.error('Artículo Eliminado');
+    }
     return (
         <React.Fragment>
             <div className="flex items-center justify-center">
                 <div className="container shadow-md border rounded-md">
                     <div className="flex flex-col items-center justify-center p-6">
                         <h1 className="text-2xl font-bold mb-4">Toma de Inventario</h1>
-                        <button type="button" className="btn btn-outline btn-accent mt-2" onClick={handleShow}>Seleccione un artículo</button>
+                        {selectedArticulos.length == 0 && (
+
+                            <button type="button" className="btn btn-outline btn-accent mt-2" onClick={handleShow}>Seleccione un artículo</button>
+                        )}
                     </div>
                     <div className="flex flex-row justify-center mb-4">
                         <div className="flex flex-col w-full">
@@ -201,47 +237,69 @@ export default function Index() {
                                 </Modal.Body>
                                 <Modal.Actions>
                                     <form method="dialog">
-                                        <Button className="btn btn-outline btn-primary">Aceptar</Button>
+                                        <Button className="btn-outline btn-accent mr-1" onClick={handleSelectArticulo}>Agregar artículo</Button>
+                                        <Button className="btn-outline btn-accent ml-1" onClick={() => ref.current?.close()}>Cancelar</Button>
                                     </form>
                                 </Modal.Actions>
                             </Modal>
                         </div>
                     </div>
-                    <div className="overflow-x-auto">
-                        {idArticulo !== '' ? (
-                            <Table className="shadow-md border rounded-md" >
-                                <Table.Head className="bg-primary text-base-100">
-                                    <span>Código artículo</span>
-                                    <span>Descipción</span>
-                                    <span>Estado</span>
-                                    <span>Marca</span>
-                                    <span>Unidad medida</span>
-                                    <span>Presentación</span>
-                                    <span>Cantidad Inventariada</span>
-                                    <span>Código Qr</span>
-                                    <span>Fuente Financiamiento</span>
-                                    <span>Acción</span>
-                                </Table.Head>
+                    <div className="overflow-x-auto ml-3 mr-3 mb-3">
+                        {selectedArticulos.length !== 0 ? (
+                            <>
+                                <Table className="shadow-md border rouder-border-md rounded-md" >
+                                    <Table.Head className="bg-primary text-base-100">
+                                        <span>Código artículo</span>
+                                        <span>Descipción</span>
+                                        <span className="w-auto">Estado</span>
+                                        <span>Marca</span>
+                                        <span>Unidad medida</span>
+                                        <span>Presentación</span>
+                                        <span>Cantidad Inventariada</span>
+                                        <span>Código Qr</span>
+                                        <span>Fuente Financiamiento</span>
+                                        <span>Acción</span>
+                                    </Table.Head>
 
-                                <Table.Body>
+                                    <Table.Body>
+                                        {selectedArticulos.map((articulos, index) => (
+                                            <Table.Row hover>
+                                                <span>{articulos.codigo}</span>
+                                                <span>{articulos.nombre}</span>
+                                                <span>
+                                                    <select className="mt-1 block w-2/4 py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                                        <option key={0}>Regular</option>
+                                                        <option key={1}>Dañado</option>
+                                                    </select>
+                                                </span>
+                                                <span></span>
+                                                <span>Unidad</span>
+                                                <span></span>
+                                                <input type="number" className="mt-1 block w-2/4 py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" />
+                                                <span></span>
+                                                <span></span>
+                                                <span><button onClick={() => handleDeleteArticulo(index)} className="text-red-500"><FaCircleXmark /></button></span>
+                                            </Table.Row>
+                                        ))}
                                         <Table.Row hover>
-                                            <span>{codigoArticulo}</span>
-                                            <span>{nameArticulo}</span>
                                             <span></span>
                                             <span></span>
                                             <span></span>
                                             <span></span>
-                                            <input type="number" className="mt-1 block w-2/4 py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"/>
                                             <span></span>
                                             <span></span>
-                                            <span><button><FaPlus /></button></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span><button onClick={handleShow} className="text-green-500"><FaPlus /></button></span>
                                         </Table.Row>
 
-                                </Table.Body>
-                            </Table>
-
+                                    </Table.Body>
+                                </Table>
+                                <button type="button" className="btn btn-outline btn-accent mt-3">Guardar Inventario</button>
+                            </>
                         ) : (
-                            <WarningAlert message="Primero debe seleccionar un articulo" />
+                            <WarningAlert message="Se debe seleccionar al menos un articulo" />
                         )}
                     </div>
                 </div>

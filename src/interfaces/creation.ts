@@ -566,8 +566,36 @@ interface FormValueRecepcionData {
     Cantidad: number;
     Observaciones: string;
   }[];
-
 }
+
+interface FormValueRecepcionSoData {
+  Recepcion: {
+    CotizacionId: string;
+    EmpresaId: string;
+    AnoNumero: number;
+    CentroCostoId: string;
+    BodegaId?: string;
+    FuncionarioId: string;
+    TipoDocumentoRecepcionCodigo: number;
+    NumeroDocumento: number;
+    FechaIngreso: Date;
+    FechaRecepcion: Date;
+    Observaciones: string;
+    NumeroRecepcion: number;
+    FechaDocumento: Date;
+    Nula: boolean;
+  };
+  RecepcionDetalle: {
+    CotizacionId: string;
+    EmpresaId: string;
+    CotizacionDetalleId: string;
+    AnoNumero: number;
+    Cantidad: number;
+    Observaciones: string;
+  }[];
+}
+
+
 
 interface ICotizacion {
   empresaId: string;
@@ -613,6 +641,11 @@ interface ICotizacion {
     id: string;
     observaciones?: string;
     solicitudDetalle: {
+      solicitud:{
+        funcionarioEmpresa:{
+          funcionarioId: string;
+        }
+      }
       centroCosto: {
         id: string;
         nombre: string;
@@ -767,5 +800,5 @@ export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
   RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
-  OutPutQuiebreStockFormValues
+  OutPutQuiebreStockFormValues,FormValueRecepcionSoData
 }

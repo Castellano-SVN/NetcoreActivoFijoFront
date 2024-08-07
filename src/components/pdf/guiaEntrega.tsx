@@ -217,9 +217,9 @@ export default function PDFGuiaEntrega(props: props) {
                         <View style={styles.fila}>
                             <Text style={styles.parrafoSubTitle}>Bodega origen: {props.data.BodegaOrigen}</Text>
                         </View>
-                        <View style={styles.fila}>
+                        {/* <View style={styles.fila}>
                             <Text style={styles.parrafoSubTitle}>Dirección origen: {props.data.DireccionOrigen}</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                     <View style={styles.columna}>
@@ -227,9 +227,9 @@ export default function PDFGuiaEntrega(props: props) {
                         <View style={styles.fila}>
                             <Text style={styles.parrafoSubTitle}>Bodega destino: {props.data.BodegaDestino}</Text>
                         </View>
-                        <View style={styles.fila}>
+                        {/* <View style={styles.fila}>
                             <Text style={styles.parrafoSubTitle}>Dirección destino: {props.data.DireccionDestino}</Text>
-                        </View>
+                        </View> */}
                     </View>
                 </View>
 
