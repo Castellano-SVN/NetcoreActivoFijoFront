@@ -218,3 +218,14 @@ export function api_getArticuloEntrada(bearer: string, articuloId: string, fecha
 export function api_getInventario(bearer: string, nombreEncargado: string, fechaInventario: string) {
   return api.get(`inventario/${nombreEncargado}/${fechaInventario}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+export function api_getAllMarcas(bearer: string) {
+  return api.get(`marcas`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+export function api_getAllInventarioFisicoEstados(bearer: string) {
+  return api.get(`inventariofisicoestados`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_postInventarioFisico(bearer: string, data: any) {
+  return api.post(`inventariofisico`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}

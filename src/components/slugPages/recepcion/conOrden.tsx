@@ -71,7 +71,8 @@ export default function ConOrden(props: props) {
             Id: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             CentroCostoName: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
-            BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+            BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
+            AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             BodegaName: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
             FuncionarioId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
             TipoDocumentoRecepcionCodigo: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
@@ -89,6 +90,7 @@ export default function ConOrden(props: props) {
                 ObservacionDetalle: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).optional(),
                 Codigo: z.string({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).optional(),
                 Nombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
+                ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
                 Precio: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
                 Recepcionado: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }).optional(),
                 EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
@@ -113,25 +115,27 @@ export default function ConOrden(props: props) {
 
     const [dataPost, setDataPost] = useState<FormValueRecepcionData | null>(null);
     const onSubmit = async (data: FormValueRecepcionData) => {
-        try {
-            data.Recepcion.TipoDocumentoRecepcionCodigo = parseInt(data.Recepcion.TipoDocumentoRecepcionCodigo.toString());
-            console.log('Data del formulario:', data); // Nota la coma en lugar del +
+         try {
+             data.Recepcion.TipoDocumentoRecepcionCodigo = parseInt(data.Recepcion.TipoDocumentoRecepcionCodigo.toString());
+             console.log('Data del formulario:', data); // Nota la coma en lugar del +
+ 
+             // Hacer la solicitud al servicio
+             const response = await api_postRecepcionYDetalle(jwt, data);
+ 
+             // Mostrar el mensaje de éxito
+             if (response) {
+                 toast.success("Articulo recepcionado correctamente");
+                 setShowPdf(true);
+                 setDataPost(data);
+             }
+ 
+         } catch (error) {
+             console.error('Error al guardar: ', error);
+             toast.error('ha ocurrido un error');
+             setShowPdf(false);
+         }
 
-            // Hacer la solicitud al servicio
-            const response = await api_postRecepcionYDetalle(jwt, data);
-
-            // Mostrar el mensaje de éxito
-            if (response) {
-                toast.success("Articulo recepcionado correctamente");
-                setShowPdf(true);
-                setDataPost(data);
-            }
-
-        } catch (error) {
-            console.error('Error al guardar: ', error);
-            toast.error('ha ocurrido un error');
-            setShowPdf(false);
-        }
+        /* console.log('Data del formulario:', data); */
     };
 
     const volverHandleClick = () => {
@@ -173,6 +177,9 @@ export default function ConOrden(props: props) {
                         .join(','),
                     Nombre: ordenCompra.ordenCompraDetalles
                         .map((detalle) => detalle.cotizacionDetalle.articulo.nombre)
+                        .join(','),
+                    ArticuloId: ordenCompra.ordenCompraDetalles
+                        .map((detalle) => detalle.cotizacionDetalle.articulo.id)
                         .join(','),
                     Precio: ordenCompra.ordenCompraDetalles
                         .map((detalle) => detalle.cotizacionDetalle.valorUnitario)
@@ -261,6 +268,27 @@ export default function ConOrden(props: props) {
                                 }
                             </select>
                             {errors.Recepcion?.BodegaId && <span className="text-red-600">{errors.Recepcion.BodegaId.message}</span>}
+                        </div>
+
+                        <div>
+                            <label className="block text-left mb-2" htmlFor="bodega">Almacen:</label>
+                            <select {...register("Recepcion.AlmacenId", { setValueAs: (value) => value === '' ? undefined : value })} className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" >
+                                <option key={0} disabled selected>Seleccione una opción</option>
+                                {
+                                    props.dataConOrdenCompra.map((ordenCompra, index) => (
+                                        ordenCompra.ordenCompraDetalles.map((centroCosto, detalleIndex) => (
+                                            centroCosto.cotizacionDetalle.solicitudDetalle.centroCosto.bodegas.map((bodegas, bodegaindex) => (
+                                                bodegas.almacens.map((almacen, almacenIndex) => (
+                                                    <option key={almacenIndex} value={almacen.id}>
+                                                        {almacen.nombre}
+                                                    </option>
+                                                ))
+                                            ))
+                                        ))
+                                    ))
+                                }
+                            </select>
+                            {errors.Recepcion?.AlmacenId && <span className="text-red-600">{errors.Recepcion.AlmacenId.message}</span>}
                         </div>
                     </div>
                     <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">

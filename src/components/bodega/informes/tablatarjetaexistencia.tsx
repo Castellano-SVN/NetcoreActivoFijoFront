@@ -28,7 +28,7 @@ export default function TablaTarjetaExistencia(props: props) {
                 </Table.Head>
 
                 <Table.Body>
-                {props.dataEntrada.map((entrada, indexEntrada) => (
+                {/* {props.dataEntrada.map((entrada, indexEntrada) => (
                     <Table.Row hover key={indexEntrada}>
                         <span>{entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.nombres} {entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.apellidoPaterno}</span>
                         <span>{new Date(entrada.fecha).toLocaleDateString()}</span>
@@ -63,7 +63,7 @@ export default function TablaTarjetaExistencia(props: props) {
                         <span>30000</span>
                         <span>40000</span>
                     </Table.Row>
-                ))}
+                ))} */}
                 </Table.Body>
             </Table>
         </>

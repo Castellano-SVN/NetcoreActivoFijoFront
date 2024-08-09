@@ -522,6 +522,11 @@ interface IOrdenCompra {
           id: string;
           nombre: string;
           bodegas: {
+            almacens:{
+              id:string;
+              nombre:string;
+              sigla:string;
+            }[]
             id: string;
             nombre: string;
             sigla: string;
@@ -540,7 +545,8 @@ interface FormValueRecepcionData {
     AnoNumero: number;
     Id: string;
     CentroCostoId: string;
-    BodegaId?: string;
+    BodegaId: string;
+    AlmacenId: string;
     BodegaName?: string;
     FuncionarioId: string;
     TipoDocumentoRecepcionCodigo: number;
@@ -557,6 +563,7 @@ interface FormValueRecepcionData {
     ObservacionDetalle?: string;
     Codigo?: string;
     Nombre?: string;
+    ArticuloId?: string;
     Precio?: string;
     Recepcionado?: string;
     EmpresaId: string;
@@ -593,6 +600,45 @@ interface FormValueRecepcionSoData {
     Cantidad: number;
     Observaciones: string;
   }[];
+}
+interface InventarioFisicoFormValue {
+  InventarioFisico:{
+    EmpresaId: string;
+    FuncionarioId: string;
+    Numero: number;
+    FechaRegistro: Date;
+    FechaInicio: Date;
+    FechaTermino: Date;
+  };
+  InventarioFisicoDetalle:{
+    EmpresaId: string;
+    InventarioFisicoId: string;
+    FuncionarioId: string;
+    CentroCostoId: string;
+    BodegaId: string;
+    DependenciaLocacion: string;
+    FechaRegistro: Date;
+  };
+  InventarioFisicoRegistro:{
+    EmpresaId: string;
+    InventarioFisicoId: string;
+    InventarioFisicoDetalleId: string;
+    FuncionarioId: string;
+    PersonaConteoId: string;
+    AnoNumero:  number;
+    SubFamiliaId: string;
+    ArticuloId: string;
+    MarcaId: string;
+    EstadoCodigo: number;
+    LugarFisicoConteo: string;
+    LocacionId: string;
+    ProgramaId: string;
+    Presentacion: string;
+    Observaciones: string;
+    Codigo: string;
+    NumeroUnidades:  number;
+    FechaRegistro: Date;
+  };
 }
 
 
@@ -792,6 +838,14 @@ interface IParteEntrada {
     cantidad: number;
   }
 }
+interface IMarca {
+  id: string;
+  nombre: string;
+}
+interface IInventarioFisicoEstado {
+  codigo: number;
+  nombre: string;
+}
 
 
 
@@ -800,5 +854,5 @@ export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
   RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
-  OutPutQuiebreStockFormValues,FormValueRecepcionSoData
+  OutPutQuiebreStockFormValues,FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue
 }
