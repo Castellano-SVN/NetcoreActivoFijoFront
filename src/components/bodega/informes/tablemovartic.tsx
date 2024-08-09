@@ -28,7 +28,7 @@ export default function TableMoveArticle(props: props) {
                 </Table.Head>
 
                 <Table.Body>
-                    {props.dataEntrada.map((entrada, indexEntrada) => (
+                    {/* {props.dataEntrada.map((entrada, indexEntrada) => (
                         <Table.Row hover key={indexEntrada}>
                             <span>{entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.nombres} {entrada.recepcionDetalle.recepcion.funcionarioEmpresa.funcionario.idNavigation.apellidoPaterno}</span>
                             <span>{new Date(entrada.fecha).toLocaleDateString()}</span>
@@ -57,7 +57,7 @@ export default function TableMoveArticle(props: props) {
                             <span>{salida.cantidad}</span>
                             <span>{salida.almacenArticulo.cantidad}</span>
                         </Table.Row>
-                    ))}
+                    ))} */}
 
                 </Table.Body>
             </Table>

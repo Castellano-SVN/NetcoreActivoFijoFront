@@ -29,10 +29,6 @@ export default function SinOrden(props: props) {
     const { jwt } = useUserStore();
     
 
-    useEffect(()=>{
-        console.log(jwt);
-    },[])
-
     const RecepcionDataSchema = z.object({
         Recepcion: z.object({
             CotizacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo inválido" }),
