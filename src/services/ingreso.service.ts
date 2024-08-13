@@ -43,5 +43,8 @@ export function api_pdf_consulta(bearer: string, id: number, guid: string) {
 
     return api.get(`ingreso/actualizar/pdf?id=${id}&guid=${guid}`, { responseType: 'blob', headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_tipoDocumentoRecepcion(bearer:string) {
+    return api.get(`tipoDocumentoRecepcion`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 
 

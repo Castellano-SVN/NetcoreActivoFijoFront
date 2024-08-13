@@ -183,7 +183,7 @@ export function api_getOneSinOrdenCompra(bearer: string, empresaId: string, nume
 }
 
 export function api_postRecepcionYDetalle(bearer: string, data: any) {
-  return api.post(`recepcionydetalle`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+  return api.post(`recepcion`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_getAllEmpresas(bearer: string) {

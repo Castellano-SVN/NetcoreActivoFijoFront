@@ -518,6 +518,7 @@ interface IOrdenCompra {
       observaciones?: string;
       solicitudDetalle: {
         cantidadAprobada: number;
+        centroCostoId: string;
         centroCosto: {
           id: string;
           nombre: string;

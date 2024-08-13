@@ -157,13 +157,19 @@ function Element({ element }: { element: IEmpresa }) {
             <FaFilePen className="text-primary ml-2" />
           </a> */}
           <a
-            onClick={() => router.push(`/recepcion/recepcion?empresa=${element.id}`)}
+            onClick={() => router.push(`/recepcion/recepcion?empresa=${element.id}&OC=true`)}
             className="flex items-center cursor-pointer hover:font-bold"
           >
-            <span className="text-sm underline text-primary">Recepción</span>
+            <span className="text-sm underline text-primary">Recepción con OC</span>
             <FaClipboardCheck className="text-primary ml-2" />
           </a>
-
+          <a
+            onClick={() => router.push(`/recepcion/soc?empresa=${element.id}&OC=true`)}
+            className="flex items-center cursor-pointer hover:font-bold"
+          >
+            <span className="text-sm underline text-primary">Recepción sin OC</span>
+            <FaClipboardCheck className="text-primary ml-2" />
+          </a>
           {/* <a
             onClick={() => { router.push(`/recepcion/ingreso?empresa=${element.id}`) }}
             className="flex items-center cursor-pointer hover:font-bold"
