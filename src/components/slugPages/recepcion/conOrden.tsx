@@ -16,11 +16,13 @@ import {
 } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa";
 import { z } from "zod";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { api_postRecepcionYDetalle } from "@/services/bodega.service";
 import { toast } from "react-toastify";
 import UbicacionRecepcion from "./ubicacionRecepcion";
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);
 import {
   articulosI,
   recepcionCOC,
@@ -246,6 +248,7 @@ export default function ConOrden(props: props) {
                       showYearDropdown
                       showMonthDropdown
                       dateFormat={"dd/MM/yyyy"}
+                      locale="es"
                     />
                   )}
                 />
@@ -300,6 +303,7 @@ export default function ConOrden(props: props) {
                       showYearDropdown
                       showMonthDropdown
                       dateFormat={"dd/MM/yyyy"}
+                      locale="es"
                     />
                   )}
                 />

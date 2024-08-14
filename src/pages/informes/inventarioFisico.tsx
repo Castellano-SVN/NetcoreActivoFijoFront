@@ -5,7 +5,7 @@ import { useUserStore } from "@/store/user.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Controller, useForm } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +13,9 @@ import { IBodega, ICentroCosto, IEmpresa, InventarioFormValues } from "@/interfa
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Modal } from "react-daisyui";
-import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
+import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface"
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);;
 export default function InventarioFisico() {
     const ref = useRef<HTMLDialogElement>(null);
     const handleShow = useCallback(() => {
@@ -171,6 +173,7 @@ export default function InventarioFisico() {
                                                     showMonthDropdown
                                                     dateFormat={"dd/MM/yyyy"}
                                                     selectsStart
+                                                    locale="es"
                                                 />
                                             )}
                                         />

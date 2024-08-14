@@ -9,9 +9,11 @@ import { IBodega, ICentroCosto, IEmpresa, IParteEntrada, IParteSalida } from "@/
 import { Button, Modal, Table } from "react-daisyui";
 import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WarningAlert from "@/components/alerts/warningAlert";
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);
 
 export default function MovimientoArticulos() {
     const ref = useRef<HTMLDialogElement>(null);
@@ -301,6 +303,7 @@ export default function MovimientoArticulos() {
                                                 selectsStart
                                                 startDate={fechaDesde}
                                                 endDate={fechaHasta}
+                                                locale="es"
                                             />
                                         )}
                                     />
@@ -327,6 +330,7 @@ export default function MovimientoArticulos() {
                                                 startDate={fechaDesde}
                                                 endDate={fechaHasta}
                                                 minDate={fechaDesde}
+                                                locale="es"
                                             />
                                         )}
                                     />

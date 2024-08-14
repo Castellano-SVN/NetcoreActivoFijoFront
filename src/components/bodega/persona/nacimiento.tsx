@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import { Input } from "react-daisyui";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useQuery } from "react-query";
 import { api_getSexos } from "../../../services/tipos.service";
@@ -8,6 +8,9 @@ import { useUserStore } from "../../../store/user.store";
 import { useMixStore } from "../../../store/mix.store";
 import { FieldErrors, useFormContext, Controller } from "react-hook-form";
 import { PersonaFormValues } from "../../../interfaces/creation";
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);
+
 interface props {
   errors: FieldErrors<PersonaFormValues>
 }
@@ -58,6 +61,7 @@ export default function Nacimiento({ errors }: props) {
                 showYearDropdown
                 showMonthDropdown
                 dateFormat={"dd/MM/yyyy"}
+                locale='es'
               />
             )}
           />

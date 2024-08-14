@@ -12,9 +12,11 @@ import { Button, Modal } from "react-daisyui";
 import { FormProvider, useForm, useFieldArray, Controller } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa";
 import { z } from "zod";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import { toast } from "react-toastify";
 import router from "next/router";
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);
 
 
 export default function QuiebreStock() {
@@ -194,6 +196,7 @@ export default function QuiebreStock() {
                                                         showYearDropdown
                                                         showMonthDropdown
                                                         dateFormat={"dd/MM/yyyy"}
+                                                        locale="es"
                                                     />
                                                 )}
                                             />

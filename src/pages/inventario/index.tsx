@@ -220,35 +220,14 @@ export default function Index() {
     getAllInventarioFisicoEstados();
   }, []);
 
+  const InventarioSchema = z.object({
+    fecha: z.date(),
+    fechaFin: z.date(),
+    
+  });
+
+
   const InventarioFisicoSchema = z.object({
-    InventarioFisico: z.object({
-      EmpresaId: z.string({
-        required_error: "Campo requerido",
-        invalid_type_error: "Opción inválida",
-      }),
-      FuncionarioId: z
-        .string({
-          required_error: "Campo requerido",
-          invalid_type_error: "Opción inválida",
-        })
-        .optional(),
-      Numero: z.number({
-        required_error: "Campo requerido",
-        invalid_type_error: "Campo inválido",
-      }),
-      FechaRegistro: z.string({
-        required_error: "Campo requerido",
-        invalid_type_error: "Opción inválida",
-      }),
-      FechaInicio: z.string({
-        required_error: "Campo requerido",
-        invalid_type_error: "Opción inválida",
-      }),
-      FechaTermino: z.string({
-        required_error: "Campo requerido",
-        invalid_type_error: "Opción inválida",
-      }),
-    }),
     InventarioFisicoDetalle: z.object({
       EmpresaId: z.string({
         required_error: "Campo requerido",
@@ -383,7 +362,8 @@ export default function Index() {
     data: InventarioFisicoFormValue
   ) => {
     try {
-      await api_postInventarioFisico(jwt, data);
+      console.log(data)
+      // await api_postInventarioFisico(jwt, data);
       toast.success("Inventario guardado correctamente");
     } catch (error) {
       console.log(error);

@@ -14,11 +14,12 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 import Observaciones from "@/components/bodega/persona/observaciones";
 import Image from 'next/image'
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PDFConsulta from "@/components/pdf/consulta";
 import ReactPDF from "@react-pdf/renderer";
-
+import {es} from "date-fns/locale/es";
+registerLocale("es", es);
 
 interface props {
     solicitud: IConsulta;
@@ -177,6 +178,7 @@ export default function PropiedadesConsulta(props: props) {
                                     showYearDropdown
                                     showMonthDropdown
                                     dateFormat={"dd/MM/yyyy"}
+                                    locale="es"
                                 />
                             )}
                         />

@@ -84,59 +84,71 @@ export default function UbicacionRecepcion(props: props) {
 
   return (
     <>
-      <div>
-        <label className="block text-left mb-2" htmlFor="centroDeCosto">
-          Centro de costo:
-        </label>
-        <select
-          {...register("cc")}
-          className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-        >
-          {cc.map((cc, index) => (
-            <option key={index} value={cc.id}>
-              {cc.nombre}
-            </option>
-          ))}
-        </select>
-        {errors.cc && <span className="text-red-600">{errors.cc.message}</span>}
+      <div className="flex flex-col md:flex-row lg:flex-row justify-between">
+        <div className="w-full md:mr-2 lg:mr-2">
+          <div className="mt-2">
+            <label className="block text-left mb-2" htmlFor="centroDeCosto">
+              Centro de costo:
+            </label>
+            <select
+              {...register("cc")}
+              className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            >
+              {cc.map((cc, index) => (
+                <option key={index} value={cc.id}>
+                  {cc.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.cc && (
+              <span className="text-red-600">{errors.cc.message}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="w-full">
+          <div className="mt-2">
+            <label className="block text-left mb-2" htmlFor="bodega">
+              Bodega:
+            </label>
+            <select
+              {...register("bodega")}
+              className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            >
+              {bodegas.map((cc, index) => (
+                <option key={index} value={cc.id}>
+                  {cc.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.bodega && (
+              <span className="text-red-600">{errors.bodega.message}</span>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label className="block text-left mb-2" htmlFor="bodega">
-          Bodega:
-        </label>
-        <select
-          {...register("bodega")}
-          className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-        >
-          {bodegas.map((cc, index) => (
-            <option key={index} value={cc.id}>
-              {cc.nombre}
-            </option>
-          ))}
-        </select>
-        {errors.bodega && (
-          <span className="text-red-600">{errors.bodega.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-left mb-2" htmlFor="bodega">
-          Almacen:
-        </label>
-        <select
-          {...register("almacen")}
-          className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-        >
-          {almacens.map((cc, index) => (
-            <option key={index} value={cc.id}>
-              {cc.nombre}
-            </option>
-          ))}
-        </select>
-        {errors.almacen && (
-          <span className="text-red-600">{errors.almacen.message}</span>
-        )}
+      <div className="flex flex-col md:flex-row lg:flex-row justify-between">
+        <div className="w-full md:mr-2 lg:mr-2">
+          <div className="mt-2">
+            <label className="block text-left mb-2" htmlFor="bodega">
+              Almacen:
+            </label>
+            <select
+              {...register("almacen")}
+              className="mt-1 block w-1/2 py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            >
+              {almacens.map((cc, index) => (
+                <option key={index} value={cc.id}>
+                  {cc.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.almacen && (
+              <span className="text-red-600">{errors.almacen.message}</span>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );
