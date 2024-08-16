@@ -189,13 +189,13 @@ export default function PDFConOrden(props: props) {
                                 <View style={styles.fila}>
                                     <Text style={styles.subTitle}>CENTRO DE COSTO</Text>
                                 </View>
-                                <Text style={styles.parrafo}>{props.data.cc}</Text>
+                                <Text style={styles.parrafo}></Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>
                                     <Text style={styles.subTitle}>TIPO DE DOCUMENTO</Text>
                                 </View>
-                                <Text style={styles.parrafo}>{props.data.tipo}</Text>
+                                <Text style={styles.parrafo}>{props.data.tipo == 1 ? "Factura" : "Guia de depacho"}</Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>
@@ -213,7 +213,7 @@ export default function PDFConOrden(props: props) {
                                 <View style={styles.fila}>
                                     <Text style={styles.subTitle}>BODEGA</Text>
                                 </View>
-                                <Text style={styles.parrafo}>{props.data.bodega}</Text>
+                                <Text style={styles.parrafo}></Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>
@@ -281,10 +281,10 @@ export default function PDFConOrden(props: props) {
                                         <Text style={styles.tableCell}>{Articulo.porRecepcionar}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{Articulo.}</Text>
+                                        <Text style={styles.tableCell}>{Articulo.recibida}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{Articulo.Obseraciones}</Text>
+                                        <Text style={styles.tableCell}>{Articulo.observaciones}</Text>
                                     </View>
                                 </View>
                             ))}
@@ -293,7 +293,7 @@ export default function PDFConOrden(props: props) {
                         <View style={styles.brBig}></View>
 
                         <View style={styles.columna}>
-                            <Text style={styles.subTitle}>Descripcion general:   {props.data.Recepcion.Observaciones}</Text>
+                            <Text style={styles.subTitle}>Descripcion general:   {props.data.descripcion}</Text>
                         </View>
 
                         <View style={styles.fila}>

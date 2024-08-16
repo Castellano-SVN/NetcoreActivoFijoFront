@@ -44,7 +44,7 @@ import UbicacionRecepcion from "./ubicacionRecepcion";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 import Select from "react-select";
-import { api_getArticulos } from "../../../services/ingreso.service";
+import { api_getArticulos, api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
 import { FaPlus } from "react-icons/fa";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { HiCheck, HiOutlineX, HiX } from "react-icons/hi";
@@ -61,6 +61,10 @@ interface familiaI {
 interface props {
   empresa: string;
 }
+interface recepcionProps extends props {
+  tipos:{ codigo: number; nombre: string }[]
+}
+
 interface propsArticulo extends props {
   familia: familiaI[];
   subFamilias: familiaI[];
@@ -100,7 +104,7 @@ const RecepcionDataSchema = z.object({
     .min(1, { message: "Campo requerido" }),
   numDoc: z.number({ required_error: "Campo requerido" }),
   fechaDoc: z.date({ required_error: "Campo requerido" }),
-  // tipo: z.number({ required_error: "Campo requerido" }),
+  tipo: z.number({ required_error: "Campo requerido" }),
   descripcion: z.string({ required_error: "Campo requerido" }).optional(),
   articulos: z.array(ArticulosSchema),
 });
@@ -109,7 +113,7 @@ export default function SinOrden(props: props) {
   const methods = useForm<recepcionSOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
-      // tipo: 1,
+      tipo: 2,
       fecha: new Date(),
       fechaDoc: new Date(),
       empresa: props.empresa,
@@ -134,6 +138,7 @@ export default function SinOrden(props: props) {
       keyName: "code",
     }
   );
+  const [tipos, setTipos] = useState<{ codigo: number; nombre: string }[]>([]);
 
   const { jwt } = useUserStore();
 
@@ -174,9 +179,15 @@ export default function SinOrden(props: props) {
     setSelectedSubFamilia(null);
     getSubFamilias();
   }, [selectedFamilia]);
+  
+  const getTipos = async () => {
+    const fetch = await api_tipoDocumentoRecepcion(jwt);
+    setTipos(fetch.data.dataList);
+  };
 
   useEffect(() => {
     getFamilias();
+    getTipos();
   }, []);
 
   const [selectedArticles, setSelectedArticles] = useState([]);
@@ -258,7 +269,7 @@ export default function SinOrden(props: props) {
         {tab == 1 && (
           <FormProvider {...methods}>
             <form  onSubmit={handleSubmit(onSubmit)}>
-              <Recepcion empresa={props.empresa} />
+              <Recepcion empresa={props.empresa} tipos={tipos} />
               <button
                 type="submit"
                 className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"
@@ -274,7 +285,7 @@ export default function SinOrden(props: props) {
   );
 }
 
-function Recepcion(props: props) {
+function Recepcion(props: recepcionProps) {
   const {
     register,
     handleSubmit,
@@ -286,7 +297,7 @@ function Recepcion(props: props) {
     watch,
   } = useFormContext<recepcionSOC>();
   const { jwt } = useUserStore();
-
+  const [loadingAlmacenCantidad,setLoadingAlmacenCantidad] = useState<boolean>(false);
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
@@ -295,8 +306,9 @@ function Recepcion(props: props) {
     }
   );
   const almacenWatch = watch("almacen");
-
+  const tipoWatch = watch("tipo")
   const getAlmacenArticulo = async () => {
+    setLoadingAlmacenCantidad(true);
     const data = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
       jwt,
       props.empresa,
@@ -307,8 +319,8 @@ function Recepcion(props: props) {
     const commonItems = fields.map((item1) => {
       // Encuentra el elemento en dataList que tenga un ID coincidente
       const matchingItem2 = data.data.dataList.find(
-        (item2: { articuloId: string; cantidad: number }) =>
-          item2.articuloId === item1.id
+        (item2: { articuloId: string; cantidad: number,almacenId: string }) =>
+          item2.articuloId === item1.id && item2.almacenId === getValues("almacen")
       );
 
       // Si hay una coincidencia, agrega la propiedad cantidadAlmacen; de lo contrario, deja el objeto sin cambios
@@ -321,6 +333,7 @@ function Recepcion(props: props) {
     });
     remove();
     append(commonItems);
+    setLoadingAlmacenCantidad(false)
   };
   useEffect(() => {
     if (fields.length !== 0 && almacenWatch) {
@@ -445,45 +458,40 @@ function Recepcion(props: props) {
         </fieldset>
       </div>
 
-      {/* <div className="mt-2 mx-auto">
-        <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105">
+      <div className="mt-2 mx-auto">
+        <fieldset className="border shadow-md rounded-lg py-2 transition duration-300 transform hover:scale-105">
           <legend>Tipo de documento</legend>
           <div className="flex justify-center">
-            <label className="mr-4">
-              <input
-                type="radio"
-                value={1}
-                {...register("tipo", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
-                className="radio radio-xs radio-primary ml-2 mr-2"
-              />
-              Factura
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                value={2}
-                {...register("tipo", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
-                className="radio radio-xs radio-primary ml-2 mr-2"
-              />
-              Guia de despacho
-            </label>
-          </div>
+                  <Controller
+                    control={control}
+                    name="tipo"
+                    render={({ field }) => (
+                      <>
+                        {props.tipos.map((tipo, index) => (
+                          <label key={tipo.codigo} className="mr-4">
+                            <br />
+                            <input
+                              {...field}
+                              type="radio"
+                              value={tipo.codigo}
+                              className="radio radio-xs radio-primary ml-2 mr-2"
+                              checked={Number(field.value) === Number(tipo.codigo)}
+                            />
+                            {tipo.nombre}
+                          </label>
+                        ))}
+                      </>
+                    )}
+                  />
+                </div>
         </fieldset>
-      </div> */}
+      </div>
 
-      <div className="mt-2 mx-auto p-6">
-        <fieldset className="border-t  rounded-lg  transition duration-300 transform hover:scale-105">
+      <div className="overflow-x-auto mt-2 mx-auto p-6">
+        <fieldset className="border-t rounded-lg transition duration-300 transform">
           <legend>Articulos</legend>
-          <div className="flex justify-center"></div>
-          <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
-            <Table className="border shadow-lg m-5">
+          <div className=" ">
+            <Table className="border shadow-lg my-5 overflow-x-auto">
               <Table.Head className="bg-primary text-white">
                 <span>Codigo</span>
                 <span>Nombre</span>
@@ -507,7 +515,7 @@ function Recepcion(props: props) {
                       <span>{articulo.nombre}</span>
                       <div className="flex justify-center">
                         <span className="font-bold">
-                          {articulo.cantidadAlmacen}
+                          {!loadingAlmacenCantidad ? articulo.cantidadAlmacen : <span className="loading loading-spinner loading-md text-primary"></span>                          }
                         </span>
                       </div>
                       <span className="font-semibold">{articulo.valor}</span>
@@ -620,7 +628,7 @@ function Articulos(props: propsArticulo) {
         )}
         <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform">
           <legend>Artículos seleccionados</legend>
-          <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-3 gap-1">
+          <div className="grid grid-flow-row-dense ggrid-cols-1 md:grid-cols-3 grid-rows-3 gap-1">
             {props.list.map((articulo, index) => (
               <div
                 className="pl-2 m-1 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"
@@ -651,7 +659,7 @@ function Articulos(props: propsArticulo) {
       <fieldset className="border shadow-md rounded-lg p-6 md:m-10 m-0">
         <legend>Artículos encontrados</legend>
         {props.article.length !== 0 ? (
-          <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-3 gap-2">
+          <div className="grid grid-flow-row-dense grid-cols-1 md:grid-cols-3 grid-rows-3 gap-2">
             {props.article.map((articulo, index) => (
               <div
                 className="pl-2 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"

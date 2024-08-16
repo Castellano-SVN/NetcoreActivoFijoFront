@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { FormValueRecepcionData } from "../../../interfaces/creation";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUserStore } from "../../../store/user.store";
 import {
   api_getAllAlmacenByEmpByCenByBod,
@@ -15,6 +15,11 @@ import {
 interface props {
   empresa: string;
   filterCC: string[];
+  dispatchStrings?:Dispatch<SetStateAction<{
+    centrocosto?: string;
+    bodega?: string;
+    almacen?: string;
+  }>>
 }
 export default function UbicacionRecepcion(props: props) {
   const { jwt } = useUserStore();
@@ -36,6 +41,7 @@ export default function UbicacionRecepcion(props: props) {
   );
   const ccWatch = watch("cc");
   const ccBodega = watch("bodega");
+  const ccAlmacen = watch("almacen");
   useEffect(() => {
     getCentroCostos();
   }, []);
@@ -75,13 +81,39 @@ export default function UbicacionRecepcion(props: props) {
   useEffect(() => {
     if (!ccWatch) return;
     getBodegas();
+    if (props.dispatchStrings) {
+      props.dispatchStrings(
+        {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
+          bodega:bodegas.find(e => e.id === ccBodega)?.nombre,
+          almacen:almacens.find(e => e.id === ccAlmacen)?.nombre
+        }
+      )
+    }
   }, [ccWatch]);
 
   useEffect(() => {
     if (!ccBodega) return;
+    if (props.dispatchStrings) {
+      props.dispatchStrings(
+        {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
+          bodega:bodegas.find(e => e.id === ccBodega)?.nombre,
+          almacen:almacens.find(e => e.id === ccAlmacen)?.nombre
+        }
+      )
+    }
     getAlmacens();
   }, [ccBodega]);
 
+  useEffect(() => {
+    if (props.dispatchStrings) {
+      props.dispatchStrings(
+        {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
+          bodega:bodegas.find(e => e.id === ccBodega)?.nombre,
+          almacen:almacens.find(e => e.id === ccAlmacen)?.nombre
+        }
+      )
+    }
+  },[ccAlmacen])
   return (
     <>
       <div className="flex flex-col md:flex-row lg:flex-row justify-between">

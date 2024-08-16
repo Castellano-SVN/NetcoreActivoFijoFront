@@ -134,7 +134,7 @@ export default function ConOrden(props: props) {
       cotizacion: props.dataConOrdenCompra[0].cotizacionId,
     },
   });
-
+  const [locationString,setLocationString] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
   const {
     register,
     handleSubmit,
@@ -170,7 +170,7 @@ export default function ConOrden(props: props) {
       append(articulo);
     });
   }, []);
-  const [pdfData, setPdfData] = useState({});
+  const [pdfData, setPdfData] = useState<recepcionCOC | null>(null);
 
   const onSubmit = async (data: recepcionCOC) => {
     try {
@@ -444,7 +444,7 @@ export default function ConOrden(props: props) {
                 Volver
               </button>
 
-              {/* {showPdf && pdfData &&(
+              {showPdf && pdfData &&(
                 <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepcion?
@@ -484,7 +484,7 @@ export default function ConOrden(props: props) {
                   </Modal.Body>
                 </Modal>
               
-              )} */}
+              )}
               <button
                 type="submit"
                 className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"
