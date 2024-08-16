@@ -2,7 +2,7 @@ import PDFSinOrden from "@/components/pdf/recepcion/recepcionSinOrden";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Table } from "react-daisyui";
 import { FaFilePdf, FaSearch } from "react-icons/fa";
 import {
@@ -27,6 +27,7 @@ import {
 import router from "next/router";
 import DatePicker, { registerLocale } from "react-datepicker";
 import {
+  api_getAllAlmacenArticuloByEmpByCenByBodByAlm,
   api_getAllFamilias,
   api_getArticulosBySubfamilia,
   api_getSubFamiliaByEmpresa,
@@ -36,7 +37,6 @@ import { toast } from "react-toastify";
 import {
   articulosI,
   articulosSOC,
-  recepcionCOC,
   recepcionSOC,
   ubicacionRecepcionI,
 } from "../../../interfaces/recepcion.interface";
@@ -60,7 +60,6 @@ interface familiaI {
 
 interface props {
   empresa: string;
-  list: FieldArrayWithId<recepcionSOC, "articulos", "id">[];
 }
 interface propsArticulo extends props {
   familia: familiaI[];
@@ -76,27 +75,17 @@ interface propsArticulo extends props {
 
   textArticle: string;
   setTextArticle: React.Dispatch<React.SetStateAction<string>>;
-  append: UseFieldArrayAppend<recepcionSOC, "articulos">
-  list: FieldArrayWithId<recepcionSOC, "articulos", "id">[]
+  append: UseFieldArrayAppend<recepcionSOC, "articulos">;
+  list: FieldArrayWithId<recepcionSOC, "articulos", "id">[];
   remove: UseFieldArrayRemove;
   search: () => Promise<void>;
 }
 const ArticulosSchema = z.object({
   id: z.string(),
-  codigo: z.string(),
-  nombre: z.string(),
-  cantidad: z.number(),
-  precio: z.number(),
-  observacion: z.string(),
-  recepcionado: z.number(),
-  porRecepcionar: z.number(),
-  recibida: z.number(),
-  descripcion: z.string().optional(),
+  cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
 });
 
 const RecepcionDataSchema = z.object({
-  cotizacion: z.string(),
-  oc: z.number({ required_error: "Campo requerido" }),
   folio: z.number({ required_error: "Campo requerido" }),
   fecha: z.date({ required_error: "Campo requerido" }),
   empresa: z.string(),
@@ -111,7 +100,7 @@ const RecepcionDataSchema = z.object({
     .min(1, { message: "Campo requerido" }),
   numDoc: z.number({ required_error: "Campo requerido" }),
   fechaDoc: z.date({ required_error: "Campo requerido" }),
-  tipo: z.number({ required_error: "Campo requerido" }),
+  // tipo: z.number({ required_error: "Campo requerido" }),
   descripcion: z.string({ required_error: "Campo requerido" }).optional(),
   articulos: z.array(ArticulosSchema),
 });
@@ -120,9 +109,10 @@ export default function SinOrden(props: props) {
   const methods = useForm<recepcionSOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
-      tipo: 1,
+      // tipo: 1,
       fecha: new Date(),
       fechaDoc: new Date(),
+      empresa: props.empresa,
     },
   });
 
@@ -141,7 +131,7 @@ export default function SinOrden(props: props) {
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
       name: "articulos", // unique name for your Field Array
-      keyName: 'code'
+      keyName: "code",
     }
   );
 
@@ -200,31 +190,35 @@ export default function SinOrden(props: props) {
         selectedSubFamilia?.id,
         textArticle
       );
-      const resulset = res.data.dataList.map((item: { id: string; }) => {
-        const exists = fields.some(articulo => articulo.id.toString() === item.id.toString());
+      const resulset = res.data.dataList.map((item: { id: string }) => {
+        const exists = fields.some(
+          (articulo) => articulo.id.toString() === item.id.toString()
+        );
         return {
           ...item,
-          action: exists ? "success" : "stand"
+          action: exists ? "success" : "stand",
         };
       });
-      setDataArticulo(resulset)
+      setDataArticulo(resulset);
     } catch (error) {
       console.log(error);
     }
   };
-
+  const onSubmit = async (data: recepcionSOC) => {
+    console.log(data)
+  }
 
   return (
     <>
-
       <div className="w-11/12 md:w-11/12 md:w-8/12  m-auto p- flex flex-col">
         <div className=" shadow  flex flex-row justify-around rounded p-1">
           <a
             onClick={() => {
               setTab(0);
             }}
-            className={`${tab == 0 && "border-b-2 border-primary font-bold"
-              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${
+              tab == 0 && "border-b-2 border-primary font-bold"
+            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Artículos
           </a>
@@ -232,19 +226,11 @@ export default function SinOrden(props: props) {
             onClick={() => {
               setTab(1);
             }}
-            className={`${tab == 1 && "border-b-2 border-primary font-bold"
-              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${
+              tab == 1 && "border-b-2 border-primary font-bold"
+            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Recepción
-          </a>
-          <a
-            onClick={() => {
-              setTab(2);
-            }}
-            className={`${tab == 2 && "border-b-2 border-primary font-bold"
-              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
-          >
-            Resumen
           </a>
         </div>
       </div>
@@ -271,15 +257,19 @@ export default function SinOrden(props: props) {
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
         {tab == 1 && (
           <FormProvider {...methods}>
-            <form className="">
-              <Recepcion empresa={props.empresa} list={fields}/>
+            <form  onSubmit={handleSubmit(onSubmit)}>
+              <Recepcion empresa={props.empresa} />
+              <button
+                type="submit"
+                className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"
+              >
+                Guardar
+              </button>
             </form>
           </FormProvider>
         )}
       </div>
-      {tab == 2 && (
-        'hola mundo'
-      )}
+      {tab == 2 && "hola mundo"}
     </>
   );
 }
@@ -294,10 +284,61 @@ function Recepcion(props: props) {
     getValues,
     reset,
     watch,
-  } = useFormContext<recepcionCOC>();
+  } = useFormContext<recepcionSOC>();
+  const { jwt } = useUserStore();
 
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
+    {
+      control, // control props comes from useForm (optional: if you are using FormProvider)
+      name: "articulos", // unique name for your Field Array
+      keyName: "code",
+    }
+  );
+  const almacenWatch = watch("almacen");
 
+  const getAlmacenArticulo = async () => {
+    const data = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
+      jwt,
+      props.empresa,
+      getValues("cc"),
+      getValues("bodega"),
+      getValues("almacen")
+    );
+    const commonItems = fields.map((item1) => {
+      // Encuentra el elemento en dataList que tenga un ID coincidente
+      const matchingItem2 = data.data.dataList.find(
+        (item2: { articuloId: string; cantidad: number }) =>
+          item2.articuloId === item1.id
+      );
 
+      // Si hay una coincidencia, agrega la propiedad cantidadAlmacen; de lo contrario, deja el objeto sin cambios
+      return {
+        ...item1,
+        cantidadAlmacen: matchingItem2
+          ? matchingItem2.cantidad
+          : "No recepcionado anteriormente", // Usa la propiedad existente si no hay coincidencia
+      };
+    });
+    remove();
+    append(commonItems);
+  };
+  useEffect(() => {
+    if (fields.length !== 0 && almacenWatch) {
+      getAlmacenArticulo();
+    }
+  }, [fields.length, almacenWatch]);
+  
+  
+
+  const handleInput = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Permitir solo dígitos del 0 al 9
+    if (/^\d*$/.test(value)) {
+      e.target.value = value;
+    } else {
+      e.target.value = e.target.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
+    }
+  };
 
   return (
     <div className="">
@@ -404,7 +445,7 @@ function Recepcion(props: props) {
         </fieldset>
       </div>
 
-      <div className="mt-2 mx-auto">
+      {/* <div className="mt-2 mx-auto">
         <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105">
           <legend>Tipo de documento</legend>
           <div className="flex justify-center">
@@ -435,27 +476,55 @@ function Recepcion(props: props) {
             </label>
           </div>
         </fieldset>
-      </div>
+      </div> */}
 
-      <div className="mt-2 mx-auto">
-        <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105">
-          <legend>Articulos Seleccionados</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {props.list.map((article, index) => (
-              <div key={index} className="flex flex-row items-center p-2 border-b border-gray-200">
-                <div className="w-3/4">
-                  <span className="font-bold">{article.nombre}</span>
-                  <span className="text-sm ml-3">{article.descripcion}</span>
+      <div className="mt-2 mx-auto p-6">
+        <fieldset className="border-t  rounded-lg  transition duration-300 transform hover:scale-105">
+          <legend>Articulos</legend>
+          <div className="flex justify-center"></div>
+          <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
+            <Table className="border shadow-lg m-5">
+              <Table.Head className="bg-primary text-white">
+                <span>Codigo</span>
+                <span>Nombre</span>
+                <div className="flex justify-center">
+                  <span className="">Cantidad en almacen</span>
                 </div>
-                <div className="w-1/4">
-                  <input
-                    type="number"
-                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    placeholder="Cantidad recibida"
-                  />
-                </div>
-              </div>
-            ))}
+                <span>Precio</span>
+                <span>Cantidad a recepcionar</span>
+              </Table.Head>
+
+              <Table.Body>
+                {fields
+                  .sort((a, b) => {
+                    if (Number(a.codigo) < Number(b.codigo)) return -1;
+                    if (Number(a.codigo) > Number(b.codigo)) return 1;
+                    return 0;
+                  })
+                  .map((articulo, index) => (
+                    <Table.Row key={index} hover={true}>
+                      <span>{articulo.codigo}</span>
+                      <span>{articulo.nombre}</span>
+                      <div className="flex justify-center">
+                        <span className="font-bold">
+                          {articulo.cantidadAlmacen}
+                        </span>
+                      </div>
+                      <span className="font-semibold">{articulo.valor}</span>
+                      <input
+                        key={articulo.id}
+                        onInput={handleInput}
+                        className={`block w-20 py-1 px-1 border ${
+                          errors.articulos && errors.articulos[index]?.cantidad
+                            ? "border-red-600"
+                            : "border-primary"
+                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        {...register(`articulos.${index}.cantidad`,{setValueAs: (value) => (value === "" ? undefined : Number(value))})}
+                      />
+                    </Table.Row>
+                  ))}
+              </Table.Body>
+            </Table>
           </div>
         </fieldset>
       </div>
@@ -464,40 +533,36 @@ function Recepcion(props: props) {
 }
 
 function Articulos(props: propsArticulo) {
-
   const { jwt } = useUserStore();
   const updateArticle = (index: number, article: articulosSOC) => {
-    props.setArticle(prevState => {
+    props.setArticle((prevState) => {
       const updatedArticles = [...prevState];
       updatedArticles[index] = { ...updatedArticles[index], action: "loading" };
       return updatedArticles;
     });
 
     props.append(article);
-    props.setArticle(prevState => {
+    props.setArticle((prevState) => {
       const updatedArticles = [...prevState];
       updatedArticles[index] = { ...updatedArticles[index], action: "success" };
       return updatedArticles;
     });
-  }
+  };
 
   const deleteField = (index: number, article: articulosSOC) => {
-    const inList = props.article.findIndex(e => e.id == article.id);
+    const inList = props.article.findIndex((e) => e.id == article.id);
     if (inList !== -1) {
-      props.setArticle(prevState => {
+      props.setArticle((prevState) => {
         const updatedArticles = [...prevState];
-        updatedArticles[inList] = { ...updatedArticles[inList], action: "stand" };
+        updatedArticles[inList] = {
+          ...updatedArticles[inList],
+          action: "stand",
+        };
         return updatedArticles;
       });
     }
-    props.remove(index)
-  }
-
-
-  const handleClickRecepcion = () => {
-    console.log(props.list);
+    props.remove(index);
   };
-
   return (
     <>
       <div className=" grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
@@ -557,26 +622,30 @@ function Articulos(props: propsArticulo) {
           <legend>Artículos seleccionados</legend>
           <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-3 gap-1">
             {props.list.map((articulo, index) => (
-              <div className="pl-2 m-1 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2" key={index}>
+              <div
+                className="pl-2 m-1 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"
+                key={index}
+              >
                 <div className="w-4/5 flex flex-col text-start">
-                  <label className=" select-none"><span className="font-semibold">{articulo.nombre}</span></label>
+                  <label className=" select-none">
+                    <span className="font-semibold">{articulo.nombre}</span>
+                  </label>
                 </div>
                 <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
-                  <button disabled={articulo.action == "loading"} onClick={() => deleteField(index, articulo)} type="button" className="flex items-center justify-center h-full w-full text-primary hover:text-error">
-                    {articulo.action == "stand" && <HiX className="h-6 w-6 focus:scale-115 " />}
+                  <button
+                    disabled={articulo.action == "loading"}
+                    onClick={() => deleteField(index, articulo)}
+                    type="button"
+                    className="flex items-center justify-center h-full w-full text-primary hover:text-error"
+                  >
+                    {articulo.action == "stand" && (
+                      <HiX className="h-6 w-6 focus:scale-115 " />
+                    )}
                   </button>
-
                 </div>
               </div>
             ))}
           </div>
-          {props.list.length !== 0 && (
-            <>
-              <div className="flex flex-row justify-end">
-                <button className="btn btn-outline btn-primary" onClick={() => handleClickRecepcion()}>Recepcionar Articulos</button>
-              </div>
-            </>
-          )}
         </fieldset>
       </div>
       <fieldset className="border shadow-md rounded-lg p-6 md:m-10 m-0">
@@ -584,17 +653,34 @@ function Articulos(props: propsArticulo) {
         {props.article.length !== 0 ? (
           <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-3 gap-2">
             {props.article.map((articulo, index) => (
-              <div className="pl-2 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2" key={index}>
+              <div
+                className="pl-2 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"
+                key={index}
+              >
                 <div className="w-4/5 flex flex-col text-start">
-                  <label className=" select-none"><span className="font-semibold">Nombre</span>: {articulo.nombre}</label>
-                  <label className="select-none"><span className="font-semibold">Descripcion</span>: {articulo.descripcion}</label>
+                  <label className=" select-none">
+                    <span className="font-semibold">Nombre</span>:{" "}
+                    {articulo.nombre}
+                  </label>
+                  <label className="select-none">
+                    <span className="font-semibold">Descripcion</span>:{" "}
+                    {articulo.descripcion}
+                  </label>
                 </div>
                 <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
-                  <button disabled={articulo.action != "stand"} onClick={() => updateArticle(index, articulo)} type="button" className="flex items-center justify-center h-full w-full text-primary hover:text-success">
-                    {articulo.action == "stand" && <FaPlus className="h-6 w-6 focus:scale-115" />}
-                    {articulo.action == "success" && <HiCheck className="h-6 w-6 focus:scale-115" />}
+                  <button
+                    disabled={articulo.action != "stand"}
+                    onClick={() => updateArticle(index, articulo)}
+                    type="button"
+                    className="flex items-center justify-center h-full w-full text-primary hover:text-success"
+                  >
+                    {articulo.action == "stand" && (
+                      <FaPlus className="h-6 w-6 focus:scale-115" />
+                    )}
+                    {articulo.action == "success" && (
+                      <HiCheck className="h-6 w-6 focus:scale-115" />
+                    )}
                   </button>
-
                 </div>
               </div>
             ))}

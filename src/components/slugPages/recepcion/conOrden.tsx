@@ -170,19 +170,22 @@ export default function ConOrden(props: props) {
       append(articulo);
     });
   }, []);
-  
+  const [pdfData, setPdfData] = useState({});
+
   const onSubmit = async (data: recepcionCOC) => {
     try {
       console.log("Data del formulario:", data); // Nota la coma en lugar del +
       
       // Hacer la solicitud al servicio
-      const response = await api_postRecepcionYDetalle(jwt, data);
+      // const response = await api_postRecepcionYDetalle(jwt, data);
       
       // Mostrar el mensaje de éxito
-      if (response) {
+      // if (response) {
         toast.success("Articulo recepcionado correctamente");
+        setPdfData(data)
+        console.log("Pdf data :",pdfData)
         setShowPdf(true);
-      }
+      // }
     } catch (error) {
       console.error("Error al guardar: ", error);
       toast.error("ha ocurrido un error");
@@ -441,7 +444,7 @@ export default function ConOrden(props: props) {
                 Volver
               </button>
 
-              {/* {showPdf && dataPost ? (
+              {/* {showPdf && pdfData &&(
                 <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepcion?
@@ -450,7 +453,7 @@ export default function ConOrden(props: props) {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                       <div className="col-span-2">
                         <PDFDownloadLink
-                          document={<PDFConOrden data={dataPost} />}
+                          document={<PDFConOrden data={pdfData} />}
                           fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}
                         >
                           {({ loading, url, error, blob }) =>
@@ -480,8 +483,8 @@ export default function ConOrden(props: props) {
                     </div>
                   </Modal.Body>
                 </Modal>
-              ) : (
-                )} */}
+              
+              )} */}
               <button
                 type="submit"
                 className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"

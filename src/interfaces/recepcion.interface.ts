@@ -19,9 +19,12 @@ export interface articulosI {
  export interface articulosSOC {
     cantidad: number;
     action: string;
+    codigo: number;
     id: string;
     nombre: string;
     descripcion: string;
+    valor: number;
+    cantidadAlmacen: string | number;
  }
  interface recepcion extends ubicacionRecepcionI {
     oc: number;
