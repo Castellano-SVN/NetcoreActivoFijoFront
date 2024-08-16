@@ -56,7 +56,7 @@ export function api_getArticulos(bearer: string, empresa:string, familiaId?:stri
   }
 
   export function api_postRecepcionSo(bearer: string, data: any) {
-    return api.post(`ingreso/solicitud`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+    return api.post(`ingreso/recepcionso`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 
