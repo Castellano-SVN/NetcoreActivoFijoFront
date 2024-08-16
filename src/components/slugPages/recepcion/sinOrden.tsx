@@ -60,6 +60,7 @@ interface familiaI {
 
 interface props {
   empresa: string;
+  list: FieldArrayWithId<recepcionSOC, "articulos", "id">[];
 }
 interface propsArticulo extends props {
   familia: familiaI[];
@@ -140,7 +141,7 @@ export default function SinOrden(props: props) {
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
       name: "articulos", // unique name for your Field Array
-      keyName:'code'
+      keyName: 'code'
     }
   );
 
@@ -207,7 +208,7 @@ export default function SinOrden(props: props) {
         };
       });
       setDataArticulo(resulset)
-      } catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -216,72 +217,69 @@ export default function SinOrden(props: props) {
   return (
     <>
 
-          <div className="w-11/12 md:w-11/12 md:w-8/12  m-auto p- flex flex-col">
-            <div className=" shadow  flex flex-row justify-around rounded p-1">
-              <a
-                onClick={() => {
-                  setTab(0);
-                }}
-                className={`${
-                  tab == 0 && "border-b-2 border-primary font-bold"
-                } w-full mr-1 hover:font-bold hover:cursor-pointer`}
-              >
-                Artículos
-              </a>
-              <a
-                onClick={() => {
-                  setTab(1);
-                }}
-                className={`${
-                  tab == 1 && "border-b-2 border-primary font-bold"
-                } w-full mr-1 hover:font-bold hover:cursor-pointer`}
-              >
-                Recepción
-              </a>
-              <a
-                onClick={() => {
-                  setTab(2);
-                }}
-                className={`${
-                  tab == 2 && "border-b-2 border-primary font-bold"
-                } w-full mr-1 hover:font-bold hover:cursor-pointer`}
-              >
-                Resumen
-              </a>
-            </div>
-          </div>
-          {tab == 0 && (
-            <Articulos
-              empresa={props.empresa}
-              familia={dataFamilia}
-              setArticle={setDataArticulo}
-              setSubfamilias={setDataSubFamilia}
-              subFamilias={dataSubFamilia}
-              selectedFamilia={selectedFamilia}
-              setSelectedFamilia={setSelectedFamilia}
-              selectedSubFamilia={selectedSubFamilia}
-              setSelectedSubFamilia={setSelectedSubFamilia}
-              setTextArticle={setTextArticle}
-              textArticle={textArticle}
-              search={ArticleSearch}
-              article={dataArticulo}
-              append={append}
-              list={fields}
-              remove={remove}
-            />
-          )}
-          <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
-            {tab == 1 && (
-              <FormProvider {...methods}>
-                <form className="">
-                  <Recepcion empresa={props.empresa} />
-                </form>
-              </FormProvider>
-            )}
-          </div>
-          {tab == 2 && (
-              'hola mundo'
-          )}
+      <div className="w-11/12 md:w-11/12 md:w-8/12  m-auto p- flex flex-col">
+        <div className=" shadow  flex flex-row justify-around rounded p-1">
+          <a
+            onClick={() => {
+              setTab(0);
+            }}
+            className={`${tab == 0 && "border-b-2 border-primary font-bold"
+              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+          >
+            Artículos
+          </a>
+          <a
+            onClick={() => {
+              setTab(1);
+            }}
+            className={`${tab == 1 && "border-b-2 border-primary font-bold"
+              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+          >
+            Recepción
+          </a>
+          <a
+            onClick={() => {
+              setTab(2);
+            }}
+            className={`${tab == 2 && "border-b-2 border-primary font-bold"
+              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+          >
+            Resumen
+          </a>
+        </div>
+      </div>
+      {tab == 0 && (
+        <Articulos
+          empresa={props.empresa}
+          familia={dataFamilia}
+          setArticle={setDataArticulo}
+          setSubfamilias={setDataSubFamilia}
+          subFamilias={dataSubFamilia}
+          selectedFamilia={selectedFamilia}
+          setSelectedFamilia={setSelectedFamilia}
+          selectedSubFamilia={selectedSubFamilia}
+          setSelectedSubFamilia={setSelectedSubFamilia}
+          setTextArticle={setTextArticle}
+          textArticle={textArticle}
+          search={ArticleSearch}
+          article={dataArticulo}
+          append={append}
+          list={fields}
+          remove={remove}
+        />
+      )}
+      <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
+        {tab == 1 && (
+          <FormProvider {...methods}>
+            <form className="">
+              <Recepcion empresa={props.empresa} list={fields}/>
+            </form>
+          </FormProvider>
+        )}
+      </div>
+      {tab == 2 && (
+        'hola mundo'
+      )}
     </>
   );
 }
@@ -297,6 +295,10 @@ function Recepcion(props: props) {
     reset,
     watch,
   } = useFormContext<recepcionCOC>();
+
+
+
+
   return (
     <div className="">
       <div className="flex flex-col md:flex-row lg:flex-row justify-between shadow-md bordered p-4 my-2 rounded transition duration-300 transform hover:scale-105">
@@ -437,8 +439,24 @@ function Recepcion(props: props) {
 
       <div className="mt-2 mx-auto">
         <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105">
-          <legend>Articulos</legend>
-          <div className="flex justify-center"></div>
+          <legend>Articulos Seleccionados</legend>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {props.list.map((article, index) => (
+              <div key={index} className="flex flex-row items-center p-2 border-b border-gray-200">
+                <div className="w-3/4">
+                  <span className="font-bold">{article.nombre}</span>
+                  <span className="text-sm ml-3">{article.descripcion}</span>
+                </div>
+                <div className="w-1/4">
+                  <input
+                    type="number"
+                    className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                    placeholder="Cantidad recibida"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </fieldset>
       </div>
     </div>
@@ -448,33 +466,38 @@ function Recepcion(props: props) {
 function Articulos(props: propsArticulo) {
 
   const { jwt } = useUserStore();
-  const updateArticle = (index:number,article:articulosSOC) => {
+  const updateArticle = (index: number, article: articulosSOC) => {
     props.setArticle(prevState => {
       const updatedArticles = [...prevState];
-      updatedArticles[index] = { ...updatedArticles[index], action:"loading" };
+      updatedArticles[index] = { ...updatedArticles[index], action: "loading" };
       return updatedArticles;
     });
 
     props.append(article);
     props.setArticle(prevState => {
       const updatedArticles = [...prevState];
-      updatedArticles[index] = { ...updatedArticles[index], action:"success" };
+      updatedArticles[index] = { ...updatedArticles[index], action: "success" };
       return updatedArticles;
-    }); 
+    });
   }
 
-  const deleteField = (index: number,article:articulosSOC) => {
+  const deleteField = (index: number, article: articulosSOC) => {
     const inList = props.article.findIndex(e => e.id == article.id);
     if (inList !== -1) {
       props.setArticle(prevState => {
         const updatedArticles = [...prevState];
-        updatedArticles[inList] = { ...updatedArticles[inList], action:"stand" };
+        updatedArticles[inList] = { ...updatedArticles[inList], action: "stand" };
         return updatedArticles;
       });
     }
     props.remove(index)
-
   }
+
+
+  const handleClickRecepcion = () => {
+    console.log(props.list);
+  };
+
   return (
     <>
       <div className=" grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
@@ -533,20 +556,27 @@ function Articulos(props: propsArticulo) {
         <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform">
           <legend>Artículos seleccionados</legend>
           <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-3 gap-1">
-          {props.list.map((articulo, index) => (
+            {props.list.map((articulo, index) => (
               <div className="pl-2 m-1 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2" key={index}>
-              <div className="w-4/5 flex flex-col text-start">
-                <label className=" select-none"><span className="font-semibold">{articulo.nombre}</span></label>
-              </div>
-              <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
-                <button disabled={articulo.action == "loading"} onClick={() => deleteField(index,articulo)} type="button" className="flex items-center justify-center h-full w-full text-primary hover:text-error">
-                  {articulo.action == "stand" && <HiX className="h-6 w-6 focus:scale-115 "/>}
-                </button>
+                <div className="w-4/5 flex flex-col text-start">
+                  <label className=" select-none"><span className="font-semibold">{articulo.nombre}</span></label>
+                </div>
+                <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
+                  <button disabled={articulo.action == "loading"} onClick={() => deleteField(index, articulo)} type="button" className="flex items-center justify-center h-full w-full text-primary hover:text-error">
+                    {articulo.action == "stand" && <HiX className="h-6 w-6 focus:scale-115 " />}
+                  </button>
 
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
           </div>
+          {props.list.length !== 0 && (
+            <>
+              <div className="flex flex-row justify-end">
+                <button className="btn btn-outline btn-primary" onClick={() => handleClickRecepcion()}>Recepcionar Articulos</button>
+              </div>
+            </>
+          )}
         </fieldset>
       </div>
       <fieldset className="border shadow-md rounded-lg p-6 md:m-10 m-0">
@@ -560,8 +590,8 @@ function Articulos(props: propsArticulo) {
                   <label className="select-none"><span className="font-semibold">Descripcion</span>: {articulo.descripcion}</label>
                 </div>
                 <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
-                  <button disabled={articulo.action != "stand"} onClick={() => updateArticle(index,articulo)} type="button"   className="flex items-center justify-center h-full w-full text-primary hover:text-success">
-                  {articulo.action == "stand" && <FaPlus className="h-6 w-6 focus:scale-115"/>}
+                  <button disabled={articulo.action != "stand"} onClick={() => updateArticle(index, articulo)} type="button" className="flex items-center justify-center h-full w-full text-primary hover:text-success">
+                    {articulo.action == "stand" && <FaPlus className="h-6 w-6 focus:scale-115" />}
                     {articulo.action == "success" && <HiCheck className="h-6 w-6 focus:scale-115" />}
                   </button>
 
