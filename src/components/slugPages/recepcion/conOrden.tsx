@@ -151,7 +151,7 @@ export default function ConOrden(props: props) {
     }
   );
   const [showPdf, setShowPdf] = useState(false);
-  
+
   useEffect(() => {
     remove([0, 1]);
     props.dataConOrdenCompra[0].ordenCompraDetalles.forEach((element) => {
@@ -174,18 +174,17 @@ export default function ConOrden(props: props) {
 
   const onSubmit = async (data: recepcionCOC) => {
     try {
-      console.log("Data del formulario:", data); // Nota la coma en lugar del +
+
       
       // Hacer la solicitud al servicio
-      // const response = await api_postRecepcionYDetalle(jwt, data);
+      const response = await api_postRecepcionYDetalle(jwt, data);
       
       // Mostrar el mensaje de éxito
-      // if (response) {
+      if (response) {
         toast.success("Articulo recepcionado correctamente");
         setPdfData(data)
-        console.log("Pdf data :",pdfData)
         setShowPdf(true);
-      // }
+      }
     } catch (error) {
       console.error("Error al guardar: ", error);
       toast.error("ha ocurrido un error");
@@ -201,9 +200,10 @@ export default function ConOrden(props: props) {
     props.setNumero(null);
   };
   
-  useEffect(() => {
-    console.log(errors)
-  }, [errors]);
+  useEffect(()=>{
+    console.log(locationString.almacen,locationString.bodega,locationString.centrocosto)
+  },[locationString])
+
   return (
     <div className="flex justify-center items-center">
       <div className="p-6 bg-white rounded w-full max-w-3xl">

@@ -44,7 +44,7 @@ import UbicacionRecepcion from "./ubicacionRecepcion";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 import Select from "react-select";
-import { api_getArticulos, api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
+import { api_getArticulos, api_postRecepcionSo, api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
 import { FaPlus } from "react-icons/fa";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { HiCheck, HiOutlineX, HiX } from "react-icons/hi";
@@ -62,7 +62,7 @@ interface props {
   empresa: string;
 }
 interface recepcionProps extends props {
-  tipos:{ codigo: number; nombre: string }[]
+  tipos: { codigo: number; nombre: string }[]
 }
 
 interface propsArticulo extends props {
@@ -179,7 +179,7 @@ export default function SinOrden(props: props) {
     setSelectedSubFamilia(null);
     getSubFamilias();
   }, [selectedFamilia]);
-  
+
   const getTipos = async () => {
     const fetch = await api_tipoDocumentoRecepcion(jwt);
     setTipos(fetch.data.dataList);
@@ -216,7 +216,27 @@ export default function SinOrden(props: props) {
     }
   };
   const onSubmit = async (data: recepcionSOC) => {
-    console.log(data)
+    console.log(data);
+    try {
+      const response = await api_postRecepcionSo(jwt, data)
+      if (response) {
+        toast.success('Recepcion Sin orden de compra creada correctamente');
+        /* setShowPdf(true);
+        setDataPost(data); */
+        reset();
+      } else {
+        toast.error('ha ocurrido un error en generar la Salida');
+        /*  setShowPdf(false); */
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+        /* setShowPdf(false); */
+      } else {
+        toast.error('Ha ocurrido un error inesperado');
+        /* setShowPdf(false); */
+      }
+    }
   }
 
   return (
@@ -227,9 +247,8 @@ export default function SinOrden(props: props) {
             onClick={() => {
               setTab(0);
             }}
-            className={`${
-              tab == 0 && "border-b-2 border-primary font-bold"
-            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${tab == 0 && "border-b-2 border-primary font-bold"
+              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Artículos
           </a>
@@ -237,9 +256,8 @@ export default function SinOrden(props: props) {
             onClick={() => {
               setTab(1);
             }}
-            className={`${
-              tab == 1 && "border-b-2 border-primary font-bold"
-            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${tab == 1 && "border-b-2 border-primary font-bold"
+              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Recepción
           </a>
@@ -268,7 +286,7 @@ export default function SinOrden(props: props) {
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
         {tab == 1 && (
           <FormProvider {...methods}>
-            <form  onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <Recepcion empresa={props.empresa} tipos={tipos} />
               <button
                 type="submit"
@@ -297,7 +315,7 @@ function Recepcion(props: recepcionProps) {
     watch,
   } = useFormContext<recepcionSOC>();
   const { jwt } = useUserStore();
-  const [loadingAlmacenCantidad,setLoadingAlmacenCantidad] = useState<boolean>(false);
+  const [loadingAlmacenCantidad, setLoadingAlmacenCantidad] = useState<boolean>(false);
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
@@ -319,7 +337,7 @@ function Recepcion(props: recepcionProps) {
     const commonItems = fields.map((item1) => {
       // Encuentra el elemento en dataList que tenga un ID coincidente
       const matchingItem2 = data.data.dataList.find(
-        (item2: { articuloId: string; cantidad: number,almacenId: string }) =>
+        (item2: { articuloId: string; cantidad: number, almacenId: string }) =>
           item2.articuloId === item1.id && item2.almacenId === getValues("almacen")
       );
 
@@ -340,10 +358,10 @@ function Recepcion(props: recepcionProps) {
       getAlmacenArticulo();
     }
   }, [fields.length, almacenWatch]);
-  
-  
 
-  const handleInput = (e:React.ChangeEvent<HTMLInputElement>) => {
+
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Permitir solo dígitos del 0 al 9
     if (/^\d*$/.test(value)) {
@@ -462,28 +480,28 @@ function Recepcion(props: recepcionProps) {
         <fieldset className="border shadow-md rounded-lg py-2 transition duration-300 transform hover:scale-105">
           <legend>Tipo de documento</legend>
           <div className="flex justify-center">
-                  <Controller
-                    control={control}
-                    name="tipo"
-                    render={({ field }) => (
-                      <>
-                        {props.tipos.map((tipo, index) => (
-                          <label key={tipo.codigo} className="mr-4">
-                            <br />
-                            <input
-                              {...field}
-                              type="radio"
-                              value={tipo.codigo}
-                              className="radio radio-xs radio-primary ml-2 mr-2"
-                              checked={Number(field.value) === Number(tipo.codigo)}
-                            />
-                            {tipo.nombre}
-                          </label>
-                        ))}
-                      </>
-                    )}
-                  />
-                </div>
+            <Controller
+              control={control}
+              name="tipo"
+              render={({ field }) => (
+                <>
+                  {props.tipos.map((tipo, index) => (
+                    <label key={tipo.codigo} className="mr-4">
+                      <br />
+                      <input
+                        {...field}
+                        type="radio"
+                        value={tipo.codigo}
+                        className="radio radio-xs radio-primary ml-2 mr-2"
+                        checked={Number(field.value) === Number(tipo.codigo)}
+                      />
+                      {tipo.nombre}
+                    </label>
+                  ))}
+                </>
+              )}
+            />
+          </div>
         </fieldset>
       </div>
 
@@ -515,19 +533,18 @@ function Recepcion(props: recepcionProps) {
                       <span>{articulo.nombre}</span>
                       <div className="flex justify-center">
                         <span className="font-bold">
-                          {!loadingAlmacenCantidad ? articulo.cantidadAlmacen : <span className="loading loading-spinner loading-md text-primary"></span>                          }
+                          {!loadingAlmacenCantidad ? articulo.cantidadAlmacen : <span className="loading loading-spinner loading-md text-primary"></span>}
                         </span>
                       </div>
                       <span className="font-semibold">{articulo.valor}</span>
                       <input
                         key={articulo.id}
                         onInput={handleInput}
-                        className={`block w-20 py-1 px-1 border ${
-                          errors.articulos && errors.articulos[index]?.cantidad
+                        className={`block w-20 py-1 px-1 border ${errors.articulos && errors.articulos[index]?.cantidad
                             ? "border-red-600"
                             : "border-primary"
-                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        {...register(`articulos.${index}.cantidad`,{setValueAs: (value) => (value === "" ? undefined : Number(value))})}
+                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        {...register(`articulos.${index}.cantidad`, { setValueAs: (value) => (value === "" ? undefined : Number(value)) })}
                       />
                     </Table.Row>
                   ))}
