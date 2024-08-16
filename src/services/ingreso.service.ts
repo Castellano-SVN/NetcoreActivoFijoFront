@@ -47,4 +47,12 @@ export function api_tipoDocumentoRecepcion(bearer:string) {
     return api.get(`tipoDocumentoRecepcion`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_getArticulos(bearer: string, empresa:string, familiaId?:string, subFamiliaId?:string, input?:string) {
+    let query = `empresa=${empresa}`;
+    if (familiaId) query = query + `&familia=${familiaId}`;
+    if (subFamiliaId) query = query + `&subfamilia=${subFamiliaId}`;
+    if (input) query = query + `&nombre=${input}`;
+    return api.get(`articulo/buscar?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+  }
+
 

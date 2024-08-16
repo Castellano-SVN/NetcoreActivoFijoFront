@@ -111,6 +111,10 @@ export function api_getSubFamilias(bearer: string, id: string, page: number) {
 export function api_getAllSubFamilias(bearer: string) {
   return api.get(`subfamilia`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+export function api_getSubFamiliaByEmpresa(bearer: string, empresa:string, familiaId:string) {
+  return api.get(`subfamilia?empresa=${empresa}&familia=${familiaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 export function api_getOneSubFamilias(bearer: string, id: string, familia: string) {
   return api.get(`subFamilia/${id}/${familia}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -129,6 +133,10 @@ export function api_deleteSubFamilia(bearer: string, id: string) {
 
 export function api_getArticulos(bearer: string, id: string, page: number) {
   return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getArticulosBySubfamilia(bearer: string, empresaId:string, familiaId: string, subFamiliaId: string) {
+  return api.get(`articulo?empresa=${empresaId}&familia=${familiaId}&subFamilia=${subFamiliaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_postArticulos(bearer: string, data: any) {

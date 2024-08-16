@@ -15,7 +15,15 @@ export interface articulosI {
     recibida: number  | undefined;
     observaciones: string | undefined;
 }
-export interface recepcionCOC extends ubicacionRecepcionI {
+
+ export interface articulosSOC {
+    cantidad: number;
+    action: string;
+    id: string;
+    nombre: string;
+    descripcion: string;
+ }
+ interface recepcion extends ubicacionRecepcionI {
     oc: number;
     empresa: string;
     cotizacion: string;
@@ -25,5 +33,11 @@ export interface recepcionCOC extends ubicacionRecepcionI {
     fechaDoc: Date;
     tipo : number;
     descripcion:string;
+}
+export interface recepcionCOC extends recepcion {
     articulos: articulosI[]
+
+}
+export interface recepcionSOC extends recepcion {
+    articulos: articulosSOC[]
 }
