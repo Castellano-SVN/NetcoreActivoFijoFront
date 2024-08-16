@@ -261,7 +261,7 @@ export default function ConOrden(props: props) {
               </div>
             </div>
             {empresaId && ids.length !== 0 && (
-              <UbicacionRecepcion empresa={empresaId} filterCC={ids} />
+              <UbicacionRecepcion empresa={empresaId} filterCC={ids} dispatchStrings={setLocationString}/>
             )}
             <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">
               <div>
