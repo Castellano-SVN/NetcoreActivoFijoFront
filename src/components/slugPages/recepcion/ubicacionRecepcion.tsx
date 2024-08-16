@@ -23,7 +23,7 @@ interface props {
 }
 export default function UbicacionRecepcion(props: props) {
   const { jwt } = useUserStore();
-
+  
   const {
     register,
     handleSubmit,
@@ -81,30 +81,16 @@ export default function UbicacionRecepcion(props: props) {
   useEffect(() => {
     if (!ccWatch) return;
     getBodegas();
-    if (props.dispatchStrings) {
-      props.dispatchStrings(
-        {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
-          bodega:bodegas.find(e => e.id === ccBodega)?.nombre,
-          almacen:almacens.find(e => e.id === ccAlmacen)?.nombre
-        }
-      )
-    }
   }, [ccWatch]);
 
   useEffect(() => {
     if (!ccBodega) return;
-    if (props.dispatchStrings) {
-      props.dispatchStrings(
-        {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
-          bodega:bodegas.find(e => e.id === ccBodega)?.nombre,
-          almacen:almacens.find(e => e.id === ccAlmacen)?.nombre
-        }
-      )
-    }
     getAlmacens();
   }, [ccBodega]);
 
   useEffect(() => {
+    if ((ccAlmacen ) && almacens.length === 0) return;
+
     if (props.dispatchStrings) {
       props.dispatchStrings(
         {centrocosto:cc.find(e => e.id === ccWatch)?.nombre,
