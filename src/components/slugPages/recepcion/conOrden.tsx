@@ -177,14 +177,14 @@ export default function ConOrden(props: props) {
 
       
       // Hacer la solicitud al servicio
-      const response = await api_postRecepcionYDetalle(jwt, data);
+      // const response = await api_postRecepcionYDetalle(jwt, data);
       
-      // Mostrar el mensaje de éxito
-      if (response) {
+      // // Mostrar el mensaje de éxito
+      // if (response) {
         toast.success("Articulo recepcionado correctamente");
         setPdfData(data)
         setShowPdf(true);
-      }
+      // }
     } catch (error) {
       console.error("Error al guardar: ", error);
       toast.error("ha ocurrido un error");
@@ -453,7 +453,7 @@ export default function ConOrden(props: props) {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                       <div className="col-span-2">
                         <PDFDownloadLink
-                          document={<PDFConOrden data={pdfData} />}
+                          document={<PDFConOrden data={pdfData} location={locationString} />}
                           fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}
                         >
                           {({ loading, url, error, blob }) =>
