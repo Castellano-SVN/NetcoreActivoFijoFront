@@ -3,7 +3,9 @@ import { useUserStore } from "../../../../store/user.store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import {
+  api_getAllAlmacenArticuloByEmpByCenByBodByAlm,
   api_getAlmacenById,
+  api_getEstadoArticulos,
   api_getTipoLocation,
   api_postLocation,
 } from "../../../../services/bodega.service";
@@ -37,6 +39,19 @@ interface IAlmacenTA extends IAlmacen {
   tipoAlmacen: ItipoAlmacen;
   locacions: ILocacion[];
 
+}
+interface articuloI {
+  articuloId: string;
+  cantidad: number;
+  locacion: string  | undefined;
+  nombre: string;
+  descripcion: string;
+  subfamilia: string;
+  familia: string;
+  estado:number;
+}
+interface estadosI {
+  codigo:number;nombre:string;
 }
 export default function Page() {
   const validationSchemaLocation = z.object({
@@ -95,9 +110,10 @@ export default function Page() {
     total: 0,
     pages: 0,
   });
-
+  const [estadosArticulos,setEstadosArticulos] = useState<estadosI[]>([])
+  const [articulos,setArticulos] = useState<articuloI[]>([])
   const [almacen, setAlmacen] = useState<IAlmacenTA>();
-
+  
   const { isLoading, error, data, refetch } = useQuery(
     "AlmacenByID",
     () => api_getAlmacenById(jwt, router.query.id as string),
@@ -122,6 +138,29 @@ export default function Page() {
   const handleCloseLocation = useCallback(() => {
     locationRef.current?.close();
   }, [locationRef]);
+
+  const getArticles = async () => {
+    if (!almacen) return;
+    const articles = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(jwt,almacen.empresaId,almacen.centroCostoId,almacen.bodegaId,almacen.id)
+    const estados = await api_getEstadoArticulos(jwt)
+    setEstadosArticulos(estados.data.dataList)
+
+    const  newElementsArticles: articuloI[] = [];
+    articles.data.dataList.map((e:any) => {
+      newElementsArticles.push({
+        articuloId:e.articuloId,
+        cantidad:e.cantidad,
+        descripcion:e.articulo.descripcion,
+        familia: e.articulo.subFamilium.familium.nombre,
+        locacion: e.locacionId,
+        nombre: e.articulo.nombre,
+        subfamilia: e.articulo.subFamilium.nombre,
+        estado:e.estadoArticuloCodigo
+      })
+    })
+
+    setArticulos(newElementsArticles);
+  }
 
   const LocationSubmit = async (data: LocationFormValues) => {
     try {
@@ -155,8 +194,8 @@ export default function Page() {
   };
   useEffect(() => {
     getTipoLocation();
-    console.log(almacen)
     defaultValues();
+    getArticles();
   }, [almacen]);
 
   return (
@@ -234,8 +273,8 @@ export default function Page() {
           </form>
         </Modal.Body>
       </Modal>
-      <div className="w-full rounded-lg border shadow-md hover:shadow-xl transition duration-300 ease-in-out">
-        <div className="flex flex-col bg-primary">
+      <div className="w-full transition duration-300 ease-in-out">
+        <div className="flex flex-col bg-primary bordered rounded shadow-md ">
           <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
               Almacen
@@ -256,8 +295,8 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="flex md:flex-row lg:flex-row flex-col-reverse justify-around items-center mt-4 md:mt-0 lg:mt-0">
-          <button type="button" className="btn btn-primary mt-2" onClick={() => router.back()}><FaArrowLeft />Volver</button>
+        <div className="flex md:flex-row lg:flex-row flex-col-reverse justify-around items-center mt-4 md:mt-4 lg:mt-2  rounded-lg border shadow-md hover:shadow-xl py-2 ">
+          <button type="button" className="btn btn-primary mt-2 md:mt-0" onClick={() => router.back()}><FaArrowLeft />Volver</button>
           <div className="join">
             {!isLoading && (
               <button
@@ -272,35 +311,13 @@ export default function Page() {
               <FiPlus /> Tipo Locacion
             </button>
           </div>
-          <div
-            className={
-              isLoading ? "stats shadow skeleton m-2" : "stats shadow m-2"
-            }
-          >
-            <div className="stat">
-              <div className="stat-title">
-                {isLoading ? (
-                  <span style={{ color: "transparent" }}>asd</span>
-                ) : (
-                  "Total Locaciones"
-                )}
-              </div>
-              <div className="stat-value text-center">
-                {isLoading ? (
-                  <span className="" style={{ color: "transparent" }}>
-                    0
-                  </span>
-                ) : (
-                  <span className="">{almacen?.locacions.length}</span>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
-        {!isLoading ? (
-          <>
-            <Locations locacions={almacen?.locacions || []} />
-          </>
+        {!isLoading && almacen ? (
+          <div className="w-full mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
+            
+            {almacen?.locacions.map((e,index) => <Locations key={index} almacen={almacen} locacion={e} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions}/>)}
+            <WithoutLocations almacen={almacen}  articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions}/>
+          </div>
         ) : (
           <div className="text-primary text-center mt-4">
             <Loading size="lg" />
@@ -311,37 +328,344 @@ export default function Page() {
   );
 }
 
-function Locations({ locacions }: { locacions: ILocacion[] }) {
+function Locations({ locacion,articulos,estados,locations,almacen }: { locacion: ILocacion,articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA }) {
+  const validationSchemaLocation = z.object({
+    almacen: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    articulo: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    estado: z.number({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    locacion: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }).optional(),
+  });
+  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined}>({
+    resolver: zodResolver(validationSchemaLocation),
+  });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = methodsLocation;
+  const Submit = async (data: {almacen:string,articulo:string,estado:number,locacion:string | undefined}) => {
+    try {
+      console.log('ACTUALIZACION')
+    } catch (error) {
+      toast.error("Ha ocurrido un error.");
+      console.log(error);
+    }
+  };
   const router = useRouter();
+  const [articulosFilter,setArticulosFilter] = useState<articuloI[]>([])
 
+  useEffect(() => {
+    setArticulosFilter(articulos.filter(e => e.locacion === locacion.id))
+  },[articulos])
+  const locationRef = useRef<HTMLDialogElement>(null);
+  const handleShowLocation = useCallback((element:articuloI) => {
+    reset();
+    setValue("almacen",almacen.id)
+    setValue("articulo",element.articuloId);
+    setValue("estado",element.estado);
+    setValue("locacion",element.locacion);
+    locationRef.current?.showModal();
+  }, [locationRef]);
+
+  const handleCloseLocation = useCallback(() => {
+    locationRef.current?.close();
+  }, [locationRef]);
   return (
-    <div className="overflow-x-auto mb-4">
+  <>
+   <Modal backdrop responsive ref={locationRef}>
+        <Modal.Header className="font-bold">Ubicación</Modal.Header>
+        <Divider />
+        <Modal.Body>
+          <form onSubmit={handleSubmit((d) => Submit(d))}>
+            <div className="my-2">
+              <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Locación</span>
+                  </label>
+                  <Select
+                    defaultValue={""}
+                    {...register("locacion", {
+                      setValueAs: (value) => (value === "" ? undefined : value),
+                    })}
+                  >
+                    <Select.Option value={""} disabled>
+                      Seleccione nueva Locacion
+                    </Select.Option>
+                    {locations.map((locations, index) => (
+                      <Select.Option key={index} value={locations.id}>
+                        {locations.direccion}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <label className="label text-error">
+                    {errors.locacion?.message}
+                  </label>
+                </div>
+              </div>
+              <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Estado</span>
+                  </label>
+                  <Select
+                    {...register("estado", {
+                      setValueAs: (value) => (value === "" ? undefined : Number(value)),
+                    })}
+                  >
+                    <Select.Option value={""} disabled>
+                      Seleccione nueva Locacion
+                    </Select.Option>
+                    {estados.map((estado, index) => (
+                      <Select.Option key={index} value={estado.codigo}>
+                        {estado.nombre}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <label className="label text-error">
+                    {errors.estado?.message}
+                  </label>
+                </div>
+              </div>
+              <div className="my-2">
+                <div className="flex items-center justify-center">
+                  <Button type="submit" className="text-base-100" color="primary">Guardar</Button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+      </Modal>
+          <div className="flex flex-col bordered rounded shadow-md ">
+          <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
+            <h3 className="text-large font-bold text-base-100 text-center">
+            Articulos sin locacion
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
       <table className="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Dirección</th>
-            <th>Descripción</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            locacions.map((element: ILocacion, index: number) => (
-              <tr className="hover">
-                <th className="text-bold">{index + 1}</th>
-                <td>{element.direccion}</td>
-                <td>{element.descripcion}</td>
-                <td>
-                  <button type="button">
-                    <FaEye className="h-4 w-4 text-primary" onClick={() => router.push(`/empresa/centrocosto/almacen/locacion/${element.id}`)} />
-                  </button>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          {articulosFilter.map((e,index) =>  (
+            <tr className="hover">
+              <th className="text-bold">{index + 1}</th>
+              <td>
+                <span className="font-bold">
+                  {e.nombre}
+                  </span>
+                  <br />
+                  <span>{e.familia} - {e.subfamilia}</span>
                 </td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
+              <td>{e.cantidad}</td>
+              <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
+              <td>
+                <button type="button">
+                  <FaEye className="h-4 w-4 text-primary" onClick={()=> handleShowLocation(e)} />
+                </button>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+          </div>
+        </div>
+    
+  </>
+  );
+}
+
+function WithoutLocations({articulos,estados,locations,almacen }: { articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA }) {
+  const validationSchemaLocation = z.object({
+    almacen: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    articulo: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    estado: z.number({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
+    locacion: z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }).optional(),
+  });
+  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined}>({
+    resolver: zodResolver(validationSchemaLocation),
+  });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = methodsLocation;
+  const Submit = async (data: {almacen:string,articulo:string,estado:number,locacion:string | undefined}) => {
+    try {
+      console.log('ACTUALIZACION')
+    } catch (error) {
+      toast.error("Ha ocurrido un error.");
+      console.log(error);
+    }
+  };
+  const router = useRouter();
+  const [articulosFilter,setArticulosFilter] = useState<articuloI[]>([])
+
+  useEffect(() => {
+    setArticulosFilter(articulos.filter(e => !e.locacion))
+  },[articulos])
+  const locationRef = useRef<HTMLDialogElement>(null);
+  const handleShowLocation = useCallback((element:articuloI) => {
+    reset();
+    setValue("almacen",almacen.id)
+    setValue("articulo",element.articuloId);
+    setValue("estado",element.estado);
+    setValue("locacion",element.locacion);
+    locationRef.current?.showModal();
+  }, [locationRef]);
+
+  const handleCloseLocation = useCallback(() => {
+    locationRef.current?.close();
+  }, [locationRef]);
+  return (
+  <>
+   <Modal backdrop responsive ref={locationRef}>
+        <Modal.Header className="font-bold">Ubicación</Modal.Header>
+        <Divider />
+        <Modal.Body>
+          <form onSubmit={handleSubmit((d) => Submit(d))}>
+            <div className="my-2">
+              <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Locación</span>
+                  </label>
+                  <Select
+                    defaultValue={""}
+                    {...register("locacion", {
+                      setValueAs: (value) => (value === "" ? undefined : value),
+                    })}
+                  >
+                    <Select.Option value={""} disabled>
+                      Seleccione nueva Locacion
+                    </Select.Option>
+                    {locations.map((locations, index) => (
+                      <Select.Option key={index} value={locations.id}>
+                        {locations.direccion}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <label className="label text-error">
+                    {errors.locacion?.message}
+                  </label>
+                </div>
+              </div>
+              <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Estado</span>
+                  </label>
+                  <Select
+                    {...register("estado", {
+                      setValueAs: (value) => (value === "" ? undefined : Number(value)),
+                    })}
+                  >
+                    <Select.Option value={""} disabled>
+                      Seleccione nueva Locacion
+                    </Select.Option>
+                    {estados.map((estado, index) => (
+                      <Select.Option key={index} value={estado.codigo}>
+                        {estado.nombre}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <label className="label text-error">
+                    {errors.estado?.message}
+                  </label>
+                </div>
+              </div>
+              <div className="my-2">
+                <div className="flex items-center justify-center">
+                  <Button type="submit" className="text-base-100" color="primary">Guardar</Button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+      </Modal>
+          <div className="flex flex-col bordered rounded shadow-md ">
+          <div className="flex flex-row justify-between bg-error px-6 py-4 rounded-t-lg">
+            <h3 className="text-large font-bold text-base-100 text-center">
+            Articulos sin locacion
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+      <table className="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          {articulosFilter.map((e,index) =>  (
+            <tr className="hover">
+              <th className="text-bold">{index + 1}</th>
+              <td>
+                <span className="font-bold">
+                  {e.nombre}
+                  </span>
+                  <br />
+                  <span>{e.familia} - {e.subfamilia}</span>
+                </td>
+              <td>{e.cantidad}</td>
+              <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
+              <td>
+                <button type="button">
+                  <FaEye className="h-4 w-4 text-primary" onClick={()=> handleShowLocation(e)} />
+                </button>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+          </div>
+        </div>
+    
+  </>
   );
 }
