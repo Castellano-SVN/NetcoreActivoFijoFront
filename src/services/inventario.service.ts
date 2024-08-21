@@ -29,6 +29,11 @@ export function api_getValidation(bearer: string,empresaId: string, numero: numb
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
+export function api_getAllInFiDe(bearer: string,empresaId: string, numero: number) {
+  return api.get(`inventariofisicodetalleall?empresaId=${empresaId}&numero=${numero}`, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+}
 
 export function api_postInventarioFisico(bearer: string, data: any) {
   return api.post(`inventariofisico`, data, {
@@ -38,6 +43,12 @@ export function api_postInventarioFisico(bearer: string, data: any) {
 
 export function api_getAllPersonasByEmpresa(bearer: string, empresaId: string) {
   return api.get(`funcionarioempresa?empresaId=${empresaId}`, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+}
+
+export function api_postInventarioFisicoDetalle(bearer: string, data: any) {
+  return api.post(`inventariofisicodetalle`, data, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
