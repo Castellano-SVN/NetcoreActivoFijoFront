@@ -455,7 +455,7 @@ function Locations({ locacion,articulos,estados,locations,almacen }: { locacion:
           <div className="flex flex-col bordered rounded shadow-md ">
           <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
-            Articulos sin locacion
+            {locacion.direccion}
             </h3>
           </div>
           <div className="grid grid-cols-1 gap-4">

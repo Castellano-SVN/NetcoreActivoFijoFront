@@ -39,6 +39,7 @@ const ArticulosSchema = z.object({
   porRecepcionar: z.number(),
   recibida: z.number(),
   descripcion: z.string().optional(),
+  observaciones: z.string().optional(),
 });
 
 const RecepcionDataSchema = z.object({
@@ -174,17 +175,17 @@ export default function ConOrden(props: props) {
 
   const onSubmit = async (data: recepcionCOC) => {
     try {
-
+      console.log(data)
       
       // Hacer la solicitud al servicio
-      // const response = await api_postRecepcionYDetalle(jwt, data);
+      const response = await api_postRecepcionYDetalle(jwt, data);
       
       // // Mostrar el mensaje de éxito
-      // if (response) {
+      if (response) {
         toast.success("Articulo recepcionado correctamente");
         setPdfData(data)
         setShowPdf(true);
-      // }
+      }
     } catch (error) {
       console.error("Error al guardar: ", error);
       toast.error("ha ocurrido un error");
@@ -199,10 +200,6 @@ export default function ConOrden(props: props) {
     reset();
     props.setNumero(null);
   };
-  
-  useEffect(()=>{
-    console.log(locationString.almacen,locationString.bodega,locationString.centrocosto)
-  },[locationString])
 
   return (
     <div className="flex justify-center items-center">

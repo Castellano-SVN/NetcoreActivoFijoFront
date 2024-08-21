@@ -138,7 +138,7 @@ function Element({ element }: { element: IEmpresa }) {
         <span className="basis-1/2 font-bold text-sm text-left">Acciones</span>
         <div className="flex  flex-wrap justify-end space-x-4">
           <a
-            onClick={() => router.push(`/inventario/viewInventoryTaking?empresa=${element.id}`)}
+            onClick={() => router.push(`/inventario/lista?empresa=${element.id}`)}
             className="flex items-center cursor-pointer hover:font-bold"
           >
             <span className="text-sm underline text-primary">Ver</span>

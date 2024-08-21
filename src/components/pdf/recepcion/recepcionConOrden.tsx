@@ -196,7 +196,7 @@ export default function PDFConOrden(props: props) {
                                 <View style={styles.fila}>
                                     <Text style={styles.subTitle}>TIPO DE DOCUMENTO</Text>
                                 </View>
-                                <Text style={styles.parrafo}>{props.data.tipo == 1 ? "Factura" : "Guia de depacho"}</Text>
+                                <Text style={styles.parrafo}>{props.data.tipo == 1 ? "Factura" : "Guia de despacho"}</Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>

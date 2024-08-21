@@ -2,8 +2,8 @@ import PDFSinOrden from "@/components/pdf/recepcion/recepcionSinOrden";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { use, useEffect, useState } from "react";
-import { Table } from "react-daisyui";
+import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { Button, Modal, Table } from "react-daisyui";
 import { FaFilePdf, FaSearch } from "react-icons/fa";
 import {
   FormValueRecepcionData,
@@ -63,6 +63,7 @@ interface props {
 }
 interface recepcionProps extends props {
   tipos: { codigo: number; nombre: string }[]
+  setLocationString:Dispatch<SetStateAction<{centrocosto?: string;bodega?: string;almacen?: string;}>>
 }
 
 interface propsArticulo extends props {
@@ -86,6 +87,10 @@ interface propsArticulo extends props {
 }
 const ArticulosSchema = z.object({
   id: z.string(),
+  codigo: z.string().optional(),
+  nombre: z.string().optional(),
+  valor: z.number().optional(),
+  cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
 });
 
@@ -119,8 +124,10 @@ export default function SinOrden(props: props) {
       empresa: props.empresa,
     },
   });
+  const [locationString,setLocationString] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
 
   const [tab, setTab] = useState<number>(0);
+  
   const {
     register,
     handleSubmit,
@@ -215,26 +222,29 @@ export default function SinOrden(props: props) {
       console.log(error);
     }
   };
+  const [showPdf, setShowPdf] = useState(false);
+  const [pdfData, setPdfData] = useState<recepcionSOC>({} as recepcionSOC);
   const onSubmit = async (data: recepcionSOC) => {
     console.log(data);
     try {
       const response = await api_postRecepcionSo(jwt, data)
       if (response) {
         toast.success('Recepcion Sin orden de compra creada correctamente');
-        /* setShowPdf(true);
-        setDataPost(data); */
+        setShowPdf(true);
+        console.log(data);
+        setPdfData(data); 
         reset();
       } else {
         toast.error('ha ocurrido un error en generar la Salida');
-        /*  setShowPdf(false); */
+        setShowPdf(false);
       }
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
-        /* setShowPdf(false); */
+        setShowPdf(false); 
       } else {
         toast.error('Ha ocurrido un error inesperado');
-        /* setShowPdf(false); */
+        setShowPdf(false);
       }
     }
   }
@@ -287,7 +297,47 @@ export default function SinOrden(props: props) {
         {tab == 1 && (
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Recepcion empresa={props.empresa} tipos={tipos} />
+              <Recepcion empresa={props.empresa} tipos={tipos} setLocationString={setLocationString}/>
+              {showPdf && pdfData &&(
+              <Modal open={showPdf}>
+                  <Modal.Header>
+                    ¿Desea crear un reporte de la Recepcion?
+                  </Modal.Header>
+                  <Modal.Body>
+                    <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                      <div className="col-span-2">
+                        <PDFDownloadLink
+                          document={<PDFSinOrden data={pdfData} location={locationString} />}
+                          fileName={`Recepcion_SOC_Numero_pdf`}
+                        >
+                          {({ loading, url, error, blob }) =>
+                            loading ? (
+                              "Cargando.."
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+                              >
+                                <FaFilePdf />
+                                Exportar
+                              </button>
+                            )
+                          }
+                        </PDFDownloadLink>
+                      </div>
+                      <div className="col-span-2">
+                        <Button
+                          type="button"
+                          className="btn btn-outline btn-secondary w-1/2 mt-2"
+                          onClick={() => router.reload()}
+                        >
+                          salir
+                        </Button>
+                      </div>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+              )}
               <button
                 type="submit"
                 className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2 inline-block"
@@ -298,12 +348,11 @@ export default function SinOrden(props: props) {
           </FormProvider>
         )}
       </div>
-      {tab == 2 && "hola mundo"}
     </>
   );
 }
 
-function Recepcion(props: recepcionProps) {
+function Recepcion(props: recepcionProps ) {
   const {
     register,
     handleSubmit,
@@ -391,13 +440,15 @@ function Recepcion(props: recepcionProps) {
         </div>
         <div className="w-full">
           <div className="flex flex-col">
-            <label className="block text-left mb-2">Fecha:</label>
+            <label className="block text-left mb-2">Fecha Recepción:</label>
 
             <Controller
               control={control}
               name="fecha"
               render={({ field }) => (
+                
                 <DatePicker
+                  portalId="root-portal"
                   selected={field.value}
                   onChange={(date) => field.onChange(date)}
                   onBlur={field.onBlur}
@@ -419,7 +470,7 @@ function Recepcion(props: recepcionProps) {
       <div className="mt-2 mx-auto">
         <fieldset className="border shadow-md p-4 rounded transition duration-300 transform hover:scale-105">
           <legend>Ubicacion</legend>
-          <UbicacionRecepcion empresa={props.empresa} filterCC={[]} />
+          <UbicacionRecepcion empresa={props.empresa} filterCC={[]} dispatchStrings={props.setLocationString} />
         </fieldset>
       </div>
 
@@ -456,6 +507,7 @@ function Recepcion(props: recepcionProps) {
                   name="fechaDoc"
                   render={({ field }) => (
                     <DatePicker
+                    portalId="root-portal"
                       selected={field.value}
                       onChange={(date) => field.onChange(date)}
                       onBlur={field.onBlur}
