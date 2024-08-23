@@ -10,12 +10,13 @@ import {
 } from "../../../services/bodega.service";
 import Head from "next/head";
 import { IEmpresa } from "../../../interfaces/creation";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaSave } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { IAlmacen } from "../../../interfaces/modules/IAlmacen.interface";
-import { Loading } from "react-daisyui";
+import { Input, Loading } from "react-daisyui";
 interface estadosI {
-  codigo:number;nombre:string;
+  codigo: number;
+  nombre: string;
 }
 export default function Inventariar() {
   const { jwt } = useUserStore();
@@ -39,13 +40,12 @@ export default function Inventariar() {
     );
     setAlmacens(alm.data.dataList);
   };
-  const [estadosArticulos,setEstadosArticulos] = useState<estadosI[]>([])
+  const [estadosArticulos, setEstadosArticulos] = useState<estadosI[]>([]);
 
-  const estadosArtGet =  async() => {
+  const estadosArtGet = async () => {
     const estados = await api_getEstadoArticulos(jwt);
-    setEstadosArticulos(estados.data.dataList)
-
-  }
+    setEstadosArticulos(estados.data.dataList);
+  };
   useEffect(() => {
     if (!bodega) return;
     if (!empresa) return;
@@ -154,17 +154,18 @@ interface props {
   bodega: string;
   centrocosto: string;
   jwt: string;
-  estados:estadosI[]
+  estados: estadosI[];
 }
 interface articuloI {
   articuloId: string;
   cantidad: number;
-  locacion: string  | undefined;
+  locacion: string | undefined;
   nombre: string;
   descripcion: string;
   subfamilia: string;
   familia: string;
-  estado:number;
+  estado: number;
+  anoNumero: number;
 }
 function ViewAlmacen(props: props) {
   const [almacenArituclos, setAlmacenArticulos] = useState<articuloI[]>([]);
@@ -176,23 +177,25 @@ function ViewAlmacen(props: props) {
       props.centrocosto,
       props.bodega,
       props.almacen.id
-    );    
-    const  newElementsArticles: articuloI[] = [];
-    articles.data.dataList.map((e:any) => {
+    );
+
+    const newElementsArticles: articuloI[] = [];
+    articles.data.dataList.map((e: any) => {
       newElementsArticles.push({
-        articuloId:e.articuloId,
-        cantidad:e.cantidad,
-        descripcion:e.articulo.descripcion,
+        articuloId: e.articuloId,
+        cantidad: e.cantidad,
+        descripcion: e.articulo.descripcion,
         familia: e.articulo.subFamilium.familium.nombre,
         locacion: e.locacionId,
         nombre: e.articulo.nombre,
         subfamilia: e.articulo.subFamilium.nombre,
-        estado:e.estadoArticuloCodigo
-      })
-    })
+        estado: e.estadoArticuloCodigo,
+        anoNumero: e.anoNumero,
+      });
+    });
 
     setAlmacenArticulos(newElementsArticles);
-  }
+  };
 
   useEffect(() => {
     if (!props.empresa) return;
@@ -211,17 +214,30 @@ function ViewAlmacen(props: props) {
           </h3>
         </div>
         <div className="w-full grid grid-cols-1 gap-4 p-2">
-          {props.almacen.locacions?.map((locacion, index) => (
-            
-            almacenArituclos.filter(e => e.locacion === locacion.id).length !== 0 && <ViewLocation locacions={locacion} articulos={almacenArituclos.filter(e => e.locacion === locacion.id)} estados={props.estados}/>
-          ))}
+          {props.almacen.locacions?.map(
+            (locacion, index) =>
+              almacenArituclos.filter((e) => e.locacion === locacion.id)
+                .length !== 0 && (
+                <ViewLocation
+                  locacions={locacion}
+                  articulos={almacenArituclos.filter(
+                    (e) => e.locacion === locacion.id
+                  )}
+                  estados={props.estados}
+                />
+              )
+          )}
         </div>
       </div>
     </>
   );
 }
 
-function ViewLocation(props: { locacions: IAllLocations,articulos: articuloI[],estados:estadosI[]}) {
+function ViewLocation(props: {
+  locacions: IAllLocations;
+  articulos: articuloI[];
+  estados: estadosI[];
+}) {
   return (
     <>
       <div className="flex flex-col bordered rounded shadow-md mt-2">
@@ -231,35 +247,139 @@ function ViewLocation(props: { locacions: IAllLocations,articulos: articuloI[],e
           </h3>
         </div>
         <div className="w-full grid grid-cols-1 gap-4 overflow-x-auto">
-        <table className="table">
-    {/* head */}
-    <thead>
-      <tr>
-        <th></th>
-        <th>Nombre articulo</th>
-        <th>Familia</th>
-        <th>Cantidad en almacen</th>
-      </tr>
-    </thead>
-    <tbody>
-    {props.articulos?.map((articulo, index) => (
-    <tr className="hover">
-      <th>{index+1}</th>
-      <td>{articulo.nombre}</td>
-      <td>
-        {articulo.familia}
-        <br />
-        {articulo.subfamilia}
-      </td>
-      <td className="font-extrabold">{articulo.cantidad}</td>
-      <td><input type="text"  placeholder="Cantidad Inventariada"/></td>
-    </tr>
-    ))}
-    </tbody>
-  </table>
-  <button>
-    Guardar
-  </button>
+          <table className="table">
+            {/* head */}
+            <thead className="text-center">
+              <tr>
+                <th></th>
+                <th>Nombre articulo</th>
+                <th>Familia</th>
+                <th>Cantidad en almacen</th>
+                <th>Año</th>
+                <th>Funcionario</th>
+                <th>Persona Conteo</th>
+                <th>Marca</th>
+                <th>Estado</th>
+                <th></th>
+                <th></th>
+                <th>Programa</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody className="text-center">
+              {props.articulos?.map((articulo, index) => (
+                <tr className="hover">
+                  <th>{index + 1}</th>
+                  <td>{articulo.nombre}</td>
+                  <td>
+                    {articulo.familia}
+                    <br />
+                    {articulo.subfamilia}
+                  </td>
+                  <td className="font-bold">{articulo.cantidad}</td>
+                  <td>{articulo.anoNumero}</td>
+                  <td>
+                    <select
+                      defaultValue={""}
+                      className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    >
+                      <option value={""} disabled selected>
+                        Seleccione Fucionario
+                      </option>
+                      <option>jeje</option>
+                      {/* {}se habre un modal para hacer un insert de una nueva marca */}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      defaultValue={""}
+                      className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    >
+                      <option value={""} disabled selected>
+                        Seleccione persona
+                      </option>
+                      <option>Otros</option>
+                      {/* {}se habre un modal para hacer un insert de una nueva marca */}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      defaultValue={""}
+                      className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    >
+                      <option value={""} disabled selected>
+                        Seleccione Marca
+                      </option>
+                      <option> jejje</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      defaultValue={""}
+                      className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    >
+                      <option value={""} disabled selected>
+                        Seleccione Estado
+                      </option>
+                      <option> jejje</option>
+                    </select>
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Lugar Fisico del Conteo"
+                    />
+                  </td>
+                  <td>
+                    <select
+                      defaultValue={""}
+                      className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                    >
+                      <option value={""} disabled selected>
+                        Seleccione Programa
+                      </option>
+                      <option> jejje</option>
+                    </select>
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Presentacion"
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Observacion"
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Codigo"
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="number"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Numero de unidades"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="w-1/6 m-auto my-2">
+          <button className="btn btn-outline btn-primary">
+            <FaSave />
+            Guardar
+          </button>
         </div>
       </div>
     </>
