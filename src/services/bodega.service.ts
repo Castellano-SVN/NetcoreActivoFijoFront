@@ -23,6 +23,9 @@ api.interceptors.response.use(
 export function api_getPersonas(bearer: string, page: number) {
   return api.get(`persona?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_getAllPersonasEmpresa(bearer: string, empresaId: string) {
+  return api.get(`persona?empresaId={empresaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 
 export function api_postPersonas(bearer: string, data: any) {
   return api.post(`persona`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
@@ -112,7 +115,7 @@ export function api_getAllSubFamilias(bearer: string) {
   return api.get(`subfamilia`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getSubFamiliaByEmpresa(bearer: string, empresa:string, familiaId:string) {
+export function api_getSubFamiliaByEmpresa(bearer: string, empresa: string, familiaId: string) {
   return api.get(`subfamilia?empresa=${empresa}&familia=${familiaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 export function api_getOneSubFamilias(bearer: string, id: string, familia: string) {
@@ -135,7 +138,7 @@ export function api_getArticulos(bearer: string, id: string, page: number) {
   return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getArticulosBySubfamilia(bearer: string, empresaId:string, familiaId: string, subFamiliaId: string) {
+export function api_getArticulosBySubfamilia(bearer: string, empresaId: string, familiaId: string, subFamiliaId: string) {
   return api.get(`articulo?empresa=${empresaId}&familia=${familiaId}&subFamilia=${subFamiliaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
@@ -205,11 +208,11 @@ export function api_getAllBodegaByEmpresaYCentroCosto(bearer: string, empresaId:
   return api.get(`bodegas/${empresaId}/${centroCostoId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string) {
+export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string) {
   return api.get(`almacenes/${empresaId}/${centroCostoId}/${bodegaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string,almacenId: string) {
+export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string, almacenId: string) {
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
@@ -218,10 +221,10 @@ export function api_getAllAlmacenArticuloBylocacion(bearer: string, locacionId: 
   return api.get(`almacenarticulosbylocacionid/${locacionId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getArticuloSalida(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
+export function api_getArticuloSalida(bearer: string, articuloId: string, fechaDesde: string, fechaHasta: string) {
   return api.get(`articulosalida/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getArticuloEntrada(bearer: string, articuloId: string, fechaDesde: string,fechaHasta: string) {
+export function api_getArticuloEntrada(bearer: string, articuloId: string, fechaDesde: string, fechaHasta: string) {
   return api.get(`articuloentrada/${articuloId}/${fechaDesde}/${fechaHasta}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
@@ -232,6 +235,9 @@ export function api_getInventario(bearer: string, nombreEncargado: string, fecha
 export function api_getAllMarcas(bearer: string) {
   return api.get(`marcas`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_postMarcas(bearer: string, data: any) {
+  return api.post(`marcascambio`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 export function api_getAllInventarioFisicoEstados(bearer: string) {
   return api.get(`inventariofisicoestados`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -240,10 +246,10 @@ export function api_postInventarioFisico(bearer: string, data: any) {
   return api.post(`inventariofisico`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getEstadoArticulos(bearer:string) {
+export function api_getEstadoArticulos(bearer: string) {
   return api.get('almacenarticulosestados', { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_putAlmacenArticulo(bearer:string,data: Object) {
-  return api.put('almacenarticulo',data, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_putAlmacenArticulo(bearer: string, data: Object) {
+  return api.put('almacenarticulo', data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

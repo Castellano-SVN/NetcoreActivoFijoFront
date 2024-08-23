@@ -1,19 +1,25 @@
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import router from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   api_getAllAlmacenArticuloByEmpByCenByBodByAlm,
   api_getAllAlmacenByEmpByCenByBod,
+  api_getAllMarcas,
   api_getEstadoArticulos,
   api_getOneEmpresa,
+  api_postMarcas,
 } from "../../../services/bodega.service";
 import Head from "next/head";
 import { IEmpresa } from "../../../interfaces/creation";
 import { FaArrowLeft, FaSave } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { IAlmacen } from "../../../interfaces/modules/IAlmacen.interface";
-import { Input, Loading } from "react-daisyui";
+import { Input, Loading, Modal } from "react-daisyui";
+import { z } from "zod";
+import { IFuncionarioEmpresa } from "@/interfaces/inventario.interface";
+import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
+import { toast } from "react-toastify";
 interface estadosI {
   codigo: number;
   nombre: string;
@@ -224,6 +230,8 @@ function ViewAlmacen(props: props) {
                     (e) => e.locacion === locacion.id
                   )}
                   estados={props.estados}
+                  empresa={props.empresa}
+                  jwt={props.jwt}
                 />
               )
           )}
@@ -233,13 +241,132 @@ function ViewAlmacen(props: props) {
   );
 }
 
+interface MarcasI {
+  id: string;
+  nombre: string;
+}
+
+interface MarcasValues {
+  Nombre: string;
+}
+
 function ViewLocation(props: {
   locacions: IAllLocations;
   articulos: articuloI[];
   estados: estadosI[];
+  empresa: string;
+  jwt: string;
 }) {
+
+  const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>();
+  const getFuncionarios = async () => {
+    try {
+      const data = await api_getAllPersonasByEmpresa(props.jwt, props.empresa);
+      setDataFuncionario(data.data.dataList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!props.empresa) return;
+    getFuncionarios();
+  }, [props.empresa]);
+
+  const [marcas, setMarcas] = useState<MarcasI[]>([])
+
+  const getMarcas = async () => {
+    try {
+      const data = await api_getAllMarcas(props.jwt);
+      setMarcas(data.data.dataList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [inputValue, setInputValue] = useState<string>('');
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+
+  const handleSave = async () => {
+    if (inputValue.trim() === '') {
+      toast.error('El nombre de la marca es requerido');
+      return;
+    }
+
+    try {
+      const data: MarcasValues = { Nombre: inputValue };
+      await api_postMarcas(props.jwt, data);
+      toast.success('Marca agregada con éxito');
+      setModalShow(false); 
+      setInputValue('');
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+      toast.error('Ha ocurrido un error inesperado.');
+    }
+  };
+
+  useEffect(() => {
+    getMarcas();
+  }, [])
+
+
+  const InventarioFisicoRegistroSchema = z.object({
+    EmpresaId: z.string(),
+    InventarioFisicoId: z.string(),
+    InventarioFisicoDetalleId: z.string(),
+    FuncionarioId: z.string(),
+    PersonaConteoId: z.string(),
+    AnoNumero: z.number().int(),
+    SubFamiliaId: z.string(),
+    ArticuloId: z.string(),
+    MarcaId: z.string(),
+    EstadoCodigo: z.number().int(),
+    LugarFisicoConteo: z.string().optional(),
+    LocacionId: z.string().optional(),
+    ProgramaId: z.string().optional(),
+    Presentacion: z.string().optional(),
+    Observaciones: z.string().optional(),
+    Codigo: z.string().optional(),
+    NumeroUnidades: z.number().int(),
+  });
+
+  const modalRef = useRef<HTMLDialogElement>(null);
+
+  const [modalShow, setModalShow] = useState<boolean>(false);
+  const handleShowModal = useCallback(() => {
+    setModalShow(!modalShow);
+  }, [modalShow]);
+
+
+
+
+
+
+
   return (
     <>
+      <Modal ref={modalRef} open={modalShow}>
+        <Modal.Header>Generar Nueva Marca</Modal.Header>
+        <Modal.Body>
+          <label>Nombre de la marca:</label>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            className="input border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary w-full"
+          />
+          <br />
+        </Modal.Body>
+        <Modal.Actions>
+          <button className="btn btn-outline btn-primary" type="button" onClick={handleSave}>Guardar</button>
+          <button className="btn btn-outline btn-secondary" type="button" onClick={handleShowModal}>Cancelar</button>
+        </Modal.Actions>
+      </Modal>
+
       <div className="flex flex-col bordered rounded shadow-md mt-2">
         <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
           <h3 className="text-large font-bold text-base-100 text-center">
@@ -270,14 +397,19 @@ function ViewLocation(props: {
               {props.articulos?.map((articulo, index) => (
                 <tr className="hover">
                   <th>{index + 1}</th>
+
                   <td>{articulo.nombre}</td>
+
                   <td>
                     {articulo.familia}
                     <br />
                     {articulo.subfamilia}
                   </td>
+
                   <td className="font-bold">{articulo.cantidad}</td>
+
                   <td>{articulo.anoNumero}</td>
+
                   <td>
                     <select
                       defaultValue={""}
@@ -286,10 +418,12 @@ function ViewLocation(props: {
                       <option value={""} disabled selected>
                         Seleccione Fucionario
                       </option>
-                      <option>jeje</option>
-                      {/* {}se habre un modal para hacer un insert de una nueva marca */}
+                      {dataFuncionario?.map((funcionario, index) => (
+                        <option key={index} value={funcionario.funcionarioId}>{funcionario.persona.nombres + " " + funcionario.persona.apellidoPaterno}</option>
+                      ))}
                     </select>
                   </td>
+
                   <td>
                     <select
                       defaultValue={""}
@@ -298,21 +432,30 @@ function ViewLocation(props: {
                       <option value={""} disabled selected>
                         Seleccione persona
                       </option>
-                      <option>Otros</option>
-                      {/* {}se habre un modal para hacer un insert de una nueva marca */}
+                      <option>aun sin persona</option>
                     </select>
                   </td>
+
                   <td>
                     <select
                       defaultValue={""}
                       className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      onChange={(e) => {
+                        if (e.target.value === "Otras") {
+                          handleShowModal();
+                        };
+                      }}
                     >
                       <option value={""} disabled selected>
                         Seleccione Marca
                       </option>
-                      <option> jejje</option>
+                      {marcas.map((marca, index) => (
+                        <option key={index} value={marca.id}>{marca.nombre}</option>
+                      ))}
+                      <option value={"Otras"}>Otras</option>
                     </select>
                   </td>
+
                   <td>
                     <select
                       defaultValue={""}
@@ -322,15 +465,9 @@ function ViewLocation(props: {
                         Seleccione Estado
                       </option>
                       <option> jejje</option>
-                    </select>
+                    </select> {/* {}se habre un modal para hacer un insert de una nueva marca */}
                   </td>
-                  <td>
-                    <Input
-                      type="text"
-                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      placeholder="Lugar Fisico del Conteo"
-                    />
-                  </td>
+
                   <td>
                     <select
                       defaultValue={""}
@@ -342,6 +479,7 @@ function ViewLocation(props: {
                       <option> jejje</option>
                     </select>
                   </td>
+
                   <td>
                     <Input
                       type="text"
@@ -349,6 +487,15 @@ function ViewLocation(props: {
                       placeholder="Presentacion"
                     />
                   </td>
+
+                  <td>
+                    <Input
+                      type="text"
+                      className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      placeholder="Lugar Fisico del Conteo"
+                    />
+                  </td>
+
                   <td>
                     <Input
                       type="text"
@@ -356,6 +503,7 @@ function ViewLocation(props: {
                       placeholder="Observacion"
                     />
                   </td>
+
                   <td>
                     <Input
                       type="text"
@@ -363,6 +511,7 @@ function ViewLocation(props: {
                       placeholder="Codigo"
                     />
                   </td>
+
                   <td>
                     <Input
                       type="number"
