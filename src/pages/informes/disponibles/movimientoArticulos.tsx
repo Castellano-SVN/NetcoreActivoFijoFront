@@ -238,12 +238,7 @@ export default function MovimientoArticulos() {
             <legend>Artículo seleccionado</legend>
             <div className="grid grid-cols-2">
 
-            
-            </div>
-            
-        </fieldset>
-    </div>
-          {selectedArticulo  && (
+            {selectedArticulo  && (
             <FormProvider {...methods}>
                 <div className="transition duration-1000 ease-in-out">
                     <div className="flex flex-col md:flex-row lg:flex-row md:justify-around lg:justify-around w-full">
@@ -367,6 +362,10 @@ export default function MovimientoArticulos() {
                 </div>
             </FormProvider>
         )} 
+            </div>
+            
+        </fieldset>
+    </div>
     </>
   );
 }
