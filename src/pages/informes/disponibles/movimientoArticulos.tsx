@@ -57,12 +57,10 @@ export default function MovimientoArticulos() {
     useState<ICentroCosto | null>(null);
   const getAllCentroCostosByEmpresa = async () => {
     try {
-      console.log("bucando centro de costo por la empresa:", empresa);
       const data2 = await api_getAllCentroCostoByEmpresa(
         jwt,
         empresa as string
       );
-      console.log("Centro costos encontrados:", data2);
       setDataCentroCosto(data2.data.dataList);
     } catch (error) {
       console.error(error);
@@ -154,7 +152,6 @@ export default function MovimientoArticulos() {
   });
   const { handleSubmit, control, watch } = methods;
 
-  // const [idArticulo, setIdArticulo] = useState("");
   const idArticulo = selectedArticulo?.articulo.id
   const fechaDesde = watch("fechaDesde");
   const fechaHasta = watch("fechaHasta");
@@ -167,14 +164,12 @@ export default function MovimientoArticulos() {
     const formattedFechaDesde = fechaDesde.toISOString().split("T")[0];
     const formattedFechaHasta = fechaHasta.toISOString().split("T")[0];
     try {
-      console.log("El id del articulo es:",idArticulo)
       const salida = await api_getArticuloSalida(
         jwt,
         idArticulo,
         formattedFechaDesde,
         formattedFechaHasta
       );
-      console.log("mov salida:",salida.data.dataList)
       setDataSalida(salida.data.dataList);
       const entrada = await api_getArticuloEntrada(
         jwt,
@@ -183,7 +178,6 @@ export default function MovimientoArticulos() {
         formattedFechaHasta
       );
       setDataEntrada(entrada.data.dataList);
-      console.log("mov entrada:",entrada.data.dataList)
     } catch (error) {
       console.log(error);
     }
@@ -269,6 +263,7 @@ export default function MovimientoArticulos() {
                   defaultValue={new Date()}
                   render={({ field }) => (
                     <DatePicker
+                      portalId="root-portal"
                       selected={field.value}
                       onChange={(date) => field.onChange(date)}
                       onBlur={field.onBlur}
@@ -297,6 +292,7 @@ export default function MovimientoArticulos() {
                   defaultValue={new Date()}
                   render={({ field }) => (
                     <DatePicker
+                      portalId="root-portal"
                       selected={field.value}
                       onChange={(date) => field.onChange(date)}
                       onBlur={field.onBlur}
@@ -322,14 +318,14 @@ export default function MovimientoArticulos() {
 
         {selectedArticulo && (
           <>
-            <fieldset className="border shadow-md rounded-lg p-4 transition duration-300 transform hover:scale-105 mt-3">
+            <fieldset className="border shadow-md rounded-lg p-4 transition duration-300 transform hover:scale-105 mt-3 mb-3">
               <legend>Artículo seleccionado</legend>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mr-5 ml-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mr-5 ml-5 mb-3">
                 <div className="flex flex-col">
                   <label className="mb-1 text-center md:text-left">
                     Código Artículo:
                   </label>
-                  <div className="border p-2 rounded-md">
+                  <div className="border p-1 rounded-md">
                     <span>{selectedArticulo.articulo.codigo}</span>
                   </div>
                 </div>
@@ -337,7 +333,7 @@ export default function MovimientoArticulos() {
                   <label className="mb-1 text-center md:text-left">
                     Nombre Artículo:
                   </label>
-                  <div className="border p-2 rounded-md">
+                  <div className="border p-1 rounded-md">
                     <span>{selectedArticulo.articulo.nombre}</span>
                   </div>
                 </div>
@@ -345,7 +341,7 @@ export default function MovimientoArticulos() {
                   <label className="mb-1 text-center md:text-left">
                     Descripción Artículo:
                   </label>
-                  <div className="border p-2 rounded-md">
+                  <div className="border p-1 rounded-md">
                     <span>{selectedArticulo.articulo.descripcion}</span>
                   </div>
                 </div>
@@ -353,7 +349,7 @@ export default function MovimientoArticulos() {
                   <label className="mb-1 text-center md:text-left">
                     Stock Crítico:
                   </label>
-                  <div className="border p-2 rounded-md">
+                  <div className="border p-1 rounded-md">
                     <span>100</span>
                   </div>
                 </div>
@@ -361,17 +357,17 @@ export default function MovimientoArticulos() {
             </fieldset>
 
             <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 mt-3">
-              <legend>Movimientos encontrados:</legend>
+              <legend>Movimientos de {selectedArticulo.articulo.nombre} encontrados:</legend>
               <div className="grid grid-cols-1">
                 <div className="overflow-x-auto">
-                  {/* {dataSalida.length !== 0 || dataEntrada.length !== 0 ? ( */}
+                  {dataSalida.length !== 0 || dataEntrada.length !== 0 ? (
                     <TableMoveArticle
                       dataEntrada={dataEntrada}
                       dataSalida={dataSalida}
                     />
-                  {/* ) : ( */}
-                    {/* <WarningAlert message="No se han encontrado movimientos viculados este articulo en ese rango de fechas." /> */}
-                  {/* )} */}
+                   ) : ( 
+                     <WarningAlert message="No se han encontrado movimientos viculados este articulo en ese rango de fechas." /> 
+                   )} 
                 </div>
                 <div className="mt-4">
                   <PDFDownloadLink
@@ -382,13 +378,18 @@ export default function MovimientoArticulos() {
                       loading ? (
                         "Cargando.."
                       ) : (
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-accent"
-                        >
-                          <FaFilePdf />
-                          Exportar
-                        </button>
+                        <>
+                        {dataSalida.length !== 0 || dataEntrada.length !== 0 &&(
+
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-accent"
+                          >
+                            <FaFilePdf />
+                            Exportar
+                          </button>
+                        )}
+                        </>
                       )
                     }
                   </PDFDownloadLink>
