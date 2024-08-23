@@ -212,6 +212,8 @@ export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: stri
 export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string,bodegaId: string,almacenId: string) {
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+
+
 export function api_getAllAlmacenArticuloBylocacion(bearer: string, locacionId: string) {
   return api.get(`almacenarticulosbylocacionid/${locacionId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -240,4 +242,8 @@ export function api_postInventarioFisico(bearer: string, data: any) {
 
 export function api_getEstadoArticulos(bearer:string) {
   return api.get('almacenarticulosestados', { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_putAlmacenArticulo(bearer:string,data: Object) {
+  return api.put('almacenarticulo',data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

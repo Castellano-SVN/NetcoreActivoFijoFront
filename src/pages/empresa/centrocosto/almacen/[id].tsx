@@ -8,6 +8,7 @@ import {
   api_getEstadoArticulos,
   api_getTipoLocation,
   api_postLocation,
+  api_putAlmacenArticulo,
 } from "../../../../services/bodega.service";
 import {
   IAlmacen,
@@ -35,6 +36,8 @@ import {
   LocationFormValues,
 } from "../../../../interfaces/creation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { HiOutlineArchive } from "react-icons/hi";
+import { ArchiveBoxIcon } from "@heroicons/react/20/solid";
 interface IAlmacenTA extends IAlmacen {
   tipoAlmacen: ItipoAlmacen;
   locacions: ILocacion[];
@@ -315,8 +318,8 @@ export default function Page() {
         {!isLoading && almacen ? (
           <div className="w-full mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
             
-            {almacen?.locacions.map((e,index) => <Locations key={index} almacen={almacen} locacion={e} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions}/>)}
-            <WithoutLocations almacen={almacen}  articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions}/>
+            {almacen?.locacions.map((e,index) => <Locations key={index} almacen={almacen} locacion={e} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions} update={getArticles}/>)}
+            <WithoutLocations almacen={almacen}  articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions} update={getArticles}/>
           </div>
         ) : (
           <div className="text-primary text-center mt-4">
@@ -328,7 +331,7 @@ export default function Page() {
   );
 }
 
-function Locations({ locacion,articulos,estados,locations,almacen }: { locacion: ILocacion,articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA }) {
+function Locations({ locacion,articulos,estados,locations,almacen,update }: { locacion: ILocacion,articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA,update:() => Promise<void> }) {
   const validationSchemaLocation = z.object({
     almacen: z.string({
       required_error: "Campo inválido",
@@ -345,9 +348,15 @@ function Locations({ locacion,articulos,estados,locations,almacen }: { locacion:
     locacion: z.string({
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
-    }).optional(),
+    }),
+    locacionOrigen:z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }).nullish(),
   });
-  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined}>({
+  const { jwt } = useUserStore();
+
+  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined,locacionOrigen: string | undefined}>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -361,7 +370,8 @@ function Locations({ locacion,articulos,estados,locations,almacen }: { locacion:
   } = methodsLocation;
   const Submit = async (data: {almacen:string,articulo:string,estado:number,locacion:string | undefined}) => {
     try {
-      console.log('ACTUALIZACION')
+      await api_putAlmacenArticulo(jwt,data);
+      await update();
     } catch (error) {
       toast.error("Ha ocurrido un error.");
       console.log(error);
@@ -380,6 +390,8 @@ function Locations({ locacion,articulos,estados,locations,almacen }: { locacion:
     setValue("articulo",element.articuloId);
     setValue("estado",element.estado);
     setValue("locacion",element.locacion);
+    setValue("locacionOrigen",element.locacion);
+
     locationRef.current?.showModal();
   }, [locationRef]);
 
@@ -499,7 +511,7 @@ function Locations({ locacion,articulos,estados,locations,almacen }: { locacion:
   );
 }
 
-function WithoutLocations({articulos,estados,locations,almacen }: { articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA }) {
+function WithoutLocations({articulos,estados,locations,almacen,update }: { articulos:articuloI[],estados:estadosI[],locations: ILocacion[], almacen:IAlmacenTA,update:() => Promise<void> }) {
   const validationSchemaLocation = z.object({
     almacen: z.string({
       required_error: "Campo inválido",
@@ -516,9 +528,13 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
     locacion: z.string({
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
-    }).optional(),
+    }),
+    locacionOrigen:z.string({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }).nullish(),
   });
-  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined}>({
+  const methodsLocation = useForm<{almacen:string,articulo:string,estado:number,locacion:string | undefined,locacionOrigen: string | undefined}>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -530,10 +546,13 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
     setValue,
     formState: { errors },
   } = methodsLocation;
+  const { jwt } = useUserStore();
+
   const Submit = async (data: {almacen:string,articulo:string,estado:number,locacion:string | undefined}) => {
     try {
-      console.log('ACTUALIZACION')
-    } catch (error) {
+      await api_putAlmacenArticulo(jwt,data);
+      await update();
+      } catch (error) {
       toast.error("Ha ocurrido un error.");
       console.log(error);
     }
@@ -551,12 +570,15 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
     setValue("articulo",element.articuloId);
     setValue("estado",element.estado);
     setValue("locacion",element.locacion);
+    setValue("locacionOrigen",element.locacion);
     locationRef.current?.showModal();
   }, [locationRef]);
 
   const handleCloseLocation = useCallback(() => {
     locationRef.current?.close();
   }, [locationRef]);
+
+
   return (
   <>
    <Modal backdrop responsive ref={locationRef}>
@@ -601,7 +623,7 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
                     })}
                   >
                     <Select.Option value={""} disabled>
-                      Seleccione nueva Locacion
+                      Seleccione estado
                     </Select.Option>
                     {estados.map((estado, index) => (
                       <Select.Option key={index} value={estado.codigo}>
@@ -626,7 +648,7 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
           <div className="flex flex-col bordered rounded shadow-md ">
           <div className="flex flex-row justify-between bg-error px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
-            Articulos sin locacion
+            Articulos sin locación
             </h3>
           </div>
           <div className="grid grid-cols-1 gap-4">
@@ -654,8 +676,8 @@ function WithoutLocations({articulos,estados,locations,almacen }: { articulos:ar
               <td>{e.cantidad}</td>
               <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
               <td>
-                <button type="button">
-                  <FaEye className="h-4 w-4 text-primary" onClick={()=> handleShowLocation(e)} />
+                <button className="button hover:font-bold">
+                  <ArchiveBoxIcon  className="h-4 w-4 text-primary hover:font-bold" onClick={()=> handleShowLocation(e)} />
                 </button>
               </td>
             </tr>

@@ -18,22 +18,18 @@ export interface InventarioFisicoFormValues {
   FechaTermino: Date | string;
 }
 
-export interface InventarioFisicoDetalleData {
+export interface IInventarioFisicoDetalle {
   empresaId: string;
   numero: number;
   funcionarioId?: string;
   centroCostoId?: string;
+  centroCosto?: string;
   bodegaId?: string;
-  fechaRegistro?: Date;
-}
-
-export interface IInventarioFisicoDetalle{
-  empresaId: string;
-  numero: number;
-  funcionarioId?: string;
-  centroCostoId?: string;
-  bodegaId?: string;
-  fechaRegistro?: Date;
+  bodega?: string;
+  encargado?: string;
+  encargadoRut?: string;
+  fechaRegistro?: string;
+  id:string;
 }
 export interface InventarioFisicoDetalleFormValues {
   EmpresaId: string;
@@ -42,7 +38,6 @@ export interface InventarioFisicoDetalleFormValues {
   CentroCostoId?: string;
   BodegaId?: string;
 }
-
 
 export interface IFuncionarioEmpresa {
   empresaId: string;
@@ -73,5 +68,5 @@ export interface IFuncionarioEmpresa {
   ingresoServicio?: Date;
   fechaInicioCalidadJuridicaContrata?: Date;
   fechaInicioCalidadJuridicaPlanta?: Date;
-  persona:IPersona;
+  persona: IPersona;
 }

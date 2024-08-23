@@ -90,7 +90,7 @@ const ArticulosSchema = z.object({
   codigo: z.string().optional(),
   nombre: z.string().optional(),
   valor: z.number().optional(),
-  cantidadAlmacen: z.number().optional(),
+  // cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
 });
 
@@ -196,7 +196,11 @@ export default function SinOrden(props: props) {
     getFamilias();
     getTipos();
   }, []);
-
+  useEffect(() => {
+    console.log(errors)
+    console.log(getValues())
+  }, [errors]);
+  
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [dataArticulo, setDataArticulo] = useState<articulosSOC[]>([]);
   const ArticleSearch = async () => {
@@ -589,6 +593,7 @@ function Recepcion(props: recepcionProps ) {
                         </span>
                       </div>
                       <span className="font-semibold">{articulo.valor}</span>
+                      
                       <input
                         key={articulo.id}
                         onInput={handleInput}
@@ -617,7 +622,7 @@ function Articulos(props: propsArticulo) {
       updatedArticles[index] = { ...updatedArticles[index], action: "loading" };
       return updatedArticles;
     });
-
+    article.cantidadAlmacen = 0;
     props.append(article);
     props.setArticle((prevState) => {
       const updatedArticles = [...prevState];
@@ -642,7 +647,7 @@ function Articulos(props: propsArticulo) {
   };
   return (
     <>
-      <div className=" grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
         {props.familia.length !== 0 && (
           <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 ">
             <legend>Busqueda de articulos</legend>
