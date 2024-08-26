@@ -23,8 +23,9 @@ api.interceptors.response.use(
 export function api_getPersonas(bearer: string, page: number) {
   return api.get(`persona?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getAllPersonasEmpresa(bearer: string, empresaId: string) {
-  return api.get(`persona?empresaId={empresaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+
+export function api_getAllPersonas(bearer: string) {
+  return api.get(`personaall`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_postPersonas(bearer: string, data: any) {

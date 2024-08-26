@@ -70,3 +70,24 @@ export interface IFuncionarioEmpresa {
   fechaInicioCalidadJuridicaPlanta?: Date;
   persona: IPersona;
 }
+
+export interface InventarioFisicoRegistroFormValues {
+  InvFisRegistro: {
+    EmpresaId: string;
+    InventarioFisicoDetalleId: string;
+    FuncionarioId: string;
+    PersonaConteoId: string;
+    AnoNumero: number;
+    SubFamiliaId: string;
+    ArticuloId: string;
+    MarcaId: string;
+    EstadoCodigo: number;
+    LugarFisicoConteo: string;
+    LocacionId: string;
+    ProgramaId: string;
+    Presentacion: string;
+    Observaciones: string;
+    Codigo: string;
+    NumeroUnidades: number;
+  }[];
+}
