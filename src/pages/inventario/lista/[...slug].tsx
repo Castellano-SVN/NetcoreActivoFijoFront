@@ -21,7 +21,7 @@ import { IAlmacen } from "../../../interfaces/modules/IAlmacen.interface";
 import { Input, Loading, Modal } from "react-daisyui";
 import { z } from "zod";
 import { IFuncionarioEmpresa, InventarioFisicoRegistroFormValues } from "@/interfaces/inventario.interface";
-import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
+import { api_getAllPersonasByEmpresa, api_postInventarioFisicoRegistro } from "@/services/inventario.service";
 import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import Select from "react-select";
@@ -52,7 +52,6 @@ export default function Inventariar() {
   useEffect(() => {
     setActive("Toma inventario");
     if (!ifdid) return;
-    console.log(ifdid);
   }, [ifdid]);
 
   const getAlmacens = async () => {
@@ -434,25 +433,26 @@ function ViewLocation(props: {
 
 
   const ValidationSchema = z.object({
-    EmpresaId: z.string(),
-    InventarioFisicoDetalleId: z.string(),
-    FuncionarioId: z.string(),
-    PersonaConteoId: z.string(),
-    AnoNumero: z.number().int(),
-    SubFamiliaId: z.string(),
-    ArticuloId: z.string(),
-    MarcaId: z.string(),
-    EstadoCodigo: z.number().int(),
-    LugarFisicoConteo: z.string().optional(),
-    LocacionId: z.string().optional(),
-    ProgramaId: z.string().optional(),
-    Presentacion: z.string().optional(),
-    Observaciones: z.string().optional(),
-    Codigo: z.string().optional(),
-    NumeroUnidades: z.number().int(),
+    EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    InventarioFisicoDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    PersonaConteoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    AnoNumero: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
+    SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    MarcaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    EstadoCodigo: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
+    LugarFisicoConteo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    LocacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    ProgramaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    Presentacion: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    Observaciones: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    Codigo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
+    NumeroUnidades: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
   });
 
-  const InvFisRegistroSchema = z.array(ValidationSchema);
+  const InvFisRegistroSchema = z.object({
+    InvFisRegistro: z.array(ValidationSchema)
+  });
 
   const defaultValues: InventarioFisicoRegistroFormValues = {
     InvFisRegistro: props.articulos.map((articulo) => ({
@@ -496,7 +496,22 @@ function ViewLocation(props: {
     name: "InvFisRegistro",
   });
 
-  const onSubmit = (data: InventarioFisicoRegistroFormValues) => {
+  const onSubmit = async (data: InventarioFisicoRegistroFormValues) => {
+    try {
+      const response = await api_postInventarioFisicoRegistro(props.jwt, data);
+      if (response) {
+        toast.success('Inventario Registrado con exito');
+        reset();
+      } else {
+        toast.error('ha ocurrido un error registrar el inventario');
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Ha ocurrido un error inesperado');
+      }
+    }
     console.log(data);
   };
 
@@ -507,7 +522,7 @@ function ViewLocation(props: {
   return (
     <>
       <div className="flex flex-col bordered rounded shadow-md mt-2">
-        <form /* onSubmit={handleSubmit(onSubmit)} */>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
               {props.locacions.direccion}
@@ -523,11 +538,15 @@ function ViewLocation(props: {
                   <th>Familia</th>
                   <th>Cantidad en almacen</th>
                   <th>Año</th>
-                  <th>Funcionario</th>
                   <th>Persona Conteo</th>
                   <th>Marca</th>
                   <th>Estado</th>
                   <th>Programa</th>
+                  <th>Presentacion</th>
+                  <th>Lugar Fisico</th>
+                  <th>Observaciones</th>
+                  <th>Codigo</th>
+                  <th>Numero de unidades</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -549,40 +568,29 @@ function ViewLocation(props: {
 
                     <td>
                       <select
-                        defaultValue={""}
+                        {...register(`InvFisRegistro.${index}.PersonaConteoId`, { setValueAs: (value) => value === "" ? undefined : value })}
                         className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+
                       >
-                        <option value={""} disabled selected>
-                          Seleccione Fucionario
+                        <option value={""} selected disabled>
+                          Seleccione Persona
                         </option>
-                        {props.funcionario.map((funcionario, index) => (
-                          <option key={index} value={funcionario.funcionarioId}>{funcionario.persona.nombres + " " + funcionario.persona.apellidoPaterno}</option>
+                        {props.funcionario.sort((a, b) => {
+                          if (a.persona.apellidoPaterno < b.persona.apellidoPaterno) return -1;
+                          if (a.persona.apellidoPaterno > b.persona.apellidoPaterno) return 1;
+                          return a.persona.nombres.localeCompare(b.persona.nombres);
+                        }).map((funcionario, index) => (
+                          <option key={index} value={funcionario.funcionarioId}>{funcionario.persona.apellidoMaterno ? funcionario.persona.apellidoPaterno + " " + funcionario.persona.apellidoMaterno + " " + funcionario.persona.nombres : funcionario.persona.apellidoPaterno + " " + funcionario.persona.nombres}</option>
                         ))}
                       </select>
-                    </td>
-
-                    <td>
-                      <Select
-                        className="w-60 border border-primary rounded-md"
-                        placeholder="Seleccione Persona"
-                        options={props.persona}
-                        onChange={(option) => setSelectedPersona(option)}
-                        value={selectedPersona}
-                        loadingMessage={() => "Cargando opciones..."}
-                        isLoading={props.persona?.length === 0}
-                        getOptionValue={(option) => option.id ?? ''}
-                        getOptionLabel={(option) =>
-                          option.nombres +
-                          " " +
-                          option.apellidoPaterno
-                        }
-                        menuPortalTarget={document.body}
-                      />
+                      {errors.InvFisRegistro?.[index]?.PersonaConteoId && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId.message}</span>
+                      )}
                     </td>
 
                     <td>
                       <select
-                        defaultValue={""}
+                        {...register(`InvFisRegistro.${index}.MarcaId`, { setValueAs: (value) => value === "" ? undefined : value })}
                         className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         onChange={(e) => {
                           if (e.target.value === "Otras") {
@@ -598,25 +606,31 @@ function ViewLocation(props: {
                         ))}
                         <option value={"Otras"}>Otras</option>
                       </select>
+                      {errors.InvFisRegistro?.[index]?.MarcaId && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.MarcaId.message}</span>
+                      )}
                     </td>
 
                     <td>
                       <select
-                        defaultValue={""}
+                        {...register(`InvFisRegistro.${index}.EstadoCodigo`, { setValueAs: (value) => value === 0 ? undefined : Number(value) })}
                         className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                       >
-                        <option value={""} disabled selected>
+                        <option value={0} disabled selected>
                           Seleccione Estado
                         </option>
                         {props.ife.map((estado, index) => (
                           <option key={index} value={estado.codigo}>{estado.nombre}</option>
                         ))}
                       </select>
+                      {errors.InvFisRegistro?.[index]?.EstadoCodigo && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.EstadoCodigo.message}</span>
+                      )}
                     </td>
 
                     <td>
                       <select
-                        defaultValue={""}
+                        {...register(`InvFisRegistro.${index}.ProgramaId`, { setValueAs: (value) => value === "" ? undefined : value })}
                         className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                       >
                         <option value={""} disabled selected>
@@ -626,46 +640,64 @@ function ViewLocation(props: {
                           <option key={index} value={programa.id}>{programa.nombre}</option>
                         ))}
                       </select>
+                      {errors.InvFisRegistro?.[index]?.ProgramaId && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.ProgramaId.message}</span>
+                      )}
                     </td>
 
                     <td>
-                      <Input
+                      <Input {...register(`InvFisRegistro.${index}.Presentacion`, { setValueAs: (value) => value === "" ? undefined : value })}
                         type="text"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         placeholder="Presentacion"
                       />
+                      {errors.InvFisRegistro?.[index]?.Presentacion && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Presentacion.message}</span>
+                      )}
                     </td>
 
                     <td>
-                      <Input
+                      <Input {...register(`InvFisRegistro.${index}.LugarFisicoConteo`, { setValueAs: (value) => value === "" ? undefined : value })}
                         type="text"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         placeholder="Lugar Fisico del Conteo"
                       />
+                      {errors.InvFisRegistro?.[index]?.LugarFisicoConteo && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.LugarFisicoConteo.message}</span>
+                      )}
                     </td>
 
                     <td>
-                      <Input
+                      <Input {...register(`InvFisRegistro.${index}.Observaciones`, { setValueAs: (value) => value === "" ? undefined : value })}
                         type="text"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         placeholder="Observacion"
                       />
+                      {errors.InvFisRegistro?.[index]?.Observaciones && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Observaciones.message}</span>
+                      )}
                     </td>
 
                     <td>
-                      <Input
+                      <Input {...register(`InvFisRegistro.${index}.Codigo`, { setValueAs: (value) => value === "" ? undefined : value })}
                         type="text"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         placeholder="Codigo"
                       />
+                      {errors.InvFisRegistro?.[index]?.Codigo && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Codigo.message}</span>
+                      )}
                     </td>
 
                     <td>
-                      <Input
+                      <Input {...register(`InvFisRegistro.${index}.NumeroUnidades`, { setValueAs: (value) => value === 0 || "" ? undefined : Number(value) })}
                         type="number"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         placeholder="Numero de unidades"
                       />
+                      {errors.InvFisRegistro?.[index]?.NumeroUnidades && (
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades.message}</span>
+                      )}
                     </td>
                   </tr>
                 ))}

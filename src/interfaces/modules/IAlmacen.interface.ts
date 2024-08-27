@@ -22,6 +22,10 @@ interface ILocacion {
     descripcion?: string;
 }
 
+interface IArticulo{
+    id: string;
+    nombre: string;
+}
 interface IAlmacenArticulo {
     almacenId: string;
     anoNumero: number;
@@ -55,4 +59,4 @@ interface IAlmacenArticulo {
     subFamiliaId: string;
 }
 
-export type { IAlmacen, ILocacion, IAlmacenArticulo } 
+export type { IAlmacen, ILocacion, IAlmacenArticulo, IArticulo } 

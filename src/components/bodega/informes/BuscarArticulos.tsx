@@ -11,6 +11,7 @@ import {
     api_getAllEmpresas,
     api_getArticuloSalida,
     api_getArticuloEntrada,
+    api_getAllArticulosByAlmacen,
 } from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import router, { useRouter } from "next/router";
@@ -26,6 +27,7 @@ import { Button, Modal, Table } from "react-daisyui";
 import {
     IAlmacen,
     IAlmacenArticulo,
+    IArticulo,
 } from "@/interfaces/modules/IAlmacen.interface";
 import {
     Controller,
@@ -121,32 +123,29 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         getAllAlmacenByEmpByCenByBod();
     }, [selectedBodega]);
 
-    const [dataAlmacenArticulo, setDataAlmacenArticulo] = useState<
-        IAlmacenArticulo[]
-    >([]);
-    const [selectedArticulo, setSelectedArticulo] =
-        useState<IAlmacenArticulo | null>(null);
 
-    const getAllAlmacenArticuloByEmpByCenByBodByAlm = async () => {
+    const [dataArticulo, setDataArticulo] = useState<IArticulo[]>([]);
+
+
+    const getAllArticulosByAlmacen = async () => {
         try {
             if (selectedCentroCosto && selectedBodega && selectedAlmacen) {
-                const data = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
+                const responseArt = await api_getAllArticulosByAlmacen(
                     jwt,
-                    empresa as string,
-                    selectedCentroCosto.id,
-                    selectedBodega.id,
                     selectedAlmacen.id
                 );
-                setDataAlmacenArticulo(data.data.dataList);
+                setDataArticulo(responseArt.data.dataList);
             }
         } catch (error) {
             console.error(error);
         }
     };
+    const [selectedArticulo, setSelectedArticulo] =
+        useState<IArticulo | null>(null);
 
     useEffect(() => {
-        getAllAlmacenArticuloByEmpByCenByBodByAlm();
-    }, [selectedAlmacen]);
+        getAllArticulosByAlmacen();
+    }, [selectedAlmacen])
 
     const methods = useForm({
         defaultValues: {
@@ -156,7 +155,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
     });
     const { handleSubmit, control, watch } = methods;
 
-    const idArticulo = selectedArticulo?.articulo.id
+    const idArticulo = selectedArticulo?.id
+    const idAlmacen = selectedAlmacen?.id
     const fechaDesde = watch("fechaDesde");
     const fechaHasta = watch("fechaHasta");
 
@@ -164,12 +164,13 @@ export default function BuscarArticuloMovTarjeta(props: props) {
     const [dataEntrada, setDataEntrada] = useState<IParteEntrada[]>([]);
 
     const getMovimientoArticulo = async () => {
-        if (!idArticulo || !fechaDesde || !fechaHasta) return;
+        if (!idArticulo || !idAlmacen || !fechaDesde || !fechaHasta) return;
         const formattedFechaDesde = fechaDesde.toISOString().split("T")[0];
         const formattedFechaHasta = fechaHasta.toISOString().split("T")[0];
         try {
             const salida = await api_getArticuloSalida(
                 jwt,
+                idAlmacen,
                 idArticulo,
                 formattedFechaDesde,
                 formattedFechaHasta
@@ -187,11 +188,11 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         }
     };
 
-    useEffect(() => {
-        if (idArticulo !== "") {
-            getMovimientoArticulo();
-        }
-    }, [idArticulo, fechaDesde, fechaHasta]);
+    // useEffect(() => {
+    //     if (idArticulo !== "") {
+    //         getMovimientoArticulo();
+    //     }
+    // }, [idArticulo, fechaDesde, fechaHasta]);
     return (
         <>
             <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 mt-3">
@@ -241,12 +242,12 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                         placeholder="Seleccione un articulo"
                         value={selectedArticulo}
                         onChange={(option) => setSelectedArticulo(option)}
-                        getOptionValue={(option) => option.articulo.id}
-                        getOptionLabel={(option) => option.articulo.nombre}
-                        options={dataAlmacenArticulo}
+                        getOptionValue={(option) => option.id}
+                        getOptionLabel={(option) => option.nombre}
+                        options={dataArticulo}
                         menuPortalTarget={document.body}
                         loadingMessage={() => "Cargando opciones..."}
-                        isLoading={dataAlmacenArticulo.length === 0}
+                        isLoading={dataArticulo.length === 0}
                         isClearable
                     />
                 </div>
@@ -313,6 +314,13 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                             />
                         </div>
                     </div>
+                    {props.label == "MovimientoArticulo" && (
+                        <button onClick={()=> getMovimientoArticulo()} className="btn btn-outline btn-primary mt-3" >Buscar Movimiento</button>
+                    )}
+                    {props.label == "TarjetaExistencia" && (
+                        <button onClick={()=> getMovimientoArticulo()} className="btn btn-outline btn-primary mt-3" >Buscar Tarjeta</button>
+                    )}
+
                 </div>
             </fieldset>
 
@@ -323,28 +331,13 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mr-5 ml-5 mb-3">
                             <div className="flex flex-col">
                                 <label className="mb-1 text-center md:text-left">
-                                    Código Artículo:
-                                </label>
-                                <div className="border p-1 rounded-md">
-                                    <span>{selectedArticulo.articulo.codigo}</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col">
-                                <label className="mb-1 text-center md:text-left">
                                     Nombre Artículo:
                                 </label>
                                 <div className="border p-1 rounded-md">
-                                    <span>{selectedArticulo.articulo.nombre}</span>
+                                    <span>{selectedArticulo.nombre}</span>
                                 </div>
                             </div>
-                            <div className="flex flex-col">
-                                <label className="mb-1 text-center md:text-left">
-                                    Descripción Artículo:
-                                </label>
-                                <div className="border p-1 rounded-md">
-                                    <span>{selectedArticulo.articulo.descripcion}</span>
-                                </div>
-                            </div>
+
                             <div className="flex flex-col">
                                 <label className="mb-1 text-center md:text-left">
                                     Stock Crítico:
