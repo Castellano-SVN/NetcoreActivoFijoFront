@@ -24,12 +24,12 @@ export function api_getAllIFByEmpresa(bearer: string, empresaId: string) {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
-export function api_getValidation(bearer: string,empresaId: string, numero: number) {
+export function api_getValidation(bearer: string, empresaId: string, numero: number) {
   return api.get(`inventariofisico/lista?empresaId=${empresaId}&numero=${numero}`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
-export function api_getAllInFiDe(bearer: string,empresaId: string, numero: number) {
+export function api_getAllInFiDe(bearer: string, empresaId: string, numero: number) {
   return api.get(`inventariofisicodetalleall?empresaId=${empresaId}&numero=${numero}`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
@@ -37,6 +37,11 @@ export function api_getAllInFiDe(bearer: string,empresaId: string, numero: numbe
 
 export function api_postInventarioFisico(bearer: string, data: any) {
   return api.post(`inventariofisico`, data, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+}
+export function api_postInventarioFisicoRegistro(bearer: string, data: any) {
+  return api.post(`inventariofisicoregistro`, data, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }

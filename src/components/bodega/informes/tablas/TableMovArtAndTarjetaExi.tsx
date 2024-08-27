@@ -52,16 +52,16 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                             <span>{entrada.cantidad ?? "No disponible"}</span>
                             <span>-</span>
                             <span>{entrada.almacenArticulo.cantidad ?? "No disponible"}</span>
-                            {props.label === "TarjetaExistencia" ? <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>: (<></>)}
+                            {/* {props.label === "TarjetaExistencia" ? <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>: (<></>)}
                             {props.label === "TarjetaExistencia" ? <span>-</span>:(<></>)}
-                            {props.label === "TarjetaExistencia" ? <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>: (<></>)}
-                            {/* {props.label == "TarjetaExistencia" ? (
+                            {props.label === "TarjetaExistencia" ? <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>: (<></>)} */}
+                            {props.label == "TarjetaExistencia" ? (
                                 <>
                                     <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>
                                     <span>-</span>
                                     <span>{entrada.recepcionDetalle?.recepcion?.cotizacion?.cotizacionDetalles[0]?.valorUnitario ? entrada.recepcionDetalle.recepcion.cotizacion.cotizacionDetalles[0].valorUnitario * entrada.cantidad : "No disponible"}</span>
                                 </>
-                            ) : <></>} */}
+                            ) : <></>}
                         </Table.Row>
                     ))}
                     {props.dataSalida.map((salida, indexSalida) => (
