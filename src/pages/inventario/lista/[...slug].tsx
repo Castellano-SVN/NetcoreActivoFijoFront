@@ -128,6 +128,7 @@ export default function Inventariar() {
       toast.success('Marca agregada con éxito');
       setModalShow(false);
       setInputValue('');
+      getMarcas();
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -176,24 +177,6 @@ export default function Inventariar() {
     getPrograma();
     getFuncionarios();
   }, [empresa]);
-
-  const [dataPersona, setDataPersona] = useState<IPersona[]>([]);
-  const getPersonas = async () => {
-    try {
-      const data = await api_getAllPersonas(jwt);
-      setDataPersona(data.data.dataList);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getPersonas();
-  }, []);
-
-
-
-
 
   return (
     <>
@@ -265,7 +248,6 @@ export default function Inventariar() {
                   ife={invFisEstado}
                   programa={programa}
                   funcionario={dataFuncionario}
-                  persona={dataPersona}
                 />
               ))}
             </div>
@@ -313,7 +295,6 @@ interface props {
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
-  persona: IPersona[];
 }
 interface articuloI {
   articuloId: string;
@@ -388,13 +369,12 @@ function ViewAlmacen(props: props) {
                   estados={props.estados}
                   empresa={props.empresa}
                   jwt={props.jwt}
-                  invFisDetalleId={props.invFisicoDetalleId}
+                  invFisDetalleId={props.invFisicoDetalleId as string}
                   marcas={props.marcas}
                   handleShowModal={props.handleShowModal}
                   ife={props.ife}
                   programa={props.programa}
                   funcionario={props.funcionario}
-                  persona={props.persona}
                 />
               )
           )}
@@ -420,12 +400,11 @@ function ViewLocation(props: {
   empresa: string;
   jwt: string;
   marcas: MarcasI[];
-  invFisDetalleId: string | null;
+  invFisDetalleId: string;
   handleShowModal: () => void;
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
-  persona: IPersona[];
 }) {
 
   const [selectedPersona, setSelectedPersona] =
@@ -434,9 +413,7 @@ function ViewLocation(props: {
 
   const ValidationSchema = z.object({
     EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
-    InventarioFisicoDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     PersonaConteoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
-    AnoNumero: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
     SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     MarcaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
@@ -449,15 +426,16 @@ function ViewLocation(props: {
     Codigo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
     NumeroUnidades: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
   });
-
+  
   const InvFisRegistroSchema = z.object({
-    InvFisRegistro: z.array(ValidationSchema)
+    InvFisRegistro: z.array(ValidationSchema),
+    InventarioFisicoDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
   });
 
   const defaultValues: InventarioFisicoRegistroFormValues = {
+    InventarioFisicoDetalleId: props.invFisDetalleId,
     InvFisRegistro: props.articulos.map((articulo) => ({
       EmpresaId: props.empresa,
-      InventarioFisicoDetalleId: props.invFisDetalleId || '',
       FuncionarioId: '',
       PersonaConteoId: '',
       AnoNumero: articulo.anoNumero,
@@ -587,13 +565,13 @@ function ViewLocation(props: {
                         <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId.message}</span>
                       )}
                     </td>
-
                     <td>
                       <select
                         {...register(`InvFisRegistro.${index}.MarcaId`, { setValueAs: (value) => value === "" ? undefined : value })}
                         className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                         onChange={(e) => {
                           if (e.target.value === "Otras") {
+                            e.target.value = '';
                             props.handleShowModal();
                           };
                         }}

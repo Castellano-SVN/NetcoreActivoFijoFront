@@ -72,12 +72,11 @@ export interface IFuncionarioEmpresa {
 }
 
 export interface InventarioFisicoRegistroFormValues {
+  InventarioFisicoDetalleId: string;
   InvFisRegistro: {
     EmpresaId: string;
-    InventarioFisicoDetalleId: string;
     FuncionarioId: string;
     PersonaConteoId: string;
-    AnoNumero: number;
     SubFamiliaId: string;
     ArticuloId: string;
     MarcaId: string;
