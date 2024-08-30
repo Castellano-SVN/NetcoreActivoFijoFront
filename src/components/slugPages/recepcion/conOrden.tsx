@@ -320,6 +320,7 @@ export default function ConOrden(props: props) {
                   Tipo de documento:
                 </label>
                 <div className="flex justify-center">
+                  {getValues("tipo")}
                   <Controller
                     control={control}
                     name="tipo"
@@ -332,7 +333,7 @@ export default function ConOrden(props: props) {
                               type="radio"
                               value={tipo.codigo}
                               className="radio radio-xs radio-primary ml-2 mr-2"
-                              checked={field.value === tipo.codigo}
+                              onChange={(e) => field.onChange(Number(e.target.value))}
                             />
                             {tipo.nombre}
                           </label>

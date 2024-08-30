@@ -837,6 +837,10 @@ interface IParteEntrada {
   }
   almacenArticulo: {
     cantidad: number;
+    articulo:{
+      codigo?:number;
+      descripcion?:string;
+    }
   }
 }
 interface IMarca {

@@ -64,7 +64,7 @@ export default function index() {
           </a>
         </div>
       </div>
-      <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
+      <div className="m-auto flex flex-col">
         {tab == 0 &&(
             <MovimientoArticulos/>
         )} 
