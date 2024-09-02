@@ -81,6 +81,9 @@ export function api_postBodegas(bearer: string, data: any) {
 export function api_getBodegas(bearer: string, centroCosto: string) {
   return api.get(`bodega/${centroCosto}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_getAllBodegasByEmpresa(bearer: string, empresaId: string) {
+  return api.get(`bodegabyempresa/${empresaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 export function api_getAllBodegas(bearer: string) {
   return api.get(`bodega`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

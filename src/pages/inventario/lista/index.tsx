@@ -33,6 +33,7 @@ import { Button, Divider, Loading, Modal } from "react-daisyui";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
+import { FaCircleInfo } from "react-icons/fa6";
 registerLocale("es", es);
 
 export default function ViewInventoryTaking() {
@@ -372,15 +373,15 @@ export function TableInventory(props: props) {
         <span className="">
           {props.inventarioFisico.fechaInicio
             ? new Date(props.inventarioFisico.fechaInicio).toLocaleDateString(
-                "es-ES",
-                {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              ) + " hrs."
+              "es-ES",
+              {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            ) + " hrs."
             : "Fecha no disponible"}
         </span>
       </div>
@@ -390,15 +391,15 @@ export function TableInventory(props: props) {
         <span className="">
           {props.inventarioFisico.fechaTermino
             ? new Date(props.inventarioFisico.fechaTermino).toLocaleDateString(
-                "es-ES",
-                {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              ) + " hrs."
+              "es-ES",
+              {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            ) + " hrs."
             : "Fecha no disponible"}
         </span>
       </div>
@@ -406,17 +407,47 @@ export function TableInventory(props: props) {
       <div className="col-span-2 grid grid-cols-2 gap-2 text-start bg-gray-200 p-2">
         <label className="font-semibold col-span-2">Acciones:</label>
         <div className="col-start-4 col-end-5 flex items-center">
-          <a
-            onClick={() =>
-              router.push(
-                `/inventario/lista/${props.inventarioFisico.numero}?empresa=${props.empresa}`
-              )
-            }
-            className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md"
-          >
-            <span className="text-sm">Ver</span>
-            <FaEye className=" ml-2" />
-          </a>
+          {new Date() >= new Date(props.inventarioFisico.fechaTermino) ? (
+            <>
+              <a
+                onClick={() =>
+                  router.push(
+                    `/inventario/informe/${props.inventarioFisico.numero}?empresa=${props.empresa}`
+                  )
+                }
+                className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md"
+              >
+                <span className="text-sm">Informe</span>
+                <FaCircleInfo className=" ml-2" />
+              </a>
+            </>
+          ) : (
+            <>
+              <a
+                onClick={() =>
+                  router.push(
+                    `/inventario/lista/${props.inventarioFisico.numero}?empresa=${props.empresa}`
+                  )
+                }
+                className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md mr-2"
+              >
+                <span className="text-sm">Ver</span>
+                <FaEye className=" ml-2" />
+              </a>
+
+              <a
+                onClick={() =>
+                  router.push(
+                    `/inventario/informe/${props.inventarioFisico.numero}?empresa=${props.empresa}`
+                  )
+                }
+                className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md"
+              >
+                <span className="text-sm">Informe</span>
+                <FaCircleInfo className=" ml-2" />
+              </a>
+            </>
+          )}
         </div>
       </div>
     </div>

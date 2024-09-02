@@ -42,7 +42,7 @@ export default function index() {
           >
             Tarjeta de Existencia
           </a>
-          <a
+          {/* <a
             onClick={() => {
               setTab(2);
             }}
@@ -51,7 +51,7 @@ export default function index() {
             } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Inventario Fisico
-          </a>
+          </a> */}
           <a
             onClick={() => {
               setTab(3);
@@ -71,9 +71,9 @@ export default function index() {
         {tab == 1 &&( 
             <TarjetaExistencia/>
         )}
-        {tab == 2 &&(
+        {/* {tab == 2 &&(
             <InventarioFisico/>
-        )} 
+        )}  */}
         {tab == 3 &&( 
             <QuiebreStock/>
         )}

@@ -1,6 +1,7 @@
 import { IParteEntrada, IParteSalida } from "@/interfaces/creation";
 import { useEffect, useState } from "react";
 import { Table } from "react-daisyui";
+import { z } from "zod";
 
 interface movimientoI {
   cantidad: number;
@@ -27,6 +28,8 @@ interface articleProps {
     almacen: string;
     fechaDesde: string;
     fechaHasta: string;
+    codigo?:string;
+    valor: number;
   };
 }
 interface ITdr {
@@ -42,8 +45,16 @@ interface props {
 export default function TableMovArtAndTarjetaExi(props: props) {
   
   useEffect(() => {
-    console.log("movimiento:", props.movimientos);
+    console.log("movimiento:", props);
   }, [props]);
+
+  /* const movimiento = z.object({
+    FechaDesde: z.date(),
+    FechaHasta: z.date(),
+    Codigo: z.string().optional(),
+    NombreArticulo: z.string(),
+
+  }); */
 
   return (
     <>
@@ -77,17 +88,15 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                       </span>
                       <span>{mov.proveedorRut ?? "No disponible"}</span>
                       <span>{mov.proveedorNombre ?? "No disponible"}</span>
-                      <span>{mov.tipoDocumento}</span>
+                      <span>{mov.tipoDocumento ?? "No disponible"}</span>
                       <span>{mov.numeroDocumento === 0 ? "No disponible" : mov.numeroDocumento}</span>
-                      <span>{mov.precioCompra === 0 ? "No disponible" : mov.precioCompra}</span>
-                      <span className="text-green-500">
-                        +{mov.cantidad ?? "No disponible"}
-                      </span>
+                      <span>{(mov.precioCompra === 0 || !mov.precioCompra ? (props.articulos.article?.valor || "No disponible") : mov.precioCompra).toLocaleString()}</span>
+                      <span className="text-green-500">+{mov.cantidad ?? "No disponible"}</span>
                       <span>-</span>
                       <span>{mov.saldo}</span>
-                      {props.label === "TarjetaExistencia" ? <span> {mov.precioCompra && mov.cantidad ? mov.precioCompra * mov.cantidad : "No disponible"}</span>: (<></>)}
+                      {props.label === "TarjetaExistencia" ? <span> {(props.articulos.article?.valor * mov.cantidad ?? "No disponible").toLocaleString()}</span>: (<></>)}
                       {props.label === "TarjetaExistencia" ? <span>-</span>:(<></>)}
-                      {props.label === "TarjetaExistencia" ? <span> {mov.precioCompra && mov.saldo ? mov.precioCompra * mov.saldo : "No disponible"}</span>: (<></>)} 
+                      {props.label === "TarjetaExistencia" ? <span> {(props.articulos.article?.valor * mov.saldo ?? "No disponible").toLocaleString()}</span>: (<></>)}
                     </Table.Row>
                   </>
                   
@@ -100,14 +109,15 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                     </span>
                     <span>{mov.proveedorRut ?? "No disponible"}</span>
                     <span>{mov.proveedorNombre ?? "No disponible"}</span>
-                    <span>{mov.tipoDocumento}</span>
-                    <span>{mov.numeroDocumento ?? "No disponible"}</span>
-                    <span>{mov.precioCompra ?? "No disponible"}</span>
+                    <span>{mov.tipoDocumento ?? "No disponible"}</span>
+                    <span>{mov.numeroDocumento === 0 ? "No disponible" : mov.numeroDocumento}</span>
+                    <span>{(mov.precioCompra === 0 || !mov.precioCompra ? (props.articulos.article?.valor || "No disponible") : mov.precioCompra).toLocaleString()}</span>
                     <span>-</span>
-                    <span className="text-red-500">
-                        -{mov.cantidad ?? "No disponible"}
-                      </span>
+                    <span className="text-red-500">-{mov.cantidad ?? "No disponible"}</span>
                     <span>{mov.saldo}</span>
+                    {props.label === "TarjetaExistencia" ? <span>-</span>:(<></>)}
+                    {props.label === "TarjetaExistencia" ? <span> {(props.articulos.article?.valor * mov.cantidad ?? "No disponible").toLocaleString()}</span>: (<></>)}
+                    {props.label === "TarjetaExistencia" ? <span> {(props.articulos.article?.valor * mov.saldo ?? "No disponible").toLocaleString()}</span>: (<></>)}
                   </Table.Row>
                 )
             )}

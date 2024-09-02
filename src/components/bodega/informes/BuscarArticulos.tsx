@@ -229,6 +229,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
       fechaDesde: string;
       fechaHasta: string;
       provedorNombre: string;
+      valor: number;
     }[]
   >([]);
 
@@ -256,6 +257,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         fechaDesde: string;
         fechaHasta: string;
         provedorNombre: string;
+        valor: number;
       }[] = [];
       response.data.dataList.forEach(
         (element: {
@@ -266,6 +268,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
           empresa: string;
           almacen: string;
           provedorNombre: string;
+          valor: number;
         }) => {
           const article: {
             cantidad: number;
@@ -277,6 +280,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
             fechaDesde: string;
             fechaHasta: string;
             provedorNombre: string;
+            valor: number;
           } = {
             ...element,
             almacen: data.Almacen,
@@ -543,6 +547,7 @@ interface articleProps {
     fechaDesde: string;
     fechaHasta: string;
     codigo?: string;
+    valor: number;
   };
   label: string;
 }
@@ -654,6 +659,7 @@ function Article(props: articleProps) {
               movimientos={movimientos}
               articulos={props}
               label={props.label}
+              
             />
           </>
         ) : (
