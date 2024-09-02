@@ -11,10 +11,5 @@ export default function TarjetaExistencia() {
           <BuscarArticuloMovTarjeta label="TarjetaExistencia"/>
         </div>
       </>
-
-            
-
-                         
-
     );
 }

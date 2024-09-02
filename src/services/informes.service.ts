@@ -28,6 +28,10 @@ export function api_getinformeArticulo(bearer: string, empresa:string,almacen:st
     if (articulo) query = query + `&articulo=${articulo}`
     return api.get(`informe/movimientos/busqueda?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_getinformeQuiebreStock(bearer: string, empresa:string) {
+    let query = `empresa=${empresa}`
+    return api.get(`informe/quiebrestock/busqueda?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 
 
 export function api_getinformeInput(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string) {

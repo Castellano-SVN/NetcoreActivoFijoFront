@@ -7,8 +7,8 @@ export interface InventarioFisicoData {
 }
 export interface IInventarioFisico {
   empresaId: string;
-  fechaInicio?: Date;
-  fechaTermino?: Date;
+  fechaInicio: Date;
+  fechaTermino: Date;
   numero: number;
 }
 
