@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Table } from "react-daisyui";
 import { z } from "zod";
 import PDFMovimientoArticulo from "../../../pdf/informes/pdfmovimientoarticulo";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import PDFTarjetaExistencia from "../../../pdf/informes/pdftarjetaexistencia";
+import { api_getInputOutputExcel } from "@/services/informes.service";
+import { useUserStore } from "@/store/user.store";
 
 interface movimientoI {
   cantidad: number;
@@ -51,7 +53,7 @@ interface IDataToSend {
   FechaHasta: string;
   Codigo?: string;
   Nombre: string;
-  Valor:number;
+  Valor: number;
   Movimientos: movimientoI[];
 }
 
@@ -61,7 +63,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
     FechaHasta: props.articulos.article.fechaHasta,
     Codigo: props.articulos.article.codigo,
     Nombre: props.articulos.article.nombre,
-    Valor:props.articulos.article.valor,
+    Valor: props.articulos.article.valor,
     Movimientos: [],
   });
 
@@ -71,7 +73,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
       FechaHasta: props.articulos.article.fechaHasta,
       Codigo: props.articulos.article.codigo,
       Nombre: props.articulos.article.nombre,
-      Valor:props.articulos.article.valor,
+      Valor: props.articulos.article.valor,
       Movimientos: props.movimientos,
     });
   }, [
@@ -93,6 +95,37 @@ export default function TableMovArtAndTarjetaExi(props: props) {
     NombreArticulo: z.string(),
 
   }); */
+
+  const { jwt } = useUserStore();
+
+
+  const downloadExcel = async () => {
+    try {
+      const response = await api_getInputOutputExcel(
+        jwt,
+        props.articulos.article.empresa,
+        props.articulos.article.almacen,
+        props.articulos.article.fechaDesde,
+        props.articulos.article.fechaHasta,
+        props.articulos.article.id
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+
+      // Crear un enlace temporal y simular un clic para descargar el archivo
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `movimiento_de_articulo_${props.articulos.article.nombre}.xlsx`); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpiar el enlace temporal y revocar la URL
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
+        // Limpia el objeto URL después de la descarga
+    } catch (error) {
+      console.error("Error al descargar el archivo Excel:", error);
+    }
+  };
 
   return (
     <>
@@ -227,7 +260,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
             )}
           </Table.Body>
         </Table>
-        {dataToSend.Movimientos.length > 0 && props.label == "MovimientoArticulo" && (
+        {dataToSend.Movimientos.length > 0 && props.label == "MovimientoArticulo" && (<>
           <PDFDownloadLink
             document={<PDFMovimientoArticulo data={dataToSend} />}
             fileName={`Movimiento_de_Articulo_${props.articulos.article.nombre}`}
@@ -246,8 +279,18 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               )
             }
           </PDFDownloadLink>
-        )}
-        {dataToSend.Movimientos.length > 0 && props.label == "TarjetaExistencia" && (
+          <div className="col-span-2 mt-3">
+            <button
+              type="button"
+              className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+              onClick={downloadExcel}
+            >
+              <FaFileExcel />
+              Exportar excel
+            </button>
+          </div>
+        </>)}
+        {dataToSend.Movimientos.length > 0 && props.label == "TarjetaExistencia" && (<>
           <PDFDownloadLink
             document={<PDFTarjetaExistencia data={dataToSend} />}
             fileName={`Tarjeta_de_existencia_Articulo_${props.articulos.article.nombre}`}
@@ -266,7 +309,9 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               )
             }
           </PDFDownloadLink>
-        )}
+
+          
+        </>)}
       </div>
     </>
   );

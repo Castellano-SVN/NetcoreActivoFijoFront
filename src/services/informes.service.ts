@@ -50,6 +50,7 @@ export function api_getinformeInput(bearer: string, empresa:string,almacen:strin
     return api.get(`informe/movimientos/entradas?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+
 export function api_getinformeOutput(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string) {
   let query = `empresa=${empresa}`
   query = query + `&almacen=${almacen}`
@@ -58,10 +59,18 @@ export function api_getinformeOutput(bearer: string, empresa:string,almacen:stri
   query = query + `&articulo=${articulo}`
   return api.get(`informe/movimientos/salidas?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_getInputOutputExcel(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string) {
+  let query = `empresa=${empresa}`
+  query = query + `&almacen=${almacen}`
+  query = query + `&fecha_desde=${fechaDesde}`
+  query = query + `&fecha_hasta=${fechaHasta}`
+  query = query + `&articulo=${articulo}`
+  return api.get(`informe/movimientos/excel?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } ,responseType:"blob",})
+}
 
 export function api_getIFRByDetalle(bearer: string, inventarioFisicoDetalleId: string) {
   return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=false`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getIFRByDetalleToExcel(bearer: string, inventarioFisicoDetalleId: string,isExcel: boolean = false) {
-  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=true`, { headers: { "Authorization": `Bearer ${bearer}` },responseType:"blob" })
+export function api_getIFRByDetalleToExcel(bearer: string, inventarioFisicoDetalleId: string) {
+  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=true`, { headers: { "Authorization": `Bearer ${bearer}` },responseType:"blob",})
 }
