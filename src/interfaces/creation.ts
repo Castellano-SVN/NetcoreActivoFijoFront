@@ -852,6 +852,35 @@ interface IInventarioFisicoEstado {
   nombre: string;
 }
 
+interface IBodegaQuiebre{
+  almacen:{
+    bodega:{
+      id: string;
+      nombre: string;
+    }
+    codigo: string;
+    id: string;
+    nombre: string;
+  }
+  articulo:{
+    codigo: string;
+    descripcion: string;
+    nombre: string;
+    subFamilia:{
+      familia:{
+        codigo: string;
+        id: string;
+        nombre:string;
+      }
+      codigo: string;
+      id: string;
+      nombre:string;
+    }
+  }
+  cantidad: number;
+  cantidadMinima: number;
+}
+
 
 
 
@@ -859,5 +888,5 @@ export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
   RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
-  OutPutQuiebreStockFormValues,FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue
+  OutPutQuiebreStockFormValues,FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue,IBodegaQuiebre
 }

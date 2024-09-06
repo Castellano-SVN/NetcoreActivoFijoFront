@@ -1,5 +1,5 @@
 import { useContextStore } from "@/store/context.store";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "react-daisyui";
 import MovimientoArticulos from "./movimientoArticulos";
@@ -7,17 +7,89 @@ import TarjetaExistencia from "./tarjetaExistencia";
 import InventarioFisico from "./inventarioFisico";
 import QuiebreStock from "./quiebreStock";
 import WarningAlert from "@/components/alerts/warningAlert";
+import { useUserStore } from "@/store/user.store";
+import { api_getinformeQuiebreStock } from "@/services/informes.service";
+import { IBodegaQuiebre } from "@/interfaces/creation";
+import { useInfiniteQuery } from "react-query";
 
 export default function index() {
   const [tab, setTab] = useState<number>(0);
 
   const { setActive } = useContextStore();
+
+  useEffect(() => {
+    setActive("Informes");
+  }, []);
+  
   const [currentPage, setCurrentPage] = useState<string | null>(null);
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleButtonClick = (page: string) => {
     setCurrentPage(page);
   };
+  const { jwt } = useUserStore();
+  const { empresa } = router.query;
+
+  const [page, setPage] = useState<number>(1);
+  const [meta, setMeta] = useState<{ total: number; pages: number }>({
+    total: 0,
+    pages: 0,
+  });
+
+  const [dataQuiebreStockPDF, setDataQuiebreStockPDF] = useState<
+    IBodegaQuiebre[]
+  >([]);
+  const fetchQuiebreStockPDF = async ({ pageParam = 1, perPage = 0 }) => {
+    const responsePdf = await api_getinformeQuiebreStock(
+      jwt,
+      empresa as string,
+      pageParam,
+      perPage
+    );
+    setDataQuiebreStockPDF(responsePdf.data.dataList);
+  };
+  useEffect(() => {
+    fetchQuiebreStockPDF({ pageParam: 1, perPage: 0 });
+  }, [empresa]);
+
+  const fetchQuiebreStock = async ({ pageParam = 1, perPage = 5 }) => {
+    const response = await api_getinformeQuiebreStock(
+      jwt,
+      empresa as string,
+      pageParam,
+      perPage
+    );
+    return response.data;
+  };
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    refetch,
+    isLoading,
+  } = useInfiniteQuery(`quiebreStock-${empresa}`, fetchQuiebreStock, {
+    getNextPageParam: (lastPage, pages) => {
+      if (lastPage.pages > pages.length) {
+        return pages.length + 1;
+      } else {
+        return undefined; // no more pages to load
+      }
+    },
+    onSuccess: (data) => {
+      const lastPage = data.pages[data.pages.length - 1];
+      setMeta({
+        total: lastPage.total,
+        pages: lastPage.pages,
+      });
+    },
+  });
+
+  const allItems = data?.pages?.flatMap((page) => page.dataList) || [];
+
   return (
     <>
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
@@ -65,19 +137,23 @@ export default function index() {
         </div>
       </div>
       <div className="m-auto flex flex-col">
-        {tab == 0 &&(
-            <MovimientoArticulos/>
-        )} 
-        {tab == 1 &&( 
-            <TarjetaExistencia/>
-        )}
+        {tab == 0 && <MovimientoArticulos />}
+        {tab == 1 && <TarjetaExistencia />}
         {/* {tab == 2 &&(
             <InventarioFisico/>
         )}  */}
-        {tab == 3 &&( 
-            <QuiebreStock/>
+        {tab == 3 && (
+          <>
+            <QuiebreStock
+              dataQuiebre={allItems}
+              dataQuiebrePdf={dataQuiebreStockPDF}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          </>
         )}
-        </div>
+      </div>
     </>
   );
 }

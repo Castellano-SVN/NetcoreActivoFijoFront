@@ -181,7 +181,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
   };
 
   useEffect(() => {
-    getTdr()
+    getTdr();
   }, []);
 
   const {
@@ -536,7 +536,7 @@ interface movimientoI {
   timestamp: number;
 }
 interface articleProps {
-  tdr:ITdr[];
+  tdr: ITdr[];
   article: {
     cantidad: number;
     direccion: string;
@@ -579,57 +579,54 @@ function Article(props: articleProps) {
       props.article.fechaHasta,
       props.article.id
     );
-    
-    const entradas: movimientoI[] = respEntradas.data.dataList.map((item: movimientoI) => {
-      return {
+
+    const entradas: movimientoI[] = respEntradas.data.dataList.map(
+      (item: movimientoI) => {
+        return {
           cantidad: item.cantidad,
           fecha: new Date(item.fecha),
           numero: item.numero,
-          saldo: 0,
+          saldo: item.saldo,
           fechaString: item.fecha,
           tipo: "entrada",
           proveedorRut: item.proveedorRut,
           proveedorNombre: item.proveedorNombre,
           funcionarioNombre: item.funcionarioNombre,
-          tipoDocumento: props.tdr.find(e => e.codigo === item.tipoDocumento)?.nombre || "No disponible",
+          tipoDocumento:
+            props.tdr.find((e) => e.codigo === item.tipoDocumento)?.nombre ||
+            "No disponible",
           numeroDocumento: item.numeroDocumento,
           precioCompra: item.precioCompra,
-          timestamp : item.timestamp
-      };
-  });
-  const salidas: movimientoI[] = respSalidas.data.dataList.map((item: movimientoI) => {
-    return {
-        cantidad: item.cantidad,
-        fecha: new Date(item.fecha),
-        numero: item.numero,
-        saldo: 0,
-        fechaString: item.fecha,
-        tipo: "salida",
-        proveedorRut: item.proveedorRut,
-        proveedorNombre: item.proveedorNombre,
-        funcionarioNombre: item.funcionarioNombre,
-        tipoDocumento: props.tdr.find(e => e.codigo === item.tipoDocumento)?.nombre || "No disponible",
-        numeroDocumento: item.numeroDocumento,
-        precioCompra: item.precioCompra,
-        timestamp : item.timestamp
-    };
-
-  });
-  let combinedArray = [...entradas, ...salidas].sort((a, b) => a.timestamp - b.timestamp);
-  let saldo = 0;
-  combinedArray.map((e:movimientoI) => {
-    if (e.tipo === 'entrada') {
-      e.saldo = saldo + e.cantidad;
-      saldo = e.saldo
-    } else {
-      e.saldo = saldo - e.cantidad;
-      saldo = e.saldo
-    }
-  })
-  setMovimientos(combinedArray);
-
+          timestamp: item.timestamp,
+        };
+      }
+    );
+    const salidas: movimientoI[] = respSalidas.data.dataList.map(
+      (item: movimientoI) => {
+        return {
+          cantidad: item.cantidad,
+          fecha: new Date(item.fecha),
+          numero: item.numero,
+          saldo: item.saldo,
+          fechaString: item.fecha,
+          tipo: "salida",
+          proveedorRut: item.proveedorRut,
+          proveedorNombre: item.proveedorNombre,
+          funcionarioNombre: item.funcionarioNombre,
+          tipoDocumento:
+            props.tdr.find((e) => e.codigo === item.tipoDocumento)?.nombre ||
+            "No disponible",
+          numeroDocumento: item.numeroDocumento,
+          precioCompra: item.precioCompra,
+          timestamp: item.timestamp,
+        };
+      }
+    );
+    let combinedArray = [...entradas, ...salidas].sort(
+      (a, b) => a.timestamp - b.timestamp
+    );
+    setMovimientos(combinedArray);
   };
-
 
   useEffect(() => {
     historial();
@@ -637,9 +634,9 @@ function Article(props: articleProps) {
 
   return (
     <>
-      <fieldset className=" border shadow-md rounded-lg p-2 transition duration-300 transform hover:border-primary mt-3">
-        <legend className="mouse-pointer select-none">
-          <span>Movimientos de </span>
+      <div className=" border shadow-md rounded-lg p-2 hover:border-primary mt-3">
+        <div className="mouse-pointer select-none">
+          <span className="font-bold">Movimientos de: </span>
           {props.article.nombre} <br />
           {props.article.codigo == undefined ? (
             "Sin codigo" + " " + props.article.nombre
@@ -652,22 +649,23 @@ function Article(props: articleProps) {
               </label>
             </>
           )}
-        </legend>
-        {movimientos.length > 0 ? (
-          <>
-            <TableMovArtAndTarjetaExi
-              movimientos={movimientos}
-              articulos={props}
-              label={props.label}
-              
-            />
-          </>
-        ) : (
-          <>
-            <WarningAlert message={"Articulo sin movimientos en esta fecha."} />
-          </>
-        )}
-      </fieldset>
+          {movimientos.length > 0 ? (
+            <>
+              <TableMovArtAndTarjetaExi
+                movimientos={movimientos}
+                articulos={props}
+                label={props.label}
+              />
+            </>
+          ) : (
+            <>
+              <WarningAlert
+                message={"Articulo sin movimientos en esta fecha."}
+              />
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 }

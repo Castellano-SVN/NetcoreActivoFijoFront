@@ -19,8 +19,8 @@ api.interceptors.response.use(
   }
 );
 
-export function api_getAllIFByEmpresa(bearer: string, empresaId: string) {
-  return api.get(`inventariofisico?empresaId=${empresaId}`, {
+export function api_getAllIFByEmpresa(bearer: string, empresaId: string,page: number) {
+  return api.get(`inventariofisico?empresaId=${empresaId}&page=${page}&perPage=6`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }

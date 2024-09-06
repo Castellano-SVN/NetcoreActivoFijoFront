@@ -24,7 +24,7 @@ import Select from "react-select";
 import { FaArrowLeft, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Head from "next/head";
 import { FiPlus } from "react-icons/fi";
@@ -117,9 +117,7 @@ export default function ShowInventarioFisico() {
     CentroCostoId: z
       .string({ invalid_type_error: "Tipo de dato invalido" })
       .optional(),
-    BodegaId: z
-      .string({ invalid_type_error: "Tipo de dato invalido" })
-      .optional(),
+    BodegaId: z.string({ invalid_type_error: "Tipo de dato invalido", required_error:"Campo Requerido." }),
   });
 
   const methods = useForm<InventarioFisicoDetalleFormValues>({
@@ -144,7 +142,7 @@ export default function ShowInventarioFisico() {
       toast.success("Detalles de Inventariado registrado con exito.");
       setModalShow(false);
       reset();
-      getInvFisDet()
+      getInvFisDet();
     } catch (error) {
       console.log(error);
       toast.error("ha ocurrido un error inesperado.");
@@ -304,20 +302,30 @@ export default function ShowInventarioFisico() {
               </div>
 
               <div className="col-span-3">
-                {dataBodega?.length !== 0 && (
-                  <Select
-                    className="my-2 w-full px-0 md:px-8 "
-                    placeholder="Seleccione la bodega"
-                    options={dataBodega}
-                    onChange={(option) => setSelectedBodega(option)}
-                    value={selectedBodega}
-                    loadingMessage={() => "Cargando opciones..."}
-                    isLoading={dataBodega?.length === 0}
-                    getOptionValue={(option) => option.id}
-                    getOptionLabel={(option) => option.nombre}
-                    menuPortalTarget={document.body}
-                  />
-                )}
+                <Controller
+                  control={control}
+                  name="BodegaId"
+                  render={({ field: { onChange, value, name, ref } }) => (
+                    <Select
+                      className="mt-2 px-0 md:px-8"
+                      placeholder="Seleccione Bodega"
+                      getOptionValue={(option) => option.id}
+                      getOptionLabel={(option) => option.nombre}
+                      value={selectedBodega}
+                      options={dataBodega}
+                      onChange={(option) => setSelectedBodega(option)}
+                      menuPortalTarget={document.body}
+                      loadingMessage={() => "Cargando opciones..."}
+                      isLoading={dataBodega?.length === 0}
+                      isClearable
+                    />
+                  )}
+                />
+                {errors.BodegaId && (
+                <span className="text-red-600 block">
+                  {errors.BodegaId.message}
+                </span>
+              )}
               </div>
 
               <div className="col-span-3">
@@ -386,14 +394,14 @@ export function TableInvDetalle(props: props) {
         <label className="font-semibold">Centro de Costos:</label>{" "}
         <span className="">{props.inventarioFisico.centroCosto}</span>
       </div>
-      
+
       <div className="col-span-1 text-start p-2">
         <label className="font-semibold">Bodega:</label>{" "}
         <span className="">{props.inventarioFisico.bodega}</span>
       </div>
       <div className="col-span-3 grid grid-cols-3 gap-2 text-start bg-gray-200 p-2">
         <label className="font-semibold col-span-3">Acciones:</label>
-         <div className="col-start-4 col-end-5 flex items-center">
+        <div className="col-start-4 col-end-5 flex items-center">
           <a
             onClick={() =>
               router.push(
@@ -403,7 +411,7 @@ export function TableInvDetalle(props: props) {
             className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md"
           >
             <span className="text-sm">Inventariar</span>
-            <FaBoxesStacked className="ml-2" /> 
+            <FaBoxesStacked className="ml-2" />
           </a>
         </div>
       </div>

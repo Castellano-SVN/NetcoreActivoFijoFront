@@ -5,7 +5,14 @@ import {
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { api_getOneEmpresa } from "../../../services/bodega.service";
 import {
   IEmpresa,
@@ -34,6 +41,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 import { FaCircleInfo } from "react-icons/fa6";
+import { useQuery } from "react-query";
 registerLocale("es", es);
 
 export default function ViewInventoryTaking() {
@@ -50,7 +58,6 @@ export default function ViewInventoryTaking() {
     useState<IInventarioFisico[]>();
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
   const [modalShow, setModalShow] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     const getOneEmpresa = async () => {
       if (empresaId) {
@@ -64,7 +71,37 @@ export default function ViewInventoryTaking() {
     };
     getOneEmpresa();
   }, [jwt, empresaId]);
-  const getInventarioFisico = async () => {
+
+  //seccion data inventario fisico
+  const [meta, setMeta] = useState<{ total: number; pages: number }>({
+    total: 0,
+    pages: 0,
+  });
+
+  const [page, setPage] = useState<number>(1);
+
+  const { isLoading, error, data, refetch } = useQuery(
+    "inventariosFisicos",
+    () => api_getAllIFByEmpresa(jwt, empresaId as string, page),
+    {
+      enabled: true,
+      onSuccess: (data) => {
+        setMeta({
+          total: data.data.total,
+          pages: data.data.pages,
+        });
+        setDataInventarioFisico(data.data.dataList);
+      },
+    }
+  );
+
+  useEffect(() => {
+    if(!empresaId) return;
+    setDataInventarioFisico([]);
+    refetch();
+  }, [page,empresaId]);
+
+  /* const getInventarioFisico = async () => {
     if (empresaId) {
       try {
         const data = await api_getAllIFByEmpresa(jwt, empresaId);
@@ -74,9 +111,10 @@ export default function ViewInventoryTaking() {
       }
     }
   };
+
   useEffect(() => {
     getInventarioFisico();
-  }, [jwt, empresaId]);
+  }, [jwt, empresaId]); */
 
   const programarRevisionSchema = z
     .object({
@@ -136,7 +174,7 @@ export default function ViewInventoryTaking() {
       });
       if (response) {
         toast.success("Toma programada con exito.");
-        await getInventarioFisico();
+        refetch();
         reset();
         setModalShow(false);
       } else {
@@ -163,7 +201,7 @@ export default function ViewInventoryTaking() {
       if (data.FechaInicio) input.fechaInicio = data.FechaInicio;
       if (data.FechaTermino) input.fechaFin = data.FechaTermino;
       await api_postInventarioFisico(jwt, input);
-      await getInventarioFisico();
+      refetch();
       toast.success("Inventariado registrado con exito.");
     } catch (error) {
       console.log(error);
@@ -214,7 +252,6 @@ export default function ViewInventoryTaking() {
             <div className="join">
               <button
                 type="button"
-                disabled={isLoading}
                 onClick={() => postInventariar({ EmpresaId: dataEmpresa?.id })}
                 className="btn btn-primary join-item"
               >
@@ -223,7 +260,6 @@ export default function ViewInventoryTaking() {
               </button>
               <button
                 type="button"
-                disabled={isLoading}
                 onClick={handleShowModal}
                 className="btn btn-primary join-item"
               >
@@ -339,11 +375,19 @@ export default function ViewInventoryTaking() {
           <div className="w-full mt-2 ">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {dataInventarioFisico
-                .sort((a, b) => b.numero - a.numero)
                 .map((e) => (
-                  <TableInventory inventarioFisico={e} empresa={empresaId} />
+                  <TableInventory
+                    inventarioFisico={e}
+                    empresa={empresaId}
+                    refetch={refetch}
+                  />
                 ))}
             </div>
+            <InventarioFisicoPagination
+              page={page}
+              totalPages={meta.pages}
+              setPage={setPage}
+            />
           </div>
         ) : (
           <div className="text-primary text-center mt-4">
@@ -358,6 +402,7 @@ export default function ViewInventoryTaking() {
 interface props {
   inventarioFisico: IInventarioFisico;
   empresa: string;
+  refetch: () => void;
 }
 
 export function TableInventory(props: props) {
@@ -373,15 +418,15 @@ export function TableInventory(props: props) {
         <span className="">
           {props.inventarioFisico.fechaInicio
             ? new Date(props.inventarioFisico.fechaInicio).toLocaleDateString(
-              "es-ES",
-              {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            ) + " hrs."
+                "es-ES",
+                {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              ) + " hrs."
             : "Fecha no disponible"}
         </span>
       </div>
@@ -391,15 +436,15 @@ export function TableInventory(props: props) {
         <span className="">
           {props.inventarioFisico.fechaTermino
             ? new Date(props.inventarioFisico.fechaTermino).toLocaleDateString(
-              "es-ES",
-              {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            ) + " hrs."
+                "es-ES",
+                {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              ) + " hrs."
             : "Fecha no disponible"}
         </span>
       </div>
@@ -449,6 +494,40 @@ export function TableInventory(props: props) {
             </>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function InventarioFisicoPagination({
+  totalPages,
+  page,
+  setPage,
+}: {
+  totalPages: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+}) {
+  return (
+    <div className="container mx-auto px-4 md:px-8 lg:px-16 py-6">
+      <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Página anterior
+        </button>
+        <div className="text-lg text-accent">
+          Página {page} de {totalPages}
+        </div>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Próxima página
+        </button>
       </div>
     </div>
   );

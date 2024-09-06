@@ -28,11 +28,18 @@ export function api_getinformeArticulo(bearer: string, empresa:string,almacen:st
     if (articulo) query = query + `&articulo=${articulo}`
     return api.get(`informe/movimientos/busqueda?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getinformeQuiebreStock(bearer: string, empresa:string) {
-    let query = `empresa=${empresa}`
-    return api.get(`informe/quiebrestock/busqueda?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getinformeQuiebreStock(bearer: string, empresa: string, page: number, perPage: number) {
+  let query = `empresa=${empresa}&page=${page}&perPage=${perPage}`;
+  return api.get(`informe/quiebrestock/busqueda?${query}`, {
+    headers: { "Authorization": `Bearer ${bearer}` },
+  });
 }
-
+export function api_getinformeQuiebreStockExcel(bearer: string, empresa: string,  perPage: number) {
+  let query = `empresa=${empresa}&perPage=${perPage}`;
+  return api.get(`informe/quiebrestock/busqueda/excel?${query}`, {
+    headers: { "Authorization": `Bearer ${bearer}` },responseType:"blob",
+  });
+}
 
 export function api_getinformeInput(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string) {
     let query = `empresa=${empresa}`
@@ -50,4 +57,8 @@ export function api_getinformeOutput(bearer: string, empresa:string,almacen:stri
   query = query + `&fecha_hasta=${fechaHasta}`
   query = query + `&articulo=${articulo}`
   return api.get(`informe/movimientos/salidas?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getIFRByDetalle(bearer: string, inventarioFisicoDetalleId: string) {
+  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
