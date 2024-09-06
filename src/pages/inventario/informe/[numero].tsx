@@ -186,30 +186,24 @@ function TablaRegistro(props: propsArticle) {
       const response = await api_getIFRByDetalleToExcel(
         props.jwt,
         props.ifdId,
-        true
       );
-      const url = window.URL.createObjectURL(
-        new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        })
-      );
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
 
       // Crear un enlace temporal y simular un clic para descargar el archivo
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", `inventario_numero_${props.numeroIn}`); // Nombre del archivo
+      link.setAttribute('download', `inventario_numero_${props.numeroIn}.xlsx`); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 
       // Limpiar el enlace temporal y revocar la URL
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
-      // Limpia el objeto URL después de la descarga
+        // Limpia el objeto URL después de la descarga
     } catch (error) {
       console.error("Error al descargar el archivo Excel:", error);
     }
   };
-
   return (
     <>
       <div className="overflow-x-auto border">
