@@ -2,7 +2,7 @@ import WarningAlert from "@/components/alerts/warningAlert";
 import PDFInventarioFisico from "@/components/pdf/informes/pdfinventariofisico";
 import { IBodega } from "@/interfaces/creation";
 import { IInventarioFisicoDetalle } from "@/interfaces/inventario.interface";
-import { api_getIFRByDetalle } from "@/services/informes.service";
+import { api_getIFRByDetalle, api_getIFRByDetalleToExcel } from "@/services/informes.service";
 import { api_getAllInFiDe } from "@/services/inventario.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
@@ -13,6 +13,7 @@ import { Loading, Table } from "react-daisyui";
 import {
   FaArrowAltCircleLeft,
   FaArrowCircleLeft,
+  FaFileExcel,
   FaFilePdf,
 } from "react-icons/fa";
 import { z } from "zod";
@@ -142,6 +143,8 @@ function Info(props: props) {
               registro={dataRegistro}
               bodega={props.detalle.bodega}
               numeroIn={props.numeroIn}
+              jwt={props.jwt}
+              ifdId={props.detalle.id}
             />
           ) : (
             <WarningAlert message={"Bodega sin registros de inventario"} />
@@ -156,6 +159,8 @@ interface propsArticle {
   registro: IInventarioFisicoRegistro[];
   bodega: string | undefined;
   numeroIn: number;
+  jwt:string;
+  ifdId:string;
 }
 
 interface IDataToSend {
@@ -175,6 +180,35 @@ function TablaRegistro(props: propsArticle) {
       registros: props.registro,
     });
   }, [props.registro, props.bodega]);
+
+  const downloadExcel = async () => {
+    try {
+      const response = await api_getIFRByDetalleToExcel(
+        props.jwt,
+        props.ifdId,
+        true
+      );
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        })
+      );
+
+      // Crear un enlace temporal y simular un clic para descargar el archivo
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `inventario_numero_${props.numeroIn}`); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpiar el enlace temporal y revocar la URL
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
+      // Limpia el objeto URL después de la descarga
+    } catch (error) {
+      console.error("Error al descargar el archivo Excel:", error);
+    }
+  };
 
   return (
     <>
@@ -236,24 +270,42 @@ function TablaRegistro(props: propsArticle) {
           ))}
         </Table>
         {dataToSend.registros.length > 0 && (
-          <PDFDownloadLink
-            document={<PDFInventarioFisico data={dataToSend} numeroIn={props.numeroIn} />}
-            fileName={`inventario_numero_${props.numeroIn}`}
-          >
-            {({ loading, url, error, blob }) =>
-              loading ? (
-                "Cargando.."
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-outline btn-accent mt-4"
-                >
-                  <FaFilePdf />
-                  Exportar
-                </button>
-              )
-            }
-          </PDFDownloadLink>
+          <>
+            <PDFDownloadLink
+              document={
+                <PDFInventarioFisico
+                  data={dataToSend}
+                  numeroIn={props.numeroIn}
+                />
+              }
+              fileName={`inventario_numero_${props.numeroIn}`}
+            >
+              {({ loading, url, error, blob }) =>
+                loading ? (
+                  "Cargando.."
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-accent mt-4"
+                  >
+                    <FaFilePdf />
+                    Exportar
+                  </button>
+                )
+              }
+            </PDFDownloadLink>
+            
+            <div className="col-span-2 mt-3">
+              <button
+                type="button"
+                className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+                onClick={downloadExcel}
+              >
+                <FaFileExcel />
+                Exportar excel
+              </button>
+            </div>
+          </>
         )}
       </div>
     </>

@@ -16,7 +16,7 @@ import {
   useFieldArray,
   UseFormSetValue,
 } from "react-hook-form";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 
 interface props {
   dataQuiebre: IBodegaQuiebre[];
@@ -143,14 +143,15 @@ export default function TablaQuiebreStock(props: props) {
           }
         </PDFDownloadLink>
       </div>
-      <div className="col-span-2">
+
+      <div className="col-span-2 mt-3">
         <button
           type="button"
-          className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+          className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
           onClick={downloadExcel}
         >
-          <FaFilePdf />
-          Exportar Informe en excel
+          <FaFileExcel />
+          Exportar excel
         </button>
       </div>
     </>

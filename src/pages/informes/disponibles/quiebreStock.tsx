@@ -21,27 +21,24 @@ export default function QuiebreStock(props: props) {
   return (
     <>
       <div className="">
-        <h1 className="text-2xl font-bold mt-4">
-          Informe Quiebre de Stock
-        </h1>
-        {props.dataQuiebre.length != 0 ?(
-
-        <div className="w-11/12 md:w-8/12 m-auto border shadow-md rounded-lg p-2 transition duration-300 transform hover:border-primary mt-4 mb-4">
-          <label className="mb-4 font-bold">Artículos con bajo stock</label>
-        <TablaQuiebreStock
-          dataQuiebre={props.dataQuiebre}
-          dataQuiebrePdf={props.dataQuiebrePdf}
-          fetchNextPage={props.fetchNextPage}
-          hasNextPage={props.hasNextPage}
-          isFetchingNextPage={props.isFetchingNextPage}
-        />
-        </div>
-        ):(
-<>
-              <WarningAlert
-                message={"No se han encontrado artículos con bajo stock"}
-              />
-            </>
+        <h1 className="text-2xl font-bold mt-4">Informe Quiebre de Stock</h1>
+        {props.dataQuiebre.length != 0 ? (
+          <div className="w-11/12 md:w-8/12 m-auto border shadow-md rounded-lg p-2 transition duration-300 transform hover:border-primary mt-4 mb-4">
+            <label className="mb-4 font-bold">Artículos con bajo stock</label>
+            <TablaQuiebreStock
+              dataQuiebre={props.dataQuiebre}
+              dataQuiebrePdf={props.dataQuiebrePdf}
+              fetchNextPage={props.fetchNextPage}
+              hasNextPage={props.hasNextPage}
+              isFetchingNextPage={props.isFetchingNextPage}
+            />
+          </div>
+        ) : (
+          <>
+            <WarningAlert
+              message={"No se han encontrado artículos con bajo stock"}
+            />
+          </>
         )}
       </div>
     </>

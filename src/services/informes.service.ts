@@ -60,5 +60,8 @@ export function api_getinformeOutput(bearer: string, empresa:string,almacen:stri
 }
 
 export function api_getIFRByDetalle(bearer: string, inventarioFisicoDetalleId: string) {
-  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=false`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+export function api_getIFRByDetalleToExcel(bearer: string, inventarioFisicoDetalleId: string,isExcel: boolean = false) {
+  return api.get(`inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=true`, { headers: { "Authorization": `Bearer ${bearer}` },responseType:"blob" })
 }
