@@ -34,6 +34,7 @@ export default function TablaQuiebreStock(props: props) {
   const { empresa } = router.query;
 
   const downloadExcel = async () => {
+    const dateNow = new Date().toISOString().split('T')[0];
     try {
       const response = await api_getinformeQuiebreStockExcel(
         jwt,
@@ -45,7 +46,7 @@ export default function TablaQuiebreStock(props: props) {
       // Crear un enlace temporal y simular un clic para descargar el archivo
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `textr.xlsx`); // Nombre del archivo
+      link.setAttribute('download', `Informe_Quiebre_De_Stock_${dateNow}.xlsx`); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 

@@ -59,12 +59,13 @@ export function api_getinformeOutput(bearer: string, empresa:string,almacen:stri
   query = query + `&articulo=${articulo}`
   return api.get(`informe/movimientos/salidas?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getInputOutputExcel(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string) {
+export function api_getInputOutputExcel(bearer: string, empresa:string,almacen:string,fechaDesde:string,fechaHasta:string,articulo:string, tarjeta: boolean) {
   let query = `empresa=${empresa}`
   query = query + `&almacen=${almacen}`
   query = query + `&fecha_desde=${fechaDesde}`
   query = query + `&fecha_hasta=${fechaHasta}`
   query = query + `&articulo=${articulo}`
+  query = query + `&tarjeta=${tarjeta}`
   return api.get(`informe/movimientos/excel?${query}`, { headers: { "Authorization": `Bearer ${bearer}` } ,responseType:"blob",})
 }
 

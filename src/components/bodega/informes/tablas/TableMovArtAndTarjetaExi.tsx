@@ -107,7 +107,8 @@ export default function TableMovArtAndTarjetaExi(props: props) {
         props.articulos.article.almacen,
         props.articulos.article.fechaDesde,
         props.articulos.article.fechaHasta,
-        props.articulos.article.id
+        props.articulos.article.id,
+        false
       );
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
 
@@ -115,6 +116,35 @@ export default function TableMovArtAndTarjetaExi(props: props) {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `movimiento_de_articulo_${props.articulos.article.nombre}.xlsx`); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpiar el enlace temporal y revocar la URL
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
+        // Limpia el objeto URL después de la descarga
+    } catch (error) {
+      console.error("Error al descargar el archivo Excel:", error);
+    }
+  };
+
+  const downloadExcelTarjeta = async () => {
+    try {
+      const response = await api_getInputOutputExcel(
+        jwt,
+        props.articulos.article.empresa,
+        props.articulos.article.almacen,
+        props.articulos.article.fechaDesde,
+        props.articulos.article.fechaHasta,
+        props.articulos.article.id,
+        true
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+
+      // Crear un enlace temporal y simular un clic para descargar el archivo
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `tarjeta_de_existencia_${props.articulos.article.nombre}.xlsx`); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 
@@ -271,7 +301,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-outline btn-accent my-4"
+                  className="btn btn-outline btn-accent my-2"
                 >
                   <FaFilePdf />
                   Exportar
@@ -279,10 +309,10 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               )
             }
           </PDFDownloadLink>
-          <div className="col-span-2 mt-3">
+          <div className="col-span-2 mt-3 my-2">
             <button
               type="button"
-              className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+              className="btn btn-outline btn-primary"
               onClick={downloadExcel}
             >
               <FaFileExcel />
@@ -290,6 +320,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
             </button>
           </div>
         </>)}
+
         {dataToSend.Movimientos.length > 0 && props.label == "TarjetaExistencia" && (<>
           <PDFDownloadLink
             document={<PDFTarjetaExistencia data={dataToSend} />}
@@ -301,7 +332,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-outline btn-accent my-4"
+                  className="btn btn-outline btn-accent my-2"
                 >
                   <FaFilePdf />
                   Exportar
@@ -309,7 +340,16 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               )
             }
           </PDFDownloadLink>
-
+          <div className="col-span-2 my-2">
+            <button
+              type="button"
+              className="btn btn-outline btn-primary"
+              onClick={downloadExcelTarjeta}
+            >
+              <FaFileExcel />
+              Exportar excel
+            </button>
+          </div>
           
         </>)}
       </div>
