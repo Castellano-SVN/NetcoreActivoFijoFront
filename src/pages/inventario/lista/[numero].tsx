@@ -394,7 +394,6 @@ export function TableInvDetalle(props: props) {
         <label className="font-semibold">Centro de Costos:</label>{" "}
         <span className="">{props.inventarioFisico.centroCosto}</span>
       </div>
-
       <div className="col-span-1 text-start p-2">
         <label className="font-semibold">Bodega:</label>{" "}
         <span className="">{props.inventarioFisico.bodega}</span>
@@ -402,17 +401,21 @@ export function TableInvDetalle(props: props) {
       <div className="col-span-3 grid grid-cols-3 gap-2 text-start bg-gray-200 p-2">
         <label className="font-semibold col-span-3">Acciones:</label>
         <div className="col-start-4 col-end-5 flex items-center">
-          <a
-            onClick={() =>
-              router.push(
-                `/inventario/lista/${props.numero}/${props.inventarioFisico.id}?empresa=${props.empresa}&centrocosto=${props.inventarioFisico.centroCostoId}&bodega=${props.inventarioFisico.bodegaId}`
-              )
-            }
-            className="flex items-center cursor-pointer hover:font-bold bg-primary text-primary-content p-1 px-2 rounded-md"
-          >
+          <button
+            disabled={props.inventarioFisico.status}
+            onClick={() => {
+              if (!props.inventarioFisico.status) {
+                router.push(
+                  `/inventario/lista/${props.numero}/${props.inventarioFisico.id}?empresa=${props.empresa}&centrocosto=${props.inventarioFisico.centroCostoId}&bodega=${props.inventarioFisico.bodegaId}`
+                );
+              }
+            }}
+            
+            className={`${!props.inventarioFisico.status ? 'bg-primary hover:font-bold' : 'bg-slate-500 cursor-not-allowed	'} flex items-center cursor-pointer  text-primary-content p-1 px-2 rounded-md`}
+            >
             <span className="text-sm">Inventariar</span>
             <FaBoxesStacked className="ml-2" />
-          </a>
+          </button>
         </div>
       </div>
     </div>

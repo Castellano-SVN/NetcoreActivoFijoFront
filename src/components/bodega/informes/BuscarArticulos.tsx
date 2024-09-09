@@ -622,8 +622,9 @@ function Article(props: articleProps) {
         };
       }
     );
+    
     let combinedArray = [...entradas, ...salidas].sort(
-      (a, b) => a.timestamp - b.timestamp
+      (a, b) => b.timestamp - a.timestamp
     );
     setMovimientos(combinedArray);
   };
