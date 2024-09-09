@@ -320,7 +320,6 @@ export default function ConOrden(props: props) {
                   Tipo de documento:
                 </label>
                 <div className="flex justify-center">
-                  {getValues("tipo")}
                   <Controller
                     control={control}
                     name="tipo"

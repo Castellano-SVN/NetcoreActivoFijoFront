@@ -125,6 +125,7 @@ export default function SinOrden(props: props) {
     },
   });
   const [locationString,setLocationString] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
+  const [locationStringPDF,setLocationStringPDF] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
 
   const [tab, setTab] = useState<number>(0);
   
@@ -233,6 +234,7 @@ export default function SinOrden(props: props) {
     try {
       const response = await api_postRecepcionSo(jwt, data)
       if (response) {
+        setLocationStringPDF(locationString);
         toast.success('Recepcion Sin orden de compra creada correctamente');
         setShowPdf(true);
         console.log(data);
@@ -303,6 +305,7 @@ export default function SinOrden(props: props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Recepcion empresa={props.empresa} tipos={tipos} setLocationString={setLocationString}/>
               {showPdf && pdfData &&(
+              
               <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepcion?
@@ -311,7 +314,7 @@ export default function SinOrden(props: props) {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                       <div className="col-span-2">
                         <PDFDownloadLink
-                          document={<PDFSinOrden data={pdfData} location={locationString} />}
+                          document={<PDFSinOrden data={pdfData} location={locationStringPDF} />}
                           fileName={`Recepcion_SOC_Numero_pdf`}
                         >
                           {({ loading, url, error, blob }) =>
@@ -545,12 +548,12 @@ function Recepcion(props: recepcionProps ) {
                     <label key={tipo.codigo} className="mr-4">
                       <br />
                       <input
-                        {...field}
-                        type="radio"
-                        value={tipo.codigo}
-                        className="radio radio-xs radio-primary ml-2 mr-2"
-                        checked={Number(field.value) === Number(tipo.codigo)}
-                      />
+                              {...field}
+                              type="radio"
+                              value={tipo.codigo}
+                              className="radio radio-xs radio-primary ml-2 mr-2"
+                              onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
                       {tipo.nombre}
                     </label>
                   ))}

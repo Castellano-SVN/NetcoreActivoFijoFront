@@ -30,6 +30,7 @@ export interface IInventarioFisicoDetalle {
   encargadoRut?: string;
   fechaRegistro?: string;
   id:string;
+  status: boolean
 }
 export interface InventarioFisicoDetalleFormValues {
   EmpresaId: string;
