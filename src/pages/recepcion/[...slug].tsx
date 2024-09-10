@@ -123,7 +123,7 @@ export default function Index() {
           <Divider />
           <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4 px-16">
             <div className="flex flex-col">
-              <span className="font-bold text-2xl">Recepcion</span>
+              <span className="font-bold text-2xl">Recepción</span>
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -249,7 +249,7 @@ export default function Index() {
                           <th className="font-bold text-black">Recepcionado</th>
                           <th className="font-bold text-black">Por recepcionar</th>
                           <th className="font-bold text-black">Cantidad Recibida</th>
-                          <th className="font-bold text-black">Observacion</th>
+                          <th className="font-bold text-black">Observación</th>
                         </tr>
                       </thead>
                       <tbody className="text-center">

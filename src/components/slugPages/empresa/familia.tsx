@@ -280,7 +280,7 @@ export default function Page(props: props) {
               onSubmit={handleSubmit(onSubmit)}
             >
               <span className="text-base font-semibold leading-6 text-gray-900 ">
-                Codigo:
+                Código:
               </span>
               <input
                 type="text"
@@ -308,7 +308,7 @@ export default function Page(props: props) {
               </label>
 
               <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                Descripcion:
+                Descripción:
               </span>
               <textarea
                 {...register("Descripcion")}
@@ -353,7 +353,7 @@ function Element({ element, refetch, handleShow }: { element: IFamilia, refetch:
     try {
       const dataDelete = await api_deleteFamilias(jwt, element.id);
       if (dataDelete.status === 200) {
-        toast.success('Articulo eliminado con exito');
+        toast.success('Artículo eliminado con exito');
         setIsModalOpen(false);
         refetch();
       }
@@ -418,7 +418,7 @@ function Element({ element, refetch, handleShow }: { element: IFamilia, refetch:
       {isModalOpen && (
         <dialog open className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Articulo?</h3>
+            <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Artículo?</h3>
             <div className="modal-action flex justify-center">
               <button className="btn btn-outline btn-primary mr-2 w-20" onClick={handleClickClose}>
                 No

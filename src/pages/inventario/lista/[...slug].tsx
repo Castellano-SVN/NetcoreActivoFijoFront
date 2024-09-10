@@ -512,9 +512,9 @@ function ViewLocation(props: {
               <thead className="text-center">
                 <tr>
                   <th></th>
-                  <th>Nombre articulo</th>
+                  <th>Nombre artículo</th>
                   <th>Familia</th>
-                  <th>Cantidad en almacen</th>
+                  <th>Cantidad en almacén</th>
                   <th>Año</th>
                   <th>Persona Conteo</th>
                   <th>Marca</th>
@@ -523,7 +523,7 @@ function ViewLocation(props: {
                   <th>Presentacion</th>
                   <th>Lugar Fisico</th>
                   <th>Observaciones</th>
-                  <th>Codigo</th>
+                  <th>Código</th>
                   <th>Numero de unidades</th>
                 </tr>
               </thead>

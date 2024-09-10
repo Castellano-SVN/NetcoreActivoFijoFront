@@ -212,10 +212,10 @@ function TablaRegistro(props: propsArticle) {
             <span>Correlativo</span>
             <span>Encargado Inv</span>
             <span>Fecha Inv</span>
-            <span>Codigo Articulo</span>
+            <span>Codigo Artículo</span>
             <span>Familia</span>
             <span>Sub-Familia</span>
-            <span>Descripcion Articulo</span>
+            <span>Descripcion Artículo</span>
             <span>Cantidad Sistema</span>
             <span>Cantidad Fisica</span>
             <span>Diferencia Inventario</span>

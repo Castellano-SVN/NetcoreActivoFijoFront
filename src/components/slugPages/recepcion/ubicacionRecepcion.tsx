@@ -150,7 +150,7 @@ export default function UbicacionRecepcion(props: props) {
         <div className="w-full md:mr-2 lg:mr-2">
           <div className="mt-2">
             <label className="block text-left mb-2" htmlFor="bodega">
-              Almacen:
+              Almacén:
             </label>
             <select
               {...register("almacen")}

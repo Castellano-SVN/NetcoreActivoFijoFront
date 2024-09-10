@@ -127,7 +127,7 @@ export default function NomSigDes({ errors }: props) {
 
                 <div className="flex flex-col w-full">
                     <label className="label">
-                        <span className="label-text">Descripcion</span>
+                        <span className="label-text">Descripción</span>
                     </label>
                     <textarea {...register("Descripcion", { setValueAs: (value) => value === "" ? undefined : (value) })} className="mt-1 block w-full border border:bg-primary  rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 bg-white" rows={10}>
                     </textarea>

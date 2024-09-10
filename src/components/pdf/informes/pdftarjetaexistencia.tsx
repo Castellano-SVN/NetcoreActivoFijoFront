@@ -218,7 +218,7 @@ export default function PDFTarjetaExistencia(props: props) {
             <View style={styles.fila}>
               <View style={styles.columnaLeft}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>Codigo del Articulo</Text>
+                  <Text style={styles.subTitle}>Código del Artículo</Text>
                 </View>
                 <Text style={styles.parrafo}>{props.data.Codigo}</Text>
                 <View style={styles.br}></View>
@@ -226,7 +226,7 @@ export default function PDFTarjetaExistencia(props: props) {
 
               <View style={styles.columnaRight}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>Nombre del Articulo</Text>
+                  <Text style={styles.subTitle}>Nombre del Artículo</Text>
                 </View>
                 <Text style={styles.parrafo}>{props.data.Nombre}</Text>
                 <View style={styles.br}></View>

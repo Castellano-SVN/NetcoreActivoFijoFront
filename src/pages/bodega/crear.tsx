@@ -109,8 +109,8 @@ export default function CreateBodega() {
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         try {
             const save = await api_postBodegas(jwt, data);
-            if (!data.Id) toast.success("Almacen guardado correctamente");
-            if (data.Id) toast.success("Almacen Actualizado correctamente");
+            if (!data.Id) toast.success("Almacén guardado correctamente");
+            if (data.Id) toast.success("Almacén Actualizado correctamente");
             router.back()
         } catch (error) {
 

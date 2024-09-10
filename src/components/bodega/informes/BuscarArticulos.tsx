@@ -393,7 +393,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                 render={({ field: { onChange, value, name, ref } }) => (
                   <Select
                     className="mt-2 px-0 md:px-8"
-                    placeholder="Seleccione Articulo"
+                    placeholder="Seleccione Artículo"
                     getOptionValue={(option) => option.id}
                     getOptionLabel={(option) => option.nombre}
                     value={dataArticulo.find((e) => e.id === value)}
@@ -645,7 +645,7 @@ function Article(props: articleProps) {
             <>
               <label>
                 {" "}
-                <span className="font-bold">Codigo: </span>
+                <span className="font-bold">Código: </span>
                 {props.article.codigo + " "}
               </label>
             </>
@@ -661,7 +661,7 @@ function Article(props: articleProps) {
           ) : (
             <>
               <WarningAlert
-                message={"Articulo sin movimientos en esta fecha."}
+                message={"Artculo sin movimientos en esta fecha."}
               />
             </>
           )}

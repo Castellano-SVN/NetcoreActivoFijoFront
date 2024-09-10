@@ -170,7 +170,7 @@ export default function PDFConOrden(props: props) {
                 <Page style={styles.page}>
                     <Image style={styles.img} src={LogoNetCoreBase64} />
                     <View style={styles.header} >
-                        <Text style={styles.titleRight}>Folio Recepcion Nro: {props.data.folio}</Text>
+                        <Text style={styles.titleRight}>Folio Recepción Nro: {props.data.folio}</Text>
                         <Text style={styles.titleRight}>Fecha:  {props.data.fecha.toLocaleDateString('es-ES', {
                             year: 'numeric',
                             month: 'long',
@@ -181,7 +181,7 @@ export default function PDFConOrden(props: props) {
                     <View style={styles.brBig} />
 
                     <View style={styles.columna}>
-                        <Text style={styles.titleCenter}>Recepcion con orden de compra</Text>
+                        <Text style={styles.titleCenter}>Recepción con orden de compra</Text>
 
                         <View style={styles.br} />
 
@@ -196,7 +196,7 @@ export default function PDFConOrden(props: props) {
                                 <View style={styles.fila}>
                                     <Text style={styles.subTitle}>TIPO DE DOCUMENTO</Text>
                                 </View>
-                                <Text style={styles.parrafo}>{props.data.tipo == 1 ? "Factura" : "Guia de despacho"}</Text>
+                                <Text style={styles.parrafo}>{props.data.tipo == 1 ? "Factura" : "Guía de despacho"}</Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>
@@ -212,13 +212,13 @@ export default function PDFConOrden(props: props) {
 
                             <View style={styles.columnaRight}>
                                 <View style={styles.fila}>
-                                    <Text style={styles.subTitle}>BODEGA</Text>
+                                    <Text style={styles.subTitle}>BÓDEGA</Text>
                                 </View>
                                 <Text style={styles.parrafo}>{props.location.bodega}</Text>
                                 <View style={styles.br}></View>
 
                                 <View style={styles.fila}>
-                                    <Text style={styles.subTitle}>NUMERO DE DOCUMENTO</Text>
+                                    <Text style={styles.subTitle}>NÚMERO DE DOCUMENTO</Text>
                                 </View>
                                 <Text style={styles.parrafo}>{props.data.numDoc}</Text>
                                 <View style={styles.br}></View>
@@ -243,7 +243,7 @@ export default function PDFConOrden(props: props) {
                                     <Text style={styles.tableCellHeader}>Precio</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>Observacion</Text>
+                                    <Text style={styles.tableCellHeader}>Observación</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
                                     <Text style={styles.tableCellHeader}>Recepcionado</Text>
@@ -294,7 +294,7 @@ export default function PDFConOrden(props: props) {
                         <View style={styles.brBig}></View>
 
                         <View style={styles.columna}>
-                            <Text style={styles.subTitle}>Descripcion general:   {props.data.descripcion}</Text>
+                            <Text style={styles.subTitle}>Descripción general:   {props.data.descripcion}</Text>
                         </View>
 
                         <View style={styles.fila}>

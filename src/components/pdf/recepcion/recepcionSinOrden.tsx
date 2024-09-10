@@ -174,7 +174,7 @@ export default function PDFSinOrden(props: props) {
           <Image style={styles.img} src={LogoNetCoreBase64} />
           <View style={styles.header}>
             <Text style={styles.titleRight}>
-              Folio Recepcion Nro: {props.data.folio}
+              Folio Recepción Nro: {props.data.folio}
             </Text>
             <Text style={styles.titleRight}>
               Fecha:{" "}
@@ -255,7 +255,7 @@ export default function PDFSinOrden(props: props) {
                   <Text style={styles.subTitle}>TIPO DE DOCUMENTO</Text>
                 </View>
                 <Text style={styles.parrafo}>
-                  {props.data.tipo == 2 ? "Guia de despacho" : "Factura"}
+                  {props.data.tipo == 2 ? "Guía de despacho" : "Factura"}
                 </Text>
                 <View style={styles.brSmall}></View>
                 <View style={styles.fila}>
@@ -279,7 +279,7 @@ export default function PDFSinOrden(props: props) {
                 </View>
                 <View style={styles.tableColHeader}>
                   <Text style={styles.tableCellHeader}>
-                    Cantidad en almacen
+                    Cantidad en almacén
                   </Text>
                 </View>
                 <View style={styles.tableColHeader}>

@@ -84,16 +84,16 @@ export default function CreateArticulo(props: props) {
         try {
             if (!data.Id) {
                 await api_postArticulos(jwt, data);
-                toast.success("Articulo guardado correctamente");
+                toast.success("Artículo guardado correctamente");
                 reset();
             } else {
                 await api_putArticulos(jwt, data);
-                toast.success("Articulo actualizado correctamente");
+                toast.success("Artículo actualizado correctamente");
             }
             props.change();
         } catch (error) {
             console.log(error);
-            toast.error("Ocurrió un error al guardar el articulo");
+            toast.error("Ocurrió un error al guardar el artículo");
         }
     };
 
@@ -199,7 +199,7 @@ export default function CreateArticulo(props: props) {
 
                                 <div className="flex flex-col">
                                     <span className="text-base font-semibold leading-6 text-gray-900 ">
-                                        Codigo:
+                                        Código:
                                     </span>
                                     <input
                                         type="text"
@@ -256,7 +256,7 @@ export default function CreateArticulo(props: props) {
                             </div>
 
                             <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                                Descripcion:
+                                Descripción:
                             </span>
                             <textarea
                                 {...register("Descripcion")}
@@ -275,7 +275,7 @@ export default function CreateArticulo(props: props) {
                                             className="px-16 btn btn-primary"
                                             type="submit"
                                         >
-                                            Modificar Articulo <FaPlus />
+                                            Modificar Artículo <FaPlus />
                                         </button>
                                     </div>
                                     <div className="my-2 flex justify-center">
@@ -293,7 +293,7 @@ export default function CreateArticulo(props: props) {
                                             className="px-16 btn btn-primary"
                                             type="submit"
                                         >
-                                            Crear Articulo <FaPlus />
+                                            Crear Artículo <FaPlus />
                                         </button>
                                     </div>
                                     <div className="my-2 flex justify-center">

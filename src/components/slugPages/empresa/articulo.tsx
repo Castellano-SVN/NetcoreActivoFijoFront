@@ -76,7 +76,7 @@ export default function Page(props: props) {
         <React.Fragment>
             <div className="flex flex-row justify-start md:justify-start lg:justify-start mt-0 md:mt-4 md:ml-4">
                 <div className="flex flex-col">
-                    <span className="font-bold text-2xl">Articulos</span>
+                    <span className="font-bold text-2xl">Artículos</span>
                 </div>
             </div>
             {noItems ? (
@@ -86,7 +86,7 @@ export default function Page(props: props) {
                         className="px-12 btn btn-primary"
                         onClick={() => props.create()}
                     >
-                        Crear Articulos <FaPlus />
+                        Crear Artículos <FaPlus />
                     </button>
                 </>
             ) : (
@@ -121,7 +121,7 @@ export default function Page(props: props) {
                                 className="px-12 btn btn-primary"
                                 onClick={() => props.create()}
                             >
-                                Crear Articulo <FaPlus />
+                                Crear Artículo <FaPlus />
                             </button>
                         </div>
                     </>
@@ -132,7 +132,7 @@ export default function Page(props: props) {
                                 className="px-16 btn btn-primary"
                                 onClick={() => props.create()}
                             >
-                                Crear Articulo <FaPlus />
+                                Crear Artículo <FaPlus />
                             </button>
                         </div>
                     )
@@ -169,7 +169,7 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
         try {
             const dataDelete = await api_deleteArticulo(jwt, element.id);
             if (dataDelete.status === 200) {
-                toast.success('Articulo eliminado con exito');
+                toast.success('Artículo eliminado con exito');
                 setIsModalOpen(false);
                 refetch();
             }
@@ -197,7 +197,7 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
                         <span className="text-sm align-left">${element.valor}</span>
                     </div>
                     <div className="basis-1/2 flex flex-col justify-left text-right">
-                        <span className="font-bold mb-2">Codigo</span>
+                        <span className="font-bold mb-2">Código</span>
                         <span className="text-sm align-left">{element.codigo}</span>
                     </div>
                 </div>
@@ -219,7 +219,7 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
             {isModalOpen && (
                 <dialog open className="modal">
                     <div className="modal-box">
-                        <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Articulo?</h3>
+                        <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Artículo?</h3>
                         <div className="modal-action flex justify-center">
                             <button className="btn btn-outline btn-primary mr-2 w-20" onClick={handleClickClose}>
                                 No
