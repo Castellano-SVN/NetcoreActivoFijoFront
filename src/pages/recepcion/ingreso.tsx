@@ -188,7 +188,7 @@ export default function Ingreso() {
             <FormProvider {...methodsRequerimientos}>
               <Requerimiento removeArticulo={removeArticle} selectArticle={ArticleSelected} empresa={search} />
               <div>
-                <button className="btn btn-outline btn-primary my-4" onClick={handleButtonBackClick}>Volver a articulos</button>
+                <button className="btn btn-outline btn-primary my-4" onClick={handleButtonBackClick}>Volver a artículos</button>
               </div>
             </FormProvider>
           )}

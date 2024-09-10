@@ -257,7 +257,7 @@ export default function PropiedadesConsulta(props: props) {
                     <div className="overflow-x-auto shadow-md rounded-md border my-4">
                         <Table /* {...args} */>
                             <Table.Head className="bg-slate-200">
-                                <span>Codigo</span>
+                                <span>Código</span>
                                 <span>Nombre</span>
                                 <span>Cantidad</span>
                                 <span>Glosa</span>
@@ -305,7 +305,7 @@ export default function PropiedadesConsulta(props: props) {
                 </div>
 
                 <div className="flex flex-col md:flex-row lg:flex-row w-full mt-2">
-                    <label className="py-2 px-3 ml-4">Observacion:</label>
+                    <label className="py-2 px-3 ml-4">Observación:</label>
                     <textarea
                         rows={4}
                         {...register('Observaciones',

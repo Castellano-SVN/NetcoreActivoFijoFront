@@ -215,7 +215,7 @@ export default function ConOrden(props: props) {
                   className="block text-left mb-2"
                   htmlFor="Folio Recepcion"
                 >
-                  Folio Recepcion:
+                  Folio Recepción:
                 </label>
                 <input
                   type="number"
@@ -350,7 +350,7 @@ export default function ConOrden(props: props) {
             <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
               <Table className="border shadow-lg ">
                 <Table.Head className="bg-primary text-white">
-                  <span>Codigo</span>
+                  <span>Código</span>
                   <span>Nombre</span>
                   <span>Cantidad</span>
                   <span>Precio</span>
@@ -421,7 +421,7 @@ export default function ConOrden(props: props) {
                 className="block text-left mb-2"
                 htmlFor="Descripcion_generals"
               >
-                Descripcion General:
+                Descripción General:
               </label>
               <Textarea
                 rows={4}
@@ -444,7 +444,7 @@ export default function ConOrden(props: props) {
               {showPdf && pdfData &&(
                 <Modal open={showPdf}>
                   <Modal.Header>
-                    ¿Desea crear un reporte de la Recepcion?
+                    ¿Desea crear un reporte de la Recepción?
                   </Modal.Header>
                   <Modal.Body>
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">

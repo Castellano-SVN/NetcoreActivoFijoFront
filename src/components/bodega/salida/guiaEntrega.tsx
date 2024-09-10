@@ -295,7 +295,7 @@ export default function GuiaEntrega() {
                             <button type="button" className="btn btn-outline btn-accent w-1/2 mt-2" onClick={handleShow3}>Seleccione Bodega Origen</button>
                         </div>
                         <Modal ref={ref3}>
-                            <Modal.Header className="font-bold">Seleccione la bodega y almacen de Origen</Modal.Header>
+                            <Modal.Header className="font-bold">Seleccione la bodega y almacén de Origen</Modal.Header>
                             <Modal.Body>
                                 <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                                     <div className="col-span-2">
@@ -380,7 +380,7 @@ export default function GuiaEntrega() {
                             <button type="button" className="btn btn-outline btn-accent w-1/2 mt-2" onClick={handleShow}>Seleccione Bodega Destino</button>
                         </div>
                         <Modal ref={ref}>
-                            <Modal.Header className="font-bold">Seleccione la bodega y almacen de destino</Modal.Header>
+                            <Modal.Header className="font-bold">Seleccione la bodega y almacén de destino</Modal.Header>
                             <Modal.Body>
                                 <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                                     <div className="col-span-2">

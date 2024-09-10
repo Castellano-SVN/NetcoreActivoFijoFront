@@ -7,7 +7,7 @@ export default function MovimientoArticulos() {
     <>
       <div className="">
         <h1 className="text-2xl font-bold mt-4">
-          Informe movimiento de articulo
+          Informe movimiento de artículo
         </h1>
         <BuscarArticuloMovTarjeta label="MovimientoArticulo"/>
       </div>

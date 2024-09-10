@@ -263,7 +263,7 @@ export default function ViewInventoryTaking() {
                 onClick={handleShowModal}
                 className="btn btn-primary join-item"
               >
-                <FiPlus /> Programar revision
+                <FiPlus /> Programar revisión
               </button>
             </div>
           )}
@@ -409,7 +409,7 @@ export function TableInventory(props: props) {
   return (
     <div className="shadow-md hover:border-primary border-2 border-gray-300 rounded-md grid grid-cols-2 gap-4 ">
       <div className="col-span-2 text-start p-2">
-        <label className="font-semibold">Numero:</label>{" "}
+        <label className="font-semibold">Número:</label>{" "}
         <span className="">{props.inventarioFisico.numero}</span>
       </div>
 

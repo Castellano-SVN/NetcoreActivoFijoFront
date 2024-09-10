@@ -170,7 +170,7 @@ function Element({ element, refetch, create }: { element: ISubFamilia, refetch: 
     try {
       const dataDelete = await api_deleteSubFamilia(jwt, element.id);
       if (dataDelete.status === 200) {
-        toast.success('Articulo eliminado con exito');
+        toast.success('Artículo eliminado con exito');
         setIsModalOpen(false);
         refetch();
       }
@@ -199,7 +199,7 @@ function Element({ element, refetch, create }: { element: ISubFamilia, refetch: 
             </span>
           </div>
           <div className="basis-1/2 flex flex-col justify-left text-right ">
-            <span className="font-bold mb-2">Codigo</span>
+            <span className="font-bold mb-2">Código</span>
             <span className="text-sm align-left">
               {element.codigo}
             </span>
@@ -227,7 +227,7 @@ function Element({ element, refetch, create }: { element: ISubFamilia, refetch: 
       {isModalOpen && (
         <dialog open className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Articulo?</h3>
+            <h3 className="font-bold text-lg mb-2">¿Estás seguro que deseas eliminar el Artículo?</h3>
             <div className="modal-action flex justify-center">
               <button className="btn btn-outline btn-primary mr-2 w-20" onClick={handleClickClose}>
                 No

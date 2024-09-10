@@ -238,7 +238,7 @@ export default function PDFGuiaEntrega(props: props) {
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
                         <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Código articulo</Text>
+                            <Text style={styles.tableCellHeader}>Código artículo</Text>
                         </View>
                         <View style={styles.tableColHeader}>
                             <Text style={styles.tableCellHeader}>Código familia</Text>

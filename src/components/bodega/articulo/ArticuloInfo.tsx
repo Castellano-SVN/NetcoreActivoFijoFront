@@ -33,7 +33,7 @@ export default function ArticuloInfo({ errors }: props) {
             <div className="flex flex-wrap">
                 <div className="flex flex-col w-full">
                     <label className="label">
-                        <span className="label-text">Descripcion</span>
+                        <span className="label-text">Descripción</span>
                     </label>
                     <textarea {...register("Descripcion", { setValueAs: (value) => value === "" ? undefined : (value) })} className="mt-1 block w-full  rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows={10}>
                     </textarea>

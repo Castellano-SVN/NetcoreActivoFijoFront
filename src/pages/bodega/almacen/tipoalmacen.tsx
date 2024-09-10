@@ -47,11 +47,11 @@ export default function TipoAlmacen() {
       setModalButton(true);
       if (selectedElement.action === "update") {
         await api_putTipoAlmacen(jwt, getValues());
-        toast.success("¡El nuevo tipo de almacen se actualizo correctamente!");
+        toast.success("¡El nuevo tipo de almacén se actualizo correctamente!");
       }
       if (selectedElement.action === "create") {
         await api_postTipoAlmacen(jwt, data);
-        toast.success("¡El nuevo tipo de almacen se creo correctamente!");
+        toast.success("¡El nuevo tipo de almacén se creo correctamente!");
       }
       reset();
       getElement();

@@ -235,7 +235,7 @@ export default function SinOrden(props: props) {
       const response = await api_postRecepcionSo(jwt, data)
       if (response) {
         setLocationStringPDF(locationString);
-        toast.success('Recepcion Sin orden de compra creada correctamente');
+        toast.success('Recepción Sin orden de compra creada correctamente');
         setShowPdf(true);
         console.log(data);
         setPdfData(data); 
@@ -266,7 +266,7 @@ export default function SinOrden(props: props) {
             className={`${tab == 0 && "border-b-2 border-primary font-bold"
               } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
-            Artículos
+            Paso 1: Seleccionar Artículos
           </a>
           <a
             onClick={() => {
@@ -275,7 +275,7 @@ export default function SinOrden(props: props) {
             className={`${tab == 1 && "border-b-2 border-primary font-bold"
               } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
-            Recepción
+            Paso 2: Ver Detalle Recepción
           </a>
         </div>
       </div>
@@ -308,7 +308,7 @@ export default function SinOrden(props: props) {
               
               <Modal open={showPdf}>
                   <Modal.Header>
-                    ¿Desea crear un reporte de la Recepcion?
+                    ¿Desea crear un reporte de la Recepción?
                   </Modal.Header>
                   <Modal.Body>
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
@@ -476,7 +476,7 @@ function Recepcion(props: recepcionProps ) {
 
       <div className="mt-2 mx-auto">
         <fieldset className="border shadow-md p-4 rounded transition duration-300 transform hover:scale-105">
-          <legend>Ubicacion</legend>
+          <legend>Ubicación</legend>
           <UbicacionRecepcion empresa={props.empresa} filterCC={[]} dispatchStrings={props.setLocationString} />
         </fieldset>
       </div>
@@ -490,7 +490,7 @@ function Recepcion(props: recepcionProps ) {
                 className="block text-left mb-2"
                 htmlFor="Numero Documento"
               >
-                Numero de documento:
+                Número de documento:
               </label>
               <input
                 type="number"
@@ -566,14 +566,14 @@ function Recepcion(props: recepcionProps ) {
 
       <div className="overflow-x-auto mt-2 mx-auto p-6">
         <fieldset className="border-t rounded-lg transition duration-300 transform">
-          <legend>Articulos</legend>
+          <legend>Artículos</legend>
           <div className=" ">
             <Table className="border shadow-lg my-5 overflow-x-auto">
               <Table.Head className="bg-primary text-white">
-                <span>Codigo</span>
+                <span>Código</span>
                 <span>Nombre</span>
                 <div className="flex justify-center">
-                  <span className="">Cantidad en almacen</span>
+                  <span className="">Cantidad en almacén</span>
                 </div>
                 <span>Precio</span>
                 <span>Cantidad a recepcionar</span>
@@ -653,7 +653,7 @@ function Articulos(props: propsArticulo) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
         {props.familia.length !== 0 && (
           <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 ">
-            <legend>Busqueda de articulos</legend>
+            <legend>Busqueda de artículos</legend>
             <Select
               placeholder="Seleccione Familia"
               value={props.selectedFamilia}
@@ -681,7 +681,7 @@ function Articulos(props: propsArticulo) {
             <div className="w-full px-0 md:px-8 mt-2">
               <label className="border inline-flex w-full rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary items-center">
                 <span className="whitespace-normal md:whitespace-nowrap px-3  border-r-2 select-none">
-                  Nombre articulo
+                  Nombre artículo
                 </span>
                 <input
                   value={props.textArticle}
@@ -748,7 +748,7 @@ function Articulos(props: propsArticulo) {
                     {articulo.nombre}
                   </label>
                   <label className="select-none">
-                    <span className="font-semibold">Descripcion</span>:{" "}
+                    <span className="font-semibold">Descripción</span>:{" "}
                     {articulo.descripcion}
                   </label>
                 </div>

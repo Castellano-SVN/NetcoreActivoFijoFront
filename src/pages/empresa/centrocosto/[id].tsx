@@ -325,8 +325,8 @@ function BodegaList({
   const AlmacenSubmit = async (data: AlmacenFormValues) => {
     try {
       await api_postAlmacen(jwt, data);
-      if (data.Id) toast.success("¡El nuevo almacen se creo correctamente!");
-      if (!data.Id) toast.success("¡Se modifico el almacen correctamente");
+      if (data.Id) toast.success("¡El nuevo almacén se creo correctamente!");
+      if (!data.Id) toast.success("¡Se modifico el almacén correctamente");
       refetch();
       reset();
       handleCloseCreation();
@@ -472,10 +472,10 @@ function BodegaList({
                       <tr>
                         <th className="text-base-100 font-extrabold">Codigo</th>
                         <th className="text-base-100 font-extrabold">
-                          Nombre almacen
+                          Nombre almacén
                         </th>
                         <th className="text-base-100 font-bold">
-                          Tipo almacen
+                          Tipo almacén
                         </th>
                         <th className="text-base-100 font-bold">Editar</th>
                         <th className="text-base-100 font-bold">Ver</th>
@@ -576,7 +576,7 @@ function BodegaList({
                     className="btn btn-primary w-full md:w-auto"
                   >
                     <FiPlus className="mr-2" />
-                    Crear Almacen
+                    Crear Almacén
                   </button>
                 </div>
                 <div>

@@ -193,14 +193,14 @@ export default function PDFInventarioFisico(props: props) {
 
           <View style={styles.columna}>
             <Text style={styles.titleCenter}>Informe Inventario</Text>
-            <Text style={styles.titleCenter}>Fisico</Text>
+            <Text style={styles.titleCenter}>Físico</Text>
 
             <View style={styles.br} />
 
             <View style={styles.fila}>
               <View style={styles.columnaLeft}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>NUMERO INVENTARIO FISICO</Text>
+                  <Text style={styles.subTitle}>Numero inventario Físico</Text>
                 </View>
                 <Text style={styles.parrafo}>{props.numeroIn}</Text>
               </View>
@@ -222,7 +222,7 @@ export default function PDFInventarioFisico(props: props) {
                   <Text style={styles.tableCellHeader}>Fecha Inventario</Text>
                 </View>
                 <View style={styles.tableColHeader}>
-                  <Text style={styles.tableCellHeader}>Codigo Articulo</Text>
+                  <Text style={styles.tableCellHeader}>Código Artículo</Text>
                 </View>
                 <View style={styles.tableColHeader}>
                   <Text style={styles.tableCellHeader}>Familia</Text>
@@ -232,14 +232,14 @@ export default function PDFInventarioFisico(props: props) {
                 </View>
                 <View style={styles.tableColHeader}>
                   <Text style={styles.tableCellHeader}>
-                    Descripcion Artículo
+                    Descripción Artículo
                   </Text>
                 </View>
                 <View style={styles.tableColHeader}>
                   <Text style={styles.tableCellHeader}>Cantidad Sistema</Text>
                 </View>
                 <View style={styles.tableColHeader}>
-                  <Text style={styles.tableCellHeader}>Cantidad Fisica</Text>
+                  <Text style={styles.tableCellHeader}>Cantidad Física</Text>
                 </View>
                 <View style={styles.tableColHeader}>
                   <Text style={styles.tableCellHeader}>

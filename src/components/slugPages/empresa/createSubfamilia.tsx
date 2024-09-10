@@ -187,7 +187,7 @@ export default function CreateSubFamily(props: props) {
 
                 <div className="flex flex-col">
                   <span className="text-base font-semibold leading-6 text-gray-900 ">
-                    Codigo:
+                    Código:
                   </span>
                   <input
                     type="number"
@@ -269,7 +269,7 @@ export default function CreateSubFamily(props: props) {
                 {errors.CuentaObligacionId ? errors.CuentaObligacionId.message : ""}
               </label>
               <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                Descripcion:
+                Descripción:
               </span>
               <textarea
                 {...register("Descripcion")}

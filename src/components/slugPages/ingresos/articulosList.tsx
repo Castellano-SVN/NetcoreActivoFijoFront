@@ -104,7 +104,7 @@ export default function ArticuloList(props: Props) {
             <th>Familia</th>
             <th>SubFamilia</th>
             <th>Nombre</th>
-            <th>Descripcion</th>
+            <th>Descripción</th>
             <th>Agregar</th>
           </tr>
         </thead>

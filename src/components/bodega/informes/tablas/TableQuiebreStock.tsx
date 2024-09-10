@@ -65,13 +65,13 @@ export default function TablaQuiebreStock(props: props) {
         <Table className="table-auto shadow-md border rounded-md text-center">
           <Table.Head className="bg-primary text-base-100">
             <span>Correlativos</span>
-            <span>Codigo Artículo</span>
+            <span>Código Artículo</span>
             <span>Nombre Artículo</span>
             <span>Familia</span>
             <span>Subfamilia</span>
             <span>Bodega</span>
             <span>Cantidad Registro Sistema</span>
-            <span>Stock Critico</span>
+            <span>Stock Crítico</span>
             <span>Proceso Compra</span>
           </Table.Head>
 

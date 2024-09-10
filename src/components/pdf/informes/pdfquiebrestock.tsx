@@ -202,10 +202,10 @@ export default function PDFQuiebreStock(props: props) {
                                     <Text style={styles.tableCellHeader}>Correlativo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>Codigo Articulo</Text>
+                                    <Text style={styles.tableCellHeader}>Código Artículo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>Nombre Articulo</Text>
+                                    <Text style={styles.tableCellHeader}>Nombre Artículo</Text>
                                 </View>
                                 <View style={styles.tableColHeader}>
                                     <Text style={styles.tableCellHeader}>Familia</Text>

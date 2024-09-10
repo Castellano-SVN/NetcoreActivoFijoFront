@@ -209,26 +209,26 @@ export default function PDFMovimientoArticulo(props: props) {
 
           <View style={styles.columna}>
             <Text style={styles.titleCenter}>Registro Movimiento de</Text>
-            <Text style={styles.titleCenter}>Articulos en Unidades</Text>
+            <Text style={styles.titleCenter}>Artículos en Unidades</Text>
 
             <View style={styles.br} />
 
             <View style={styles.fila}>
               <View style={styles.columnaLeft}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>CODIGO DEL ARTICULO</Text>
+                  <Text style={styles.subTitle}>Código del Artículo</Text>
                 </View>
                 <Text style={styles.parrafo}>
                   {props.data.Codigo
                     ? props.data.Codigo
-                    : "Articulo sin codigo."}
+                    : "Artículo sin código."}
                 </Text>
                 <View style={styles.br}></View>
               </View>
 
               <View style={styles.columnaRight}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>Nombre Articulo</Text>
+                  <Text style={styles.subTitle}>Nombre Artículo</Text>
                 </View>
                 <Text style={styles.parrafo}>{props.data.Nombre}</Text>
                 <View style={styles.br}></View>

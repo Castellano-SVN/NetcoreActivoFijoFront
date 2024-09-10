@@ -24,7 +24,7 @@ export default function InventarioFisico() {
         <>
             <div className="">
                 <h1 className="text-2xl font-bold mt-4">
-                    Informe movimiento de articulo
+                    Informe movimiento de artículo
                 </h1>
                 <BuscarArticulos EmpresaId={empresa} />
             </div>
@@ -147,7 +147,7 @@ function BuscarArticulos(props: props) {
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <fieldset className="w-11/12 md:w-8/12 m-auto border shadow-md rounded-lg p-2 transition duration-300 transform hover:border-primary mt-3">
-                    <legend>Filtro de inventario fisico</legend>
+                    <legend>Filtro de inventario físico</legend>
                     <div className="grid grid-cols-1 md:grid-cols-3">
                         <div className="flex flex-col">
                             <Controller

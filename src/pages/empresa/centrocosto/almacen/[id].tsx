@@ -126,7 +126,7 @@ export default function Page() {
         setAlmacen(data.data.dataList[0]);
       },
       onError: (err: AxiosError) => {
-        toast.error("Ocurrio un error buscando al buscar el almacen");
+        toast.error("Ocurrio un error buscando al buscar el almacén");
         return router.back();
       },
     }
@@ -280,7 +280,7 @@ export default function Page() {
         <div className="flex flex-col bg-primary bordered rounded shadow-md ">
           <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
-              Almacen
+              Almacén
             </h3>
             <h3 className="text-large font-bold text-base-100 text-center">
               Tipo
@@ -648,7 +648,7 @@ function WithoutLocations({articulos,estados,locations,almacen,update }: { artic
           <div className="flex flex-col bordered rounded shadow-md ">
           <div className="flex flex-row justify-between bg-error px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
-            Articulos sin locación
+            Artículos sin locación
             </h3>
           </div>
           <div className="grid grid-cols-1 gap-4">
