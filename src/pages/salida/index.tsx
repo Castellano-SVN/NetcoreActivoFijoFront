@@ -157,7 +157,7 @@ function Element({ element }: { element: IEmpresa }) {
            onClick={() => router.push(`/salida/guiaEntregaTraspaso?empresa=${element.id}`)}
             className="flex items-center cursor-pointer hover:font-bold"
           >
-            <span className="text-sm underline text-primary">Traspaso</span>
+            <span className="text-sm underline text-primary">Traspaso bodegas</span>
             <FaWarehouse className="text-primary ml-2" />
           </a>
           <a
