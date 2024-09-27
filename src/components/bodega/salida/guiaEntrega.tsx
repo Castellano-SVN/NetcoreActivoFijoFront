@@ -9,6 +9,7 @@ import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { useSearchParams } from "next/navigation";
 import router from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
@@ -17,29 +18,34 @@ import { FaFilePdf, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
+
+
 export default function GuiaEntrega() {
     const { setActive } = useContextStore()
+    const searchParams = useSearchParams();
+    const search = searchParams.get("empresa");
+    const idEmpresa = String(search); // Convertir a cadena
     useEffect(() => {
         setActive("Salidas");
     }, []);
     const { jwt } = useUserStore();
 
     const [dataEmpresa, setDataEmpresa] = useState<IEmpresa[]>([]);
-    const [getDataEmpresa, setGetDataEmpresa] = useState('');
+    //const [getDataEmpresa, setGetDataEmpresa] = useState('');
 
-    const getAllEmpresas = async () => {
-        try {
-            const data = await api_getAllEmpresas(jwt);
-            setDataEmpresa(data.data.dataList);
+    // const getAllEmpresas = async () => {
+    //     try {
+    //         const data = await api_getAllEmpresas(jwt);
+    //         setDataEmpresa(data.data.dataList);
 
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
 
-    useEffect(() => {
-        getAllEmpresas();
-    }, []);
+    // useEffect(() => {
+    //     getAllEmpresas();
+    // }, []);
 
 
 
@@ -64,7 +70,7 @@ export default function GuiaEntrega() {
     const [getDataCentroCosto, setGetDataCentroCosto] = useState('');
     const getAllCentroCostosByEmpresa = async () => {
         try {
-            const data2 = await api_getAllCentroCostoByEmpresa(jwt, getDataEmpresa);
+            const data2 = await api_getAllCentroCostoByEmpresa(jwt, idEmpresa);
             setDataCentroCosto(data2.data.dataList);
         } catch (error) {
             console.error(error);
@@ -72,10 +78,9 @@ export default function GuiaEntrega() {
     };
 
     useEffect(() => {
-        if (getDataEmpresa !== '') {
-            getAllCentroCostosByEmpresa();
-        }
-    }, [getDataEmpresa]);
+        getAllCentroCostosByEmpresa();
+        
+    }, []);
 
     const [dataCentroCostoModal, setDataCentroCostoModal] = useState<ICentroCosto[]>([]);
     const [getDataCentroCostoModal, setGetDataCentroCostoModal] = useState('');
@@ -99,7 +104,7 @@ export default function GuiaEntrega() {
     const [nameBodega, setNameBodega] = useState('');
     const getAllBodegasByEmpresaYCentroCosto = async () => {
         try {
-            const data3 = await api_getAllBodegaByEmpresaYCentroCosto(jwt, getDataEmpresa, getDataCentroCosto);
+            const data3 = await api_getAllBodegaByEmpresaYCentroCosto(jwt, idEmpresa, getDataCentroCosto);
             setDataBodega(data3.data.dataList);
         } catch (error) {
             console.error(error);
@@ -107,10 +112,10 @@ export default function GuiaEntrega() {
     };
 
     useEffect(() => {
-        if (getDataEmpresa !== '' && getDataCentroCosto !== '') {
+        if (idEmpresa !== '' && getDataCentroCosto !== '') {
             getAllBodegasByEmpresaYCentroCosto();
         }
-    }, [getDataEmpresa, getDataCentroCosto]);
+    }, [idEmpresa, getDataCentroCosto]);
 
     const [dataBodegaModal, setDataBodegaModal] = useState<IBodega[]>([]);
     const [getDataBodegaModal, setGetDataBodegaModal] = useState('');
@@ -134,7 +139,7 @@ export default function GuiaEntrega() {
     const [getDataAlmacen, setGetDataAlmacen] = useState('');
     const getAllAlmacenByEmpByCenByBod = async () => {
         try {
-            const data4 = await api_getAllAlmacenByEmpByCenByBod(jwt, getDataEmpresa, getDataCentroCosto, getDataBodega);
+            const data4 = await api_getAllAlmacenByEmpByCenByBod(jwt, idEmpresa, getDataCentroCosto, getDataBodega);
             setDataAlmacen(data4.data.dataList);
         } catch (error) {
             console.error(error);
@@ -142,11 +147,11 @@ export default function GuiaEntrega() {
     };
 
     useEffect(() => {
-        if (getDataEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '') {
+        if (idEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '') {
             getAllAlmacenByEmpByCenByBod();
 
         }
-    }, [getDataEmpresa, getDataCentroCosto, getDataBodega]);
+    }, [idEmpresa, getDataCentroCosto, getDataBodega]);
 
     const [dataAlmacenModal, setDataAlmacenModal] = useState<IAlmacen[]>([]);
     const [getDataAlmacenModal, setGetDataAlmacenModal] = useState('');
@@ -171,7 +176,7 @@ export default function GuiaEntrega() {
     const [getDataAlmacenArticulo, setGetDataAlmacenArticulo] = useState('');
     const getAllAlmacenArticuloByEmpByCenByBodByAlm = async () => {
         try {
-            const data5 = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(jwt, getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen);
+            const data5 = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(jwt, idEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen);
             setDataAlmacenArticulo(data5.data.dataList);
         } catch (error) {
             console.error(error);
@@ -179,10 +184,10 @@ export default function GuiaEntrega() {
     };
 
     useEffect(() => {
-        if (getDataEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '' && getDataAlmacen !== '') {
+        if (idEmpresa !== '' && getDataCentroCosto !== '' && getDataBodega !== '' && getDataAlmacen !== '') {
             getAllAlmacenArticuloByEmpByCenByBodByAlm();
         }
-    }, [getDataEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
+    }, [idEmpresa, getDataCentroCosto, getDataBodega, getDataAlmacen]);
 
 
 
@@ -233,25 +238,13 @@ export default function GuiaEntrega() {
         name: "ParteSalida",
     });
 
-  /*   useEffect(() => {
-        dataAlmacenArticulo.map((almacenArticulo) => {
-            append({
-                AlmacenId: almacenArticulo.almacenId,
-                ArticuloId: almacenArticulo.articuloId,
-                Cantidad: 0,
-                CodigoArticulo: almacenArticulo.articulo.codigo,
-                CodigoFamilia: almacenArticulo.articulo.subFamilium.familium.codigo,
-                Familia: almacenArticulo.articulo.subFamilium.familium.nombre,
-                CodigoSubFamilia: almacenArticulo.articulo.subFamilium.codigo,
-                SubFamilia: almacenArticulo.articulo.subFamilium.nombre,
-                DescripcionArticulo: almacenArticulo.articulo.descripcion
-            });
-        });
-    }, [dataAlmacenArticulo]); */
-
     const [showPdf, setShowPdf] = useState(false);
     const [dataPost, setDataPost] = useState<OutPutFormValues | null>(null);
+    
 
+    useEffect(()=>{
+        setValue('EmpresaIdOrigen',idEmpresa);
+    },[idEmpresa])
 
 
     const onSubmit = async (data: OutPutFormValues) => {
@@ -298,21 +291,6 @@ export default function GuiaEntrega() {
                             <Modal.Header className="font-bold">Seleccione la bodega y almacén de Origen</Modal.Header>
                             <Modal.Body>
                                 <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
-                                    <div className="col-span-2">
-                                        <label className="block text-left mb-2" htmlFor="numeroDocumento">Empresa:</label>
-                                        <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                            {...register('EmpresaIdOrigen', { setValueAs: (value) => value === 0 ? undefined : value })}
-                                            onChange={(e) => {
-                                                setGetDataEmpresa(e.target.value);
-                                            }}>
-                                            <option key={0} value={0} disabled selected>Seleccione una opción</option>
-                                            {dataEmpresa.map((empresa, index) => (
-                                                <option key={index} value={empresa.id}>{empresa.razonSocial}</option>
-                                            ))}
-                                        </select>
-                                        {errors.EmpresaIdOrigen && <span className="text-red-600">{errors.EmpresaIdOrigen.message}</span>}
-                                    </div>
-
                                     <div className="col-span-2">
                                         <label className="block text-left mb-2" htmlFor="numeroDocumento">Centro de costo:</label>
                                         <select className="mt-1 block w-full py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
