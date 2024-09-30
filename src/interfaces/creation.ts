@@ -211,6 +211,7 @@ interface IPrograma {
 }
 interface IPersona {
   id?: string;
+  run: string;
   runCuerpo: number;
   runDigito: string;
   nombres: string;
