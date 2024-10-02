@@ -1,6 +1,6 @@
-import { IBodega, ICentroCosto, IPersona } from "@/interfaces/creation";
+import { FormValueGuiaSalidaDetalle, IBodega, ICentroCosto, IPersona } from "@/interfaces/creation";
 import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interface";
-import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllCentroCostoByEmpresa, api_getAllPersonas, api_postPersonas } from "@/services/bodega.service";
+import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllCentroCostoByEmpresa, api_getAllPersonas, api_getEstadoArticulos, api_postPersonas } from "@/services/bodega.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,22 +17,19 @@ import { useQuery } from "react-query";
 import { api_getSexos } from "@/services/tipos.service";
 import { toast } from "react-toastify";
 import router from "next/router";
-import { FaSave } from "react-icons/fa";
+import { FaFilePdf, FaSave } from "react-icons/fa";
 import WarningAlert from "@/components/alerts/warningAlert";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PDFGuiaEntregaSalida from "@/components/pdf/guiaEntregaSalida";
+import { api_postGuiaEntregaSalidas } from "@/services/salidas.service";
 
 
 
-interface FormValueGuiaSalidaDetalle {
-    EmpresaId: string;
-    CentroCostoId: string;
-    BodegaId: string;
-    AlmacenId: string;
-    FuncionarioEntregaId: string;
-    PersonaRecibeId: string;
-    MotivoSalida: string;
-    Observacion: string;
-    //GuiaSalidaDetalle
+interface IEstadoArticulo {
+    codigo: number;
+    nombre?: string;
 }
+
 
 export default function Salidas() {
     const { setActive } = useContextStore()
@@ -80,27 +77,63 @@ export default function Salidas() {
         getPersonas();
     }, [idEmpresa]);
 
+    const GuiSalidaDetalles = z.object({
+        AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        SubFamiliaId: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }),
+        ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        EstadoArticuloCodigo: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
+        Cantidad: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
+        Observacion: z.string({ invalid_type_error: "tipo invalido" }).optional(),
+        CodigoSubFamilia: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
+        NombreSubFamilia: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }),
+        CodigoArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
+        DescripcionArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
+        CantidadSistema: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
+        EstadoArticuloNombre: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
+    });
+
+
     const GuiaSalida = z.object({
         EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         CentroCostoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         BodegaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        BodegaNombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        AlmacenNombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         FuncionarioEntregaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        FuncionarioEntregaNombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         PersonaRecibeId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
+        PersonaRecibeNombre: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         MotivoSalida: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        Observacion: z.string({ invalid_type_error: "Tipo invalido" }).optional()
-        /* GuiaSalidaDetalle:z.array(GuiSalidaDetalles) */
+        Observacion: z.string({ invalid_type_error: "Tipo invalido" }).optional(),
+        GuiaSalidaDetalle: z.array(GuiSalidaDetalles),
     });
 
     const methods = useForm<FormValueGuiaSalidaDetalle>({ resolver: zodResolver(GuiaSalida)/* ,defaultValues:{GuiaSalidaDetalle:[]} */ });
     const { register, handleSubmit, formState: { errors }, setValue, watch, reset, control } = methods;
 
     useEffect(() => {
+        setValue('EmpresaId', idEmpresa);
         console.log('codigo errores: ', errors)
     }, [errors]);
 
+    const [showPdf, setShowPdf] = useState(false);
+    const [dataPost, setDataPost] = useState<FormValueGuiaSalidaDetalle | null>(null);
     const onSubmit = async (data: FormValueGuiaSalidaDetalle) => {
-        console.log(data);
+        console.log("esta es la data ", data);
+        /* try {
+            const response = await api_postGuiaEntregaSalidas(jwt, data)
+            if (response) {
+                toast.success('Salida creada correctamente');
+                setShowPdf(true);
+                setDataPost(data);
+            } else {
+                toast.error('ha ocurrido un error en generar la Salida');
+                setShowPdf(false);
+            }
+        } catch {
+
+        } */
     }
 
     const CCId = watch('CentroCostoId');
@@ -134,19 +167,73 @@ export default function Salidas() {
 
     useEffect(() => {
         if (!idEmpresa || !CCId || !bodegaId) return;
+
+        // Obtener el nombre de la bodega
+        const selectedBodega = dataBodega?.find((bodega) => bodega.id == bodegaId);
+        if (selectedBodega) {
+            setValue('BodegaNombre', selectedBodega.nombre);
+        }
+
+        // Obtener los almacenes
         getAllAlmacenByEmpByCenByBod();
     }, [idEmpresa, CCId, bodegaId]);
+
+    useEffect(() => {
+        if (!almacenId || !dataAlmacen) return; // Verificar que almacenId tenga un valor válido
+
+        const selectedAlmacen = dataAlmacen.find((almacen) => almacen.id === almacenId);
+        if (selectedAlmacen) {
+            setValue('AlmacenNombre', selectedAlmacen.nombre);
+        }
+    }, [almacenId, dataAlmacen]);
+
+    // Obtener el valor de FuncionarioEntregaId del formulario
+    const funcionarioEntregaId = watch('FuncionarioEntregaId');
+
+    // useEffect para actualizar FuncionarioEntregaNombre
+    useEffect(() => {
+        if (!funcionarioEntregaId || !dataFuncionario) return;
+
+        const selectedFuncionario = dataFuncionario.find(
+            (funcionario) => funcionario.persona.id === funcionarioEntregaId
+        );
+        if (selectedFuncionario) {
+            setValue(
+                "FuncionarioEntregaNombre",
+                `${selectedFuncionario.persona.nombres} ${selectedFuncionario.persona.apellidoPaterno}`
+            );
+        }
+    }, [funcionarioEntregaId, dataFuncionario]);
+
+    // Obtener el valor de PersonaRecibeId del formulario
+    const personaRecibeId = watch('PersonaRecibeId');
+
+    // useEffect para actualizar PersonaRecibeNombre
+    useEffect(() => {
+        if (!personaRecibeId || !dataPersona) return;
+
+        const selectedPersona = dataPersona.find(
+            (persona) => persona.id === personaRecibeId
+        );
+        if (selectedPersona) {
+            setValue(
+                "PersonaRecibeNombre",
+                `${selectedPersona.nombres} ${selectedPersona.apellidoPaterno}`
+            );
+        }
+    }, [personaRecibeId, dataPersona]);
 
     const modalRef = useRef<HTMLDialogElement>(null);
 
     const handleShowModal = useCallback(() => {
         modalRef.current?.showModal();
     }, []);
-    
-    // const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-    //     control,
-    //     name: "ParteSalida",
-    // });
+
+    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control,
+        name: "GuiaSalidaDetalle",
+    });
+
     const [dataAlmacenArticulo, setDataAlmacenArticulo] = useState<IAlmacenArticulo[]>([]);
     const getAllAlmacenArticuloByEmpByCenByBodByAlm = async () => {
         try {
@@ -157,241 +244,348 @@ export default function Salidas() {
         }
     };
 
+
+
     useEffect(() => {
         if (!idEmpresa || !CCId || !bodegaId || !almacenId) return;
         getAllAlmacenArticuloByEmpByCenByBodByAlm();
     }, [idEmpresa, CCId, bodegaId, almacenId]);
 
+    const [dataEstadoA, setDataEstadoA] = useState<IEstadoArticulo[]>([]);
+
+    const getEstadoArticulo = async () => {
+        const data = await api_getEstadoArticulos(jwt);
+        setDataEstadoA(data.data.dataList);
+    };
+
+    useEffect(() => {
+        getEstadoArticulo();
+    }, []);
+
+    // Observar los cambios en GuiaSalidaDetalle
+    const guiaSalidaDetalle = watch("GuiaSalidaDetalle");
+
+    // useEffect para actualizar EstadoArticuloNombre
+    useEffect(() => {
+        if (!dataEstadoA || !guiaSalidaDetalle) return;
+
+        guiaSalidaDetalle.forEach((field, index) => {
+            const estadoArticulo = dataEstadoA.find(
+                (estado) => estado.codigo === field.EstadoArticuloCodigo
+            );
+            if (estadoArticulo) {
+                setValue(
+                    `GuiaSalidaDetalle.${index}.EstadoArticuloNombre`,
+                    estadoArticulo.nombre
+                );
+            }
+        });
+    }, [dataEstadoA, guiaSalidaDetalle]); // Dependencias: dataEstadoA y guiaSalidaDetalle
+
+
 
     return (
         <>
+
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="w-3/4 border shadow-md grid md:grid-cols-12 rounded-md p-4 gap-4 mx-auto">
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Centro costo" className="label font-semibold tex-left">Centro Costo*</label>
-                            <select className="select select-primary"
-                                {...register('CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}>
-                                <option value='' selected disabled>Seleccione una opcion: </option>
-                                {dataCc?.map((cc, index) => (
-                                    <option value={cc.id}>{cc.nombre}</option>
-                                ))}
-                            </select>
-                            {errors.CentroCostoId && (
-                                <span className="text-red-600 block">
-                                    {errors.CentroCostoId.message}
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                <div className="border shadow-md">
+                    <div className="grid grid-cols-1 md:grid-cols-12 rounded-md p-4 gap-4 mx-auto">
 
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Bodega" className="label font-semibold tex-left">Bodega*</label>
-                            <select className="select select-primary"
-                                {...register('BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}>
-                                <option value='' selected disabled>Seleccione una opcion: </option>
-                                {dataBodega?.map((bodega, index) => (
-                                    <option value={bodega.id}>{bodega.nombre}</option>
-                                ))}
-                            </select>
-                            {errors.BodegaId && (
-                                <span className="text-red-600 block">
-                                    {errors.BodegaId.message}
-                                </span>
-                            )}
-                        </div>
-                    </div>
 
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Almacen" className="label font-semibold tex-left">Almacen*</label>
-                            <select className="select select-primary"
-                                {...register('AlmacenId', { setValueAs: (value) => value === '' ? undefined : value })}>
-                                <option value='' selected disabled>Seleccione una opcion: </option>
-                                {dataAlmacen.map((almacen, index) => (
-                                    <option value={almacen.id}>{almacen.nombre}</option>
-                                ))}
-                            </select>
-                            {errors.AlmacenId && (
-                                <span className="text-red-600 block">
-                                    {errors.AlmacenId.message}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Encargado" className="label font-semibold tex-left">Encargado*</label>
-                            <Controller
-                                control={control}
-                                name="FuncionarioEntregaId"
-                                render={({ field: { onChange, value, name, ref } }) => (
-                                    <Select
-                                        className="border-2 border-primary rounded-md"
-                                        placeholder="Rut formato 12123123-1"
-                                        getOptionValue={(option) => option.persona.runCuerpo + "-" + option?.persona.runDigito || ""}
-                                        getOptionLabel={(option) => option.persona.nombres + " " + option.persona.apellidoPaterno}
-                                        value={dataFuncionario?.find((e) => e.persona.id === value)}
-                                        options={dataFuncionario}
-                                        onChange={(val) =>
-                                            setValue("FuncionarioEntregaId", val?.persona.id as string)
-                                        }
-                                        menuPortalTarget={document.body}
-                                        loadingMessage={() => "Cargando opciones..."}
-                                        isLoading={dataFuncionario?.length === 0}
-                                        isClearable
-                                    />
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Centro costo" className="label font-semibold tex-left">Centro Costo*</label>
+                                <select className="select select-primary"
+                                    {...register('CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}>
+                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    {dataCc?.map((cc, index) => (
+                                        <option value={cc.id}>{cc.nombre}</option>
+                                    ))}
+                                </select>
+                                {errors.CentroCostoId && (
+                                    <span className="text-red-600 block">
+                                        {errors.CentroCostoId.message}
+                                    </span>
                                 )}
-                            />
-                            {errors.FuncionarioEntregaId && (
-                                <span className="text-red-600 block">
-                                    {errors.FuncionarioEntregaId.message}
-                                </span>
-                            )}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Recibe" className="label font-semibold tex-left">Destinatario*</label>
-                            <Controller
-                                control={control}
-                                name="PersonaRecibeId"
-                                render={({ field: { onChange, value, name, ref } }) => (
-                                    <Select
-                                        className="border-2 border-primary rounded-md"
-                                        placeholder="Rut formato 12123123-1"
-                                        getOptionValue={(option) => option.runCuerpo + "-" + option.runDigito || ""}
-                                        getOptionLabel={(option) => option.nombres + " " + option.apellidoPaterno}
-                                        value={dataPersona?.find((e) => e.id === value)}
-                                        options={dataPersona}
-                                        onChange={(val) =>
-                                            setValue("PersonaRecibeId", val?.id as string)
-                                        }
-                                        menuPortalTarget={document.body}
-                                        loadingMessage={() => "Cargando opciones..."}
-                                        isLoading={dataPersona?.length === 0}
-                                        isClearable
-                                    />
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Bodega" className="label font-semibold tex-left">Bodega*</label>
+                                <select className="select select-primary"
+                                    {...register('BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}
+                                >
+                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    {dataBodega?.map((bodega, index) => (
+                                        <option value={bodega.id}>{bodega.nombre}</option>
+                                    ))}
+                                </select>
+                                {errors.BodegaId && (
+                                    <span className="text-red-600 block">
+                                        {errors.BodegaId.message}
+                                    </span>
                                 )}
-                            />
-                            {errors.PersonaRecibeId && (
-                                <span className="text-red-600 block">
-                                    {errors.PersonaRecibeId.message}
-                                </span>
+                            </div>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Almacen" className="label font-semibold tex-left">Almacen*</label>
+                                <select className="select select-primary"
+                                    {...register('AlmacenId', { setValueAs: (value) => value === '' ? undefined : value })}
+
+                                >
+                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    {dataAlmacen.map((almacen, index) => (
+                                        <option value={almacen.id}>{almacen.nombre}</option>
+                                    ))}
+                                </select>
+                                {errors.AlmacenId && (
+                                    <span className="text-red-600 block">
+                                        {errors.AlmacenId.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Encargado" className="label font-semibold tex-left">Encargado*</label>
+                                <Controller
+                                    control={control}
+                                    name="FuncionarioEntregaId"
+                                    render={({ field: { onChange, value, name, ref } }) => (
+                                        <Select
+                                            className="border-2 border-primary rounded-md"
+                                            placeholder="Rut formato 12123123-1"
+                                            getOptionValue={(option) => option.persona.runCuerpo + "-" + option?.persona.runDigito || ""}
+                                            getOptionLabel={(option) => option.persona.nombres + " " + option.persona.apellidoPaterno}
+                                            value={dataFuncionario?.find((e) => e.persona.id === value)}
+                                            options={dataFuncionario}
+                                            onChange={(val) =>
+                                                setValue("FuncionarioEntregaId", val?.persona.id as string)
+                                            }
+                                            menuPortalTarget={document.body}
+                                            loadingMessage={() => "Cargando opciones..."}
+                                            isLoading={dataFuncionario?.length === 0}
+                                            isClearable
+                                        />
+                                    )}
+                                />
+                                {errors.FuncionarioEntregaId && (
+                                    <span className="text-red-600 block">
+                                        {errors.FuncionarioEntregaId.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Recibe" className="label font-semibold tex-left">Destinatario*</label>
+                                <Controller
+                                    control={control}
+                                    name="PersonaRecibeId"
+                                    render={({ field: { onChange, value, name, ref } }) => (
+                                        <Select
+                                            className="border-2 border-primary rounded-md"
+                                            placeholder="Rut formato 12123123-1"
+                                            getOptionValue={(option) => option.runCuerpo + "-" + option.runDigito || ""}
+                                            getOptionLabel={(option) => option.nombres + " " + option.apellidoPaterno}
+                                            value={dataPersona?.find((e) => e.id === value)}
+                                            options={dataPersona}
+                                            onChange={(val) =>
+                                                setValue("PersonaRecibeId", val?.id as string)
+                                            }
+                                            menuPortalTarget={document.body}
+                                            loadingMessage={() => "Cargando opciones..."}
+                                            isLoading={dataPersona?.length === 0}
+                                            isClearable
+                                        />
+                                    )}
+                                />
+                                {errors.PersonaRecibeId && (
+                                    <span className="text-red-600 block">
+                                        {errors.PersonaRecibeId.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col items-center">
+                                <label htmlFor="nuevo usuario" className="label font-semibold tex-left">¿No has encontrado al destinatario?</label>
+                                <button type="button" onClick={handleShowModal} className="btn btn-primary btn-outline w-1/2 my-0">Añadir Destinario</button>                        </div>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Motivo de la salida" className="label font-semibold tex-left">Motivo de la salida*</label>
+                                <textarea rows={2}
+                                    {...register('MotivoSalida', { setValueAs: (value) => value === "" ? undefined : value })}
+                                    placeholder="Porfavor ingrese el motivo..." className="textarea textarea-primary w-full" />
+                                {errors.MotivoSalida && (
+                                    <span className="text-red-600 block">
+                                        {errors.MotivoSalida.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="Observacion" className="label font-semibold tex-left">Observaciones</label>
+                                <textarea rows={2}
+                                    {...register('Observacion')}
+                                    className="textarea textarea-primary w-full" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 rounded-md p-4 gap-4 mx-auto">
+                        <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-2">
+                            {almacenId && dataAlmacenArticulo.length > 0 ? (
+                                <Table className='border shadow-lg'>
+                                    <Table.Head className="bg-primary text-white">
+                                        <span>Selección</span>
+                                        <span>Código sub-familia</span>
+                                        <span>Sub-familia</span>
+                                        <span>Código artículo</span>
+                                        <span>Descripción artículo</span>
+                                        <span>Cantidad sistema</span>
+                                        <span>Cantidad salida</span>
+                                        <span>Estado Articulo</span>
+                                        <span>Observaciones</span>
+                                    </Table.Head>
+                                    <Table.Body>
+                                        {dataAlmacenArticulo.map((almacenArticulo, index) => {
+                                            const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                            return (
+                                                <Table.Row key={index} hover={true}>
+                                                    <span>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="checkbox checkbox-primary"
+                                                            defaultChecked={false}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    append({
+                                                                        AlmacenId: almacenArticulo.almacenId,
+                                                                        SubFamiliaId: almacenArticulo.articulo.subFamilium.id,
+                                                                        ArticuloId: almacenArticulo.articuloId,
+                                                                        EstadoArticuloCodigo: 0,
+                                                                        Cantidad: 0,
+                                                                        Observacion: "",
+                                                                        CodigoSubFamilia: almacenArticulo.articulo.subFamilium.codigo,
+                                                                        NombreSubFamilia: almacenArticulo.articulo.nombre,
+                                                                        CodigoArticulo: almacenArticulo.articulo.codigo,
+                                                                        DescripcionArticulo: almacenArticulo.articulo.descripcion,
+                                                                        CantidadSistema: almacenArticulo.cantidad,
+                                                                    });
+                                                                } else {
+                                                                    remove(fieldsIndex);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </span>
+                                                    <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
+                                                    <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
+                                                    <span>{almacenArticulo.articulo.codigo ? almacenArticulo.articulo.codigo : "articulo sin codigo"}</span>
+                                                    <span>{almacenArticulo.articulo.descripcion ? almacenArticulo.articulo.descripcion : "articulo sin descripción"}</span>
+                                                    <span>{almacenArticulo.cantidad}</span>
+                                                    <span>
+                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                            <input
+                                                                type="number"
+                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.Cantidad`, {
+                                                                    setValueAs: (value) => {
+                                                                        if (value === "" || value === 0) {
+                                                                            return undefined;
+                                                                        }
+                                                                        return Number(value)
+                                                                    }
+                                                                })}
+                                                                className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                                                            />
+                                                        ) : null}
+                                                    </span>
+                                                    <span>
+                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                            <select
+                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.EstadoArticuloCodigo`, {
+                                                                    setValueAs: (value) => {
+                                                                        if (value === "" || value === 0) {
+                                                                            return undefined;
+                                                                        }
+                                                                        return Number(value)
+                                                                    }
+                                                                })}
+                                                                className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                                                            >
+                                                                <option value="" disabled>Seleccione una opción</option>
+                                                                {dataEstadoA.map((e, ie) => (
+                                                                    <option value={e.codigo} key={ie}>{e.nombre}</option>
+                                                                ))}
+                                                            </select>
+                                                        ) : null}
+                                                    </span>
+                                                    <span>
+                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                            <input
+                                                                type="text"
+                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.Observacion`)}
+                                                                className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                                                            />
+                                                        ) : null}
+                                                    </span>
+                                                </Table.Row>
+                                            );
+                                        })}
+                                    </Table.Body>
+                                </Table>
+                            ) : almacenId && dataAlmacenArticulo.length === 0 ? (
+                                <WarningAlert message={"No hay artículos disponibles en este almacén"} />
+                            ) : (
+                                <></>
                             )}
                         </div>
                     </div>
-                    <div className="col-span-4">
-                        <div className="flex flex-col items-center">
-                            <label htmlFor="nuevo usuario" className="label font-semibold tex-left">¿No has encontrado al destinatario?</label>
-                            <button type="button" onClick={handleShowModal} className="btn btn-primary btn-outline w-1/2 my-0">Añadir Destinario</button>                        </div>
-                    </div>
+                    <div className="col-span-1 md:col-span-4 flex justify-center items-center md:justify-center mb-2">
 
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Motivo de la salida" className="label font-semibold tex-left">Motivo de la salida*</label>
-                            <textarea rows={2}
-                                {...register('MotivoSalida', { setValueAs: (value) => value === "" ? undefined : value })}
-                                placeholder="Porfavor ingrese el motivo..." className="textarea textarea-primary w-full" />
-                            {errors.MotivoSalida && (
-                                <span className="text-red-600 block">
-                                    {errors.MotivoSalida.message}
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                        <button type="submit" className="btn btn-primary btn-outline w-full md:w-auto"><FaSave />Guardar</button>
 
-                    <div className="col-span-4">
-                        <div className="flex flex-col">
-                            <label htmlFor="Observacion" className="label font-semibold tex-left">Observaciones</label>
-                            <textarea rows={2}
-                                {...register('Observacion')}
-                                className="textarea textarea-primary w-full" />
-                        </div>
-                    </div>
-
-                    <div className="col-span-12 ">
-                    <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-2">
-                        {almacenId && dataAlmacenArticulo.length > 0 ? (
-                            <Table className='border shadow-lg'>
-                                <Table.Head className="bg-primary text-white">
-                                    <span>Selección</span>
-                                    <span>Código artículo</span>
-                                    <span>Código familia</span>
-                                    <span>Familia</span>
-                                    <span>Código sub-familia</span>
-                                    <span>Sub-familia</span>
-                                    <span>Descripción artículo</span>
-                                    <span>Cantidad sistema</span>
-                                    <span>Cantidad salida</span>
-
-                                </Table.Head>
-                                <Table.Body>
-                                    {dataAlmacenArticulo.map((almacenArticulo, index) => {
-                                        //const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
-                                        return (
-                                            <Table.Row key={index} hover={true}>
-                                                {/* <input
-                                                    type="checkbox"
-                                                    defaultChecked={false}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            append({
-                                                                AlmacenId: almacenArticulo.almacenId,
-                                                                ArticuloId: almacenArticulo.articuloId,
-                                                                Cantidad: 0,
-                                                                CodigoArticulo: almacenArticulo.articulo.codigo,
-                                                                CodigoFamilia: almacenArticulo.articulo.subFamilium.familium.codigo,
-                                                                Familia: almacenArticulo.articulo.subFamilium.familium.nombre,
-                                                                CodigoSubFamilia: almacenArticulo.articulo.subFamilium.codigo,
-                                                                SubFamilia: almacenArticulo.articulo.subFamilium.nombre,
-                                                                DescripcionArticulo: almacenArticulo.articulo.descripcion
-                                                            });
-                                                        } else {
-                                                            remove(fieldsIndex);
-                                                        }
-                                                    }}
-                                                /> */}
-                                                <span>{almacenArticulo.articulo.codigo}</span>
-                                                <span>{almacenArticulo.articulo.subFamilium.familium.codigo}</span>
-                                                <span>{almacenArticulo.articulo.subFamilium.familium.nombre}</span>
-                                                <span>{almacenArticulo.articulo.subFamilium.codigo}</span>
-                                                <span>{almacenArticulo.articulo.subFamilium.nombre}</span>
-                                                <span>{almacenArticulo.articulo.descripcion}</span>
-                                                <span>{almacenArticulo.cantidad}</span>
-                                                {/* {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
-                                                    <input
-                                                        type="number"
-                                                        {...register(`ParteSalida.${fieldsIndex}.Cantidad`, {
-                                                            setValueAs: (value) => value === "" ? undefined : Number(value)
-                                                        })}
-                                                        className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                                    />
-                                                ) : (
-                                                    <></>
-                                                )} */}
-                                            </Table.Row>
-                                        );
-                                    })}
-                                </Table.Body>
-                            </Table>
-                        ) : almacenId && dataAlmacenArticulo.length === 0 ? (
-                            <WarningAlert message={"No hay artículos disponibles en este almacén"} />
-                        ) : (
-                            <></>
-                        )}
-                    </div>
-                    </div>
-
-                    <div className="col-span-4 ">
-                        <div className="flex flex-col ">
-                            <button className="btn btn-primary btn-outline"><FaSave/>Guardar</button>
-                        </div>
                     </div>
                 </div>
+                {showPdf && dataPost &&
+                    <Modal open={showPdf}>
+                        <Modal.Header>¿Desea crear un reporte de la guía de despacho de salida?</Modal.Header>
+                        <Modal.Body>
+                            <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
+                                <div className="col-span-2">
+                                    <PDFDownloadLink document={<PDFGuiaEntregaSalida data={dataPost} />} fileName={`Pdf_guia_de_entrega_salida`}>
+                                        {
+                                            ({ loading, url, error, blob }) => loading ? (
+                                                "Cargando.."
+                                            ) : (
+                                                <button type="button" className="btn btn-outline btn-accent md:my-0 lg:my-0 md:mx-2 lg:mx-2"><FaFilePdf />Exportar</button>
+                                            )
+
+                                        }
+                                    </PDFDownloadLink>
+                                </div>
+                                <div className="col-span-2">
+                                    <Button type="button" className="btn btn-outline btn-secondary w-1/2 mt-2" onClick={() => router.reload()}>
+                                        salir
+                                    </Button>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+
+
+                }
+
+
+
             </form>
             <ModalPersonaRecibe modalRef={modalRef} actualizarPersonas={getPersonas} />
         </>

@@ -203,7 +203,7 @@ export default function ConOrden(props: props) {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="p-6 bg-white rounded w-full max-w-3xl">
+      <div className="p-2 bg-white rounded w-full max-w-3xl">
         <h1 className="text-2xl font-bold mb-4">
           Recepción de Artículos con orden de compra
         </h1>

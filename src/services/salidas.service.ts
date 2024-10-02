@@ -23,3 +23,6 @@ api.interceptors.response.use(
 export function api_postGuiaEntrega(bearer: string, data: any) {
     return api.post(`guiaentrega`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_postGuiaEntregaSalidas(bearer: string, data: any) {
+    return api.post(`guiaentregasalidas`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
+}

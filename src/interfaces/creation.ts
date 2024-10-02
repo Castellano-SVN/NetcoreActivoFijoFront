@@ -524,10 +524,10 @@ interface IOrdenCompra {
           id: string;
           nombre: string;
           bodegas: {
-            almacens:{
-              id:string;
-              nombre:string;
-              sigla:string;
+            almacens: {
+              id: string;
+              nombre: string;
+              sigla: string;
             }[]
             id: string;
             nombre: string;
@@ -604,7 +604,7 @@ interface FormValueRecepcionSoData {
   }[];
 }
 interface InventarioFisicoFormValue {
-  InventarioFisico:{
+  InventarioFisico: {
     EmpresaId: string;
     FuncionarioId: string;
     Numero: number;
@@ -612,7 +612,7 @@ interface InventarioFisicoFormValue {
     FechaInicio: Date;
     FechaTermino: Date;
   };
-  InventarioFisicoDetalle:{
+  InventarioFisicoDetalle: {
     EmpresaId: string;
     InventarioFisicoId: string;
     FuncionarioId: string;
@@ -621,13 +621,13 @@ interface InventarioFisicoFormValue {
     DependenciaLocacion: string;
     FechaRegistro: Date;
   };
-  InventarioFisicoRegistro:{
+  InventarioFisicoRegistro: {
     EmpresaId: string;
     InventarioFisicoId: string;
     InventarioFisicoDetalleId: string;
     FuncionarioId: string;
     PersonaConteoId: string;
-    AnoNumero:  number;
+    AnoNumero: number;
     SubFamiliaId: string;
     ArticuloId: string;
     MarcaId: string;
@@ -638,7 +638,7 @@ interface InventarioFisicoFormValue {
     Presentacion: string;
     Observaciones: string;
     Codigo: string;
-    NumeroUnidades:  number;
+    NumeroUnidades: number;
     FechaRegistro: Date;
   };
 }
@@ -689,8 +689,8 @@ interface ICotizacion {
     id: string;
     observaciones?: string;
     solicitudDetalle: {
-      solicitud:{
-        funcionarioEmpresa:{
+      solicitud: {
+        funcionarioEmpresa: {
           funcionarioId: string;
         }
       }
@@ -838,9 +838,9 @@ interface IParteEntrada {
   }
   almacenArticulo: {
     cantidad: number;
-    articulo:{
-      codigo?:number;
-      descripcion?:string;
+    articulo: {
+      codigo?: number;
+      descripcion?: string;
     }
   }
 }
@@ -853,9 +853,9 @@ interface IInventarioFisicoEstado {
   nombre: string;
 }
 
-interface IBodegaQuiebre{
-  almacen:{
-    bodega:{
+interface IBodegaQuiebre {
+  almacen: {
+    bodega: {
       id: string;
       nombre: string;
     }
@@ -863,23 +863,51 @@ interface IBodegaQuiebre{
     id: string;
     nombre: string;
   }
-  articulo:{
+  articulo: {
     codigo: string;
     descripcion: string;
     nombre: string;
-    subFamilia:{
-      familia:{
+    subFamilia: {
+      familia: {
         codigo: string;
         id: string;
-        nombre:string;
+        nombre: string;
       }
       codigo: string;
       id: string;
-      nombre:string;
+      nombre: string;
     }
   }
   cantidad: number;
   cantidadMinima: number;
+}
+interface FormValueGuiaSalidaDetalle {
+  EmpresaId: string;
+  CentroCostoId: string;
+  BodegaId: string;
+  BodegaNombre: string;
+  AlmacenId: string;
+  AlmacenNombre: string;
+  FuncionarioEntregaId: string;
+  FuncionarioEntregaNombre: string;
+  PersonaRecibeId: string;
+  PersonaRecibeNombre: string;
+  MotivoSalida: string;
+  Observacion: string;
+  GuiaSalidaDetalle: {
+    AlmacenId: string;
+    SubFamiliaId: string;
+    ArticuloId: string;
+    EstadoArticuloCodigo: number;
+    Cantidad: number;
+    Observacion?: string;
+    CodigoSubFamilia: number;
+    NombreSubFamilia: string;
+    CodigoArticulo?: string;
+    DescripcionArticulo?: string;
+    CantidadSistema: number;
+    EstadoArticuloNombre?:string;
+  }[]
 }
 
 
@@ -889,5 +917,5 @@ export type {
   PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
   ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
   RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
-  OutPutQuiebreStockFormValues,FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue,IBodegaQuiebre
+  OutPutQuiebreStockFormValues, FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue, IBodegaQuiebre, FormValueGuiaSalidaDetalle
 }
