@@ -417,6 +417,7 @@ export default function GuiaEntrega() {
                                                 <input
                                                     type="checkbox"
                                                     defaultChecked={false}
+                                                    className="checkbox checkbox-primary"
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
                                                             append({

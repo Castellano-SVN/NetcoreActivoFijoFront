@@ -57,11 +57,11 @@ export default function recepcion() {
     <React.Fragment>
       <div className="flex items-center justify-center">
         <div className="container">
-          <div className="p-6">
+          <div className="p-1">
             <div>
               <>
-                <div className="flex flex-row justify-center p-4">
-                  <div className="flex flex-col shadow-md border rounded-md w-full p-6">
+                <div className="flex flex-row justify-center p-1">
+                  <div className="flex flex-col shadow-md border rounded-md w-full p-2">
                     {showConOrden === false ? (
                       <>
                         <h5 className="text-2xl font-bold mb-4">
