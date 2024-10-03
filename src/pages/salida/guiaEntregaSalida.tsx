@@ -22,6 +22,8 @@ import WarningAlert from "@/components/alerts/warningAlert";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PDFGuiaEntregaSalida from "@/components/pdf/guiaEntregaSalida";
 import { api_postGuiaEntregaSalidas } from "@/services/salidas.service";
+import { format } from 'date-fns';
+
 
 
 
@@ -89,7 +91,7 @@ export default function Salidas() {
         CodigoArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
         DescripcionArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
         CantidadSistema: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
-        EstadoArticuloNombre: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
+        EstadoArticuloNombre: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }),
     });
 
 
@@ -120,8 +122,8 @@ export default function Salidas() {
     const [showPdf, setShowPdf] = useState(false);
     const [dataPost, setDataPost] = useState<FormValueGuiaSalidaDetalle | null>(null);
     const onSubmit = async (data: FormValueGuiaSalidaDetalle) => {
-        console.log("esta es la data ", data);
-        /* try {
+        console.log(data)
+        try {
             const response = await api_postGuiaEntregaSalidas(jwt, data)
             if (response) {
                 toast.success('Salida creada correctamente');
@@ -132,8 +134,9 @@ export default function Salidas() {
                 setShowPdf(false);
             }
         } catch {
-
-        } */
+            toast.error('ha ocurrido un error inesperado.')
+            console.log(errors);
+        }
     }
 
     const CCId = watch('CentroCostoId');
@@ -265,24 +268,7 @@ export default function Salidas() {
     // Observar los cambios en GuiaSalidaDetalle
     const guiaSalidaDetalle = watch("GuiaSalidaDetalle");
 
-    // useEffect para actualizar EstadoArticuloNombre
-    useEffect(() => {
-        if (!dataEstadoA || !guiaSalidaDetalle) return;
-
-        guiaSalidaDetalle.forEach((field, index) => {
-            const estadoArticulo = dataEstadoA.find(
-                (estado) => estado.codigo === field.EstadoArticuloCodigo
-            );
-            if (estadoArticulo) {
-                setValue(
-                    `GuiaSalidaDetalle.${index}.EstadoArticuloNombre`,
-                    estadoArticulo.nombre
-                );
-            }
-        });
-    }, [dataEstadoA, guiaSalidaDetalle]); // Dependencias: dataEstadoA y guiaSalidaDetalle
-
-
+    const fechaActualConMinutos = format(new Date(), 'yyyy-MM-dd HH:mm');
 
     return (
         <>
@@ -452,20 +438,20 @@ export default function Salidas() {
                                         <span>Código artículo</span>
                                         <span>Descripción artículo</span>
                                         <span>Cantidad sistema</span>
-                                        <span>Cantidad salida</span>
-                                        <span>Estado Articulo</span>
+                                        <span>Cantidad salida*</span>
+                                        <span>Estado Articulo*</span>
                                         <span>Observaciones</span>
                                     </Table.Head>
                                     <Table.Body>
                                         {dataAlmacenArticulo.map((almacenArticulo, index) => {
-                                            const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                            const fieldIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
                                             return (
                                                 <Table.Row key={index} hover={true}>
                                                     <span>
                                                         <input
                                                             type="checkbox"
                                                             className="checkbox checkbox-primary"
-                                                            defaultChecked={false}
+                                                            checked={fieldIndex !== -1}
                                                             onChange={(e) => {
                                                                 if (e.target.checked) {
                                                                     append({
@@ -480,9 +466,12 @@ export default function Salidas() {
                                                                         CodigoArticulo: almacenArticulo.articulo.codigo,
                                                                         DescripcionArticulo: almacenArticulo.articulo.descripcion,
                                                                         CantidadSistema: almacenArticulo.cantidad,
+                                                                        EstadoArticuloNombre: ""
                                                                     });
                                                                 } else {
-                                                                    remove(fieldsIndex);
+                                                                    if (fieldIndex !== -1) {
+                                                                        remove(fieldIndex);
+                                                                    }
                                                                 }
                                                             }}
                                                         />
@@ -493,49 +482,75 @@ export default function Salidas() {
                                                     <span>{almacenArticulo.articulo.descripcion ? almacenArticulo.articulo.descripcion : "articulo sin descripción"}</span>
                                                     <span>{almacenArticulo.cantidad}</span>
                                                     <span>
-                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
-                                                            <input
-                                                                type="number"
-                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.Cantidad`, {
-                                                                    setValueAs: (value) => {
-                                                                        if (value === "" || value === 0) {
-                                                                            return undefined;
+                                                        {fieldIndex !== -1 && (
+                                                            <>
+                                                                <input
+                                                                    type="number"
+                                                                    {...register(`GuiaSalidaDetalle.${fieldIndex}.Cantidad`, {
+                                                                        setValueAs: (value) => {
+                                                                            if (value === "" || value === 0) {
+                                                                                return undefined;
+                                                                            }
+                                                                            return Number(value)
                                                                         }
-                                                                        return Number(value)
-                                                                    }
-                                                                })}
-                                                                className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
-                                                            />
-                                                        ) : null}
+                                                                    })}
+                                                                    className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                                                                />
+                                                                {errors.GuiaSalidaDetalle && errors.GuiaSalidaDetalle[fieldIndex] && errors.GuiaSalidaDetalle[fieldIndex]?.Cantidad && (
+                                                                    <p className="text-red-500 text-xs mt-1">{errors.GuiaSalidaDetalle[fieldIndex]?.Cantidad?.message}</p>
+                                                                )}
+                                                            </>
+                                                        )}
                                                     </span>
                                                     <span>
-                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
-                                                            <select
-                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.EstadoArticuloCodigo`, {
-                                                                    setValueAs: (value) => {
-                                                                        if (value === "" || value === 0) {
-                                                                            return undefined;
+                                                        {fieldIndex !== -1 && (
+                                                            <>
+                                                                <select
+                                                                    {...register(`GuiaSalidaDetalle.${fieldIndex}.EstadoArticuloCodigo`, {
+                                                                        setValueAs: (value) => {
+                                                                            if (value === "" || value === 0) {
+                                                                                return undefined;
+                                                                            }
+                                                                            return Number(value)
                                                                         }
-                                                                        return Number(value)
-                                                                    }
-                                                                })}
-                                                                className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
-                                                            >
-                                                                <option value="" disabled>Seleccione una opción</option>
-                                                                {dataEstadoA.map((e, ie) => (
-                                                                    <option value={e.codigo} key={ie}>{e.nombre}</option>
-                                                                ))}
-                                                            </select>
-                                                        ) : null}
+                                                                    })}
+                                                                    onChange={(e) => {
+                                                                        const estadoArticulo = dataEstadoA.find(
+                                                                            (estado) => estado.codigo === Number(e.target.value)
+                                                                        );
+                                                                        if (estadoArticulo && estadoArticulo.nombre) {
+                                                                            setValue(
+                                                                                `GuiaSalidaDetalle.${fieldIndex}.EstadoArticuloNombre`,
+                                                                                estadoArticulo.nombre
+                                                                            );
+                                                                        } else {
+                                                                            setValue(
+                                                                                `GuiaSalidaDetalle.${fieldIndex}.EstadoArticuloNombre`,
+                                                                                ''
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                    className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                                                                >
+                                                                    <option value="" disabled>Seleccione una opción</option>
+                                                                    {dataEstadoA.map((e, ie) => (
+                                                                        <option value={e.codigo} key={ie}>{e.nombre}</option>
+                                                                    ))}
+                                                                </select>
+                                                                {errors.GuiaSalidaDetalle && errors.GuiaSalidaDetalle[fieldIndex] && errors.GuiaSalidaDetalle[fieldIndex]?.EstadoArticuloCodigo && (
+                                                                    <p className="text-red-500 text-xs mt-1">{errors.GuiaSalidaDetalle[fieldIndex]?.EstadoArticuloCodigo?.message}</p>
+                                                                )}
+                                                            </>
+                                                        )}
                                                     </span>
                                                     <span>
-                                                        {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                        {fieldIndex !== -1 && (
                                                             <input
                                                                 type="text"
-                                                                {...register(`GuiaSalidaDetalle.${fieldsIndex}.Observacion`)}
+                                                                {...register(`GuiaSalidaDetalle.${fieldIndex}.Observacion`)}
                                                                 className="w-full py-1 px-2 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
                                                             />
-                                                        ) : null}
+                                                        )}
                                                     </span>
                                                 </Table.Row>
                                             );
@@ -561,7 +576,7 @@ export default function Salidas() {
                         <Modal.Body>
                             <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                                 <div className="col-span-2">
-                                    <PDFDownloadLink document={<PDFGuiaEntregaSalida data={dataPost} />} fileName={`Pdf_guia_de_entrega_salida`}>
+                                    <PDFDownloadLink document={<PDFGuiaEntregaSalida data={dataPost} />} fileName={`Pdf_salida_&${fechaActualConMinutos}`}>
                                         {
                                             ({ loading, url, error, blob }) => loading ? (
                                                 "Cargando.."
@@ -573,7 +588,7 @@ export default function Salidas() {
                                     </PDFDownloadLink>
                                 </div>
                                 <div className="col-span-2">
-                                    <Button type="button" className="btn btn-outline btn-secondary w-1/2 mt-2" onClick={() => router.reload()}>
+                                    <Button type="button" className="btn btn-outline btn-secondary w-1/2 mt-2" onClick={() => router.back()}>
                                         salir
                                     </Button>
                                 </div>
