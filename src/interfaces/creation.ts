@@ -906,7 +906,7 @@ interface FormValueGuiaSalidaDetalle {
     CodigoArticulo?: string;
     DescripcionArticulo?: string;
     CantidadSistema: number;
-    EstadoArticuloNombre?:string;
+    EstadoArticuloNombre:string;
   }[]
 }
 
