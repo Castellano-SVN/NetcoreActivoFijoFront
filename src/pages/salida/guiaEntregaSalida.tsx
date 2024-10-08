@@ -283,7 +283,7 @@ export default function Salidas() {
                                 <label htmlFor="Centro costo" className="label font-semibold tex-left">Centro Costo*</label>
                                 <select className="select select-primary"
                                     {...register('CentroCostoId', { setValueAs: (value) => value === '' ? undefined : value })}>
-                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    <option value='' selected disabled>Seleccione una opción: </option>
                                     {dataCc?.map((cc, index) => (
                                         <option value={cc.id}>{cc.nombre}</option>
                                     ))}
@@ -302,7 +302,7 @@ export default function Salidas() {
                                 <select className="select select-primary"
                                     {...register('BodegaId', { setValueAs: (value) => value === '' ? undefined : value })}
                                 >
-                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    <option value='' selected disabled>Seleccione una opción: </option>
                                     {dataBodega?.map((bodega, index) => (
                                         <option value={bodega.id}>{bodega.nombre}</option>
                                     ))}
@@ -322,7 +322,7 @@ export default function Salidas() {
                                     {...register('AlmacenId', { setValueAs: (value) => value === '' ? undefined : value })}
 
                                 >
-                                    <option value='' selected disabled>Seleccione una opcion: </option>
+                                    <option value='' selected disabled>Seleccione una opción: </option>
                                     {dataAlmacen.map((almacen, index) => (
                                         <option value={almacen.id}>{almacen.nombre}</option>
                                     ))}
