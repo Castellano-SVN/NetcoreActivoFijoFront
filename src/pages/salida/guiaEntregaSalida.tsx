@@ -133,9 +133,14 @@ export default function Salidas() {
                 toast.error('ha ocurrido un error en generar la Salida');
                 setShowPdf(false);
             }
-        } catch {
-            toast.error('ha ocurrido un error inesperado.')
-            console.log(errors);
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message);
+                setShowPdf(false);
+            } else {
+                toast.error('Ha ocurrido un error inesperado');
+                setShowPdf(false);
+            }
         }
     }
 
