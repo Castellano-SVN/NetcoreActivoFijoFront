@@ -427,7 +427,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
                     })}
                   >
                     <Select.Option value={""} disabled>
-                      Seleccione nueva Locacion
+                      Seleccione nueva Locación
                     </Select.Option>
                     {locations.map((locations, index) => (
                       <Select.Option key={index} value={locations.id}>
@@ -451,7 +451,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
                     })}
                   >
                     <Select.Option value={""} disabled>
-                      Seleccione nueva Locacion
+                      Seleccione nueva Locación
                     </Select.Option>
                     {estados.map((estado, index) => (
                       <Select.Option key={index} value={estado.codigo}>
@@ -562,6 +562,7 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
       
       await api_putAlmacenArticulo(jwt, data);
       await update();
+      locationRef.current?.close();
     } catch (error) {
       toast.error("Ha ocurrido un error.");
       
@@ -609,7 +610,7 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
                     })}
                   >
                     <Select.Option value={""} disabled>
-                      Seleccione nueva Locacion
+                      Seleccione nueva Locación
                     </Select.Option>
                     {locations.map((locations, index) => (
                       <Select.Option key={index} value={locations.id}>

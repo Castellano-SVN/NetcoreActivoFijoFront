@@ -8,6 +8,8 @@ import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import PDFTarjetaExistencia from "../../../pdf/informes/pdftarjetaexistencia";
 import { api_getInputOutputExcel } from "@/services/informes.service";
 import { useUserStore } from "@/store/user.store";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface movimientoI {
   cantidad: number;
@@ -122,7 +124,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
       // Limpiar el enlace temporal y revocar la URL
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
-        // Limpia el objeto URL después de la descarga
+      // Limpia el objeto URL después de la descarga
     } catch (error) {
       console.error("Error al descargar el archivo Excel:", error);
     }
@@ -151,7 +153,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
       // Limpiar el enlace temporal y revocar la URL
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
-        // Limpia el objeto URL después de la descarga
+      // Limpia el objeto URL después de la descarga
     } catch (error) {
       console.error("Error al descargar el archivo Excel:", error);
     }
@@ -183,8 +185,9 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                   <Table.Row hover>
                     <span>{mov.funcionarioNombre ?? "No disponible"}</span>
                     <span>
-                      {new Date(mov.fecha).toLocaleDateString() ??
-                        "No disponible"}
+                      {format(new Date(mov.fecha), "yyyy-MM-dd HH:mm:ss", {
+                        locale: es
+                      }) ?? "No disponible"}
                     </span>
                     <span>{mov.proveedorRut ?? "No disponible"}</span>
                     <span>{mov.proveedorNombre ?? "No disponible"}</span>
@@ -237,8 +240,9 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                   <Table.Row hover>
                     <span>{mov.funcionarioNombre ?? "No disponible"}</span>
                     <span>
-                      {new Date(mov.fecha).toLocaleDateString() ??
-                        "No disponible"}
+                      {format(new Date(mov.fecha), "yyyy-MM-dd HH:mm:ss", {
+                        locale: es
+                      }) ?? "No disponible"}
                     </span>
                     <span>{mov.proveedorRut ?? "No disponible"}</span>
                     <span>{mov.proveedorNombre ?? "No disponible"}</span>
@@ -350,7 +354,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
               Exportar excel
             </button>
           </div>
-          
+
         </>)}
       </div>
     </>
