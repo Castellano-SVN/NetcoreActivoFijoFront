@@ -18,7 +18,6 @@ import WarningAlert from "@/components/alerts/warningAlert";
 
 interface props {
   guid: string;
-  change: () => void;
 }
 export default function Page(props: props) {
   const router = useRouter();
