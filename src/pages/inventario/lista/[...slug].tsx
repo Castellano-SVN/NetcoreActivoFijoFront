@@ -562,7 +562,7 @@ function ViewLocation(props: {
                         ))}
                       </select>
                       {errors.InvFisRegistro?.[index]?.PersonaConteoId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId?.message}</span>
                       )}
                     </td>
                     <td>
@@ -585,7 +585,7 @@ function ViewLocation(props: {
                         <option value={"Otras"}>Otras</option>
                       </select>
                       {errors.InvFisRegistro?.[index]?.MarcaId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.MarcaId.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.MarcaId?.message}</span>
                       )}
                     </td>
 
@@ -602,7 +602,7 @@ function ViewLocation(props: {
                         ))}
                       </select>
                       {errors.InvFisRegistro?.[index]?.EstadoCodigo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.EstadoCodigo.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.EstadoCodigo?.message}</span>
                       )}
                     </td>
 
@@ -619,7 +619,7 @@ function ViewLocation(props: {
                         ))}
                       </select>
                       {errors.InvFisRegistro?.[index]?.ProgramaId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.ProgramaId.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.ProgramaId?.message}</span>
                       )}
                     </td>
 
@@ -630,7 +630,7 @@ function ViewLocation(props: {
                         placeholder="Presentacion"
                       />
                       {errors.InvFisRegistro?.[index]?.Presentacion && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Presentacion.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Presentacion?.message}</span>
                       )}
                     </td>
 
@@ -641,7 +641,7 @@ function ViewLocation(props: {
                         placeholder="Lugar Fisico del Conteo"
                       />
                       {errors.InvFisRegistro?.[index]?.LugarFisicoConteo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.LugarFisicoConteo.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.LugarFisicoConteo?.message}</span>
                       )}
                     </td>
 
@@ -652,7 +652,7 @@ function ViewLocation(props: {
                         placeholder="Observacion"
                       />
                       {errors.InvFisRegistro?.[index]?.Observaciones && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Observaciones.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Observaciones?.message}</span>
                       )}
                     </td>
 
@@ -663,7 +663,7 @@ function ViewLocation(props: {
                         placeholder="Codigo"
                       />
                       {errors.InvFisRegistro?.[index]?.Codigo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Codigo.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Codigo?.message}</span>
                       )}
                     </td>
 
@@ -674,7 +674,7 @@ function ViewLocation(props: {
                         placeholder="Numero de unidades"
                       />
                       {errors.InvFisRegistro?.[index]?.NumeroUnidades && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades.message}</span>
+                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades?.message}</span>
                       )}
                     </td>
                   </tr>
