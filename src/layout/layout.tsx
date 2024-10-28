@@ -4,35 +4,52 @@ import { generateToken } from "../services/jwt.service";
 import { useCallback, useEffect, useState } from "react";
 import TopBar from "./topBar";
 import Body from "./body";
-import { Drawer, Menu } from "react-daisyui";
+import { Drawer, Loading, Menu } from "react-daisyui";
 import Menus from "./menus";
 import InfoBar from "./infoBar";
+import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export default function Layout(props: LayoutProps) {
+  const searchParams = useSearchParams()
   const [visible, setVisible] = useState(false);
+  const [loading,setLoading] = useState(false);
   const toggleVisible = useCallback(() => {
     setVisible((visible) => !visible);
   }, []);
+  const rut = searchParams.get('remotetoken')
+  const router = useRouter();
 
   const { setJwt, jwt } = useUserStore();
   const mutation = useMutation(generateToken);
   useEffect(() => {
-    const token = async () => {
+    const token = async (rut:string) => {
       try {
-        const result = await mutation.mutateAsync("10.680.150-9");
+        const result = await mutation.mutateAsync(rut);
         if (result.data) {
+          const params = new URLSearchParams(window.location.search);
+          setLoading(true)
           setJwt(result.data);
+          params.delete('remotetoken');
+          router.replace({
+            pathname: router.pathname,
+            query: Object.fromEntries(params.entries()), // Convertir los parámetros restantes a un objeto
+          }, undefined, { shallow: true });
         }
       } catch (error) {
         console.error("Error al generar el token:", error);
       }
     };
-
-    token();
-  }, []);
+    if (!rut || rut === null) return;
+    token(rut);
+  }, [rut]);
+  
+  if (!jwt )return ( <div className="flex items-center justify-center min-h-screen">
+    <Loading size="lg" color="primary" />
+  </div>)
   return (
     <>
       <Drawer
