@@ -260,7 +260,7 @@ export default function Page(props: props) {
       <Modal ref={ref}>
         <Modal.Header>
           <span className="font-bold flex justify-center text-primary">
-            Creacion de Familia
+            Creación de Familia
           </span>
           <Button
             onClick={handleClose}

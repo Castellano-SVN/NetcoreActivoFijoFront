@@ -212,7 +212,7 @@ function BuscarArticulos(props: props) {
                                 render={({ field: { onChange, value, name, ref } }) => (
                                     <Select
                                         className="mt-2 px-0 md:px-8 "
-                                        placeholder="Seleccione una almacen"
+                                        placeholder="Seleccione un almacén"
                                         getOptionValue={(option) => option.id}
                                         getOptionLabel={(option) => option.nombre}
                                         value={Almacen.find((e) => e.id === value)}
@@ -239,7 +239,7 @@ function BuscarArticulos(props: props) {
                                 render={({ field: { onChange, value, name, ref } }) => (
                                     <Select
                                         className="mt-2 px-0 md:px-8"
-                                        placeholder="Seleccione Articulo"
+                                        placeholder="Seleccione Artículo"
                                         getOptionValue={(option) => option.id}
                                         getOptionLabel={(option) => option.nombre}
                                         value={Articulo.find((e) => e.id === value)}

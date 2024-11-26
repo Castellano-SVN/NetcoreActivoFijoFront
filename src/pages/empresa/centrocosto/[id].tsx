@@ -50,13 +50,11 @@ import { useSearchParams } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
-  const {id} = router.query;
-  const idString = String(id); // Convertir a cadena
+  const idString = router.query.id as string; // Convertir a cadena
 
   useEffect (()=>{
-    console.log(id);
     console.log( idString);
-  },[id, idString]);
+  },[idString]);
   
   const { jwt } = useUserStore();
   const [tipoAlmacen, setTipoAlmacen] = useState<ItipoAlmacen[]>([]);

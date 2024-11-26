@@ -411,7 +411,7 @@ interface ICuenta {
 }
 
 interface IArticuloValor {
-  valor: string;
+  valor: number;
 }
 interface IArticulo {
   empresaId: string;

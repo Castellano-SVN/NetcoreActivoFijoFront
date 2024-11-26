@@ -326,7 +326,7 @@ export default function Page() {
         {almacen ? (
           <div className="w-full mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
 
-            {almacen?.locacions.map((e, index) => <Locations key={index} almacen={almacen} locacion={e} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions} update={getArticles} />)}
+            {almacen?.locacions?.map((e, index) => <Locations key={index} almacen={almacen} locacion={e} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions} update={getArticles} />)}
             <WithoutLocations almacen={almacen} articulos={articulos} estados={estadosArticulos} locations={almacen?.locacions} update={getArticles} />
           </div>
         ) : (
@@ -429,7 +429,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
                     <Select.Option value={""} disabled>
                       Seleccione nueva Locación
                     </Select.Option>
-                    {locations.map((locations, index) => (
+                    {locations?.map((locations, index) => (
                       <Select.Option key={index} value={locations.id}>
                         {locations.direccion}
                       </Select.Option>
@@ -612,7 +612,7 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
                     <Select.Option value={""} disabled>
                       Seleccione nueva Locación
                     </Select.Option>
-                    {locations.map((locations, index) => (
+                    {locations?.map((locations, index) => (
                       <Select.Option key={index} value={locations.id}>
                         {locations.direccion}
                       </Select.Option>

@@ -239,7 +239,7 @@ export default function PDFQuiebreStock(props: props) {
                                         <Text style={styles.tableCell}>{q.articulo.nombre}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{q.articulo.subFamilia.familia.codigo + " " + q.articulo.subFamilia.familia.nombre}</Text>
+                                        <Text style={styles.tableCell}>{q.articulo.subFamilia.familia?.codigo + " " + q.articulo.subFamilia.familia?.nombre}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
                                         <Text style={styles.tableCell}>{q.articulo.subFamilia.codigo + " " + q.articulo.subFamilia.nombre}</Text>

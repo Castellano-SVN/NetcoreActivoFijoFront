@@ -62,7 +62,7 @@ export default function Page(props: props) {
         return (
             <div>
                 <ErrorAlert
-                    message="Ocurrio un error al buscar los datos de la familia"
+                    message="Ocurrio un error al buscar los articulos de la Sub-Familia"
                     action={() => router.back()}
                 />
             </div>
@@ -183,7 +183,7 @@ function Element({ element, refetch, create }: { element: IArticulo, refetch: ()
         localStorage.setItem("editArticulo", JSON.stringify({ articulo: element }));
         create();
     };
-
+    
     return (
         <>
             <div className="hover:shadow-md border rounded-md shadow">

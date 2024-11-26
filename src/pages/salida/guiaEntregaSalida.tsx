@@ -444,7 +444,7 @@ export default function Salidas() {
                                         <span>Descripción artículo</span>
                                         <span>Cantidad sistema</span>
                                         <span>Cantidad salida*</span>
-                                        <span>Estado Articulo*</span>
+                                        <span>Estado Artículo*</span>
                                         <span>Observaciones</span>
                                     </Table.Head>
                                     <Table.Body>

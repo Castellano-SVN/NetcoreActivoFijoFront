@@ -63,7 +63,7 @@ export default function DatostEmpresa({ errors }: props) {
       <div className="flex flex-wrap">
         <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
           <label className="label">
-            <span className="label-text">Razon social</span>
+            <span className="label-text">Razón social</span>
           </label>
           <Input {...register("RazonSocial", {
             setValueAs: (value) => value === "" ? undefined : value})} />

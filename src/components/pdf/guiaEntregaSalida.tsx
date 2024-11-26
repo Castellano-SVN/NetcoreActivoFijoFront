@@ -226,7 +226,7 @@ export default function PDFGuiaEntregaSalida(props: props) {
                     <View style={styles.columna}>
                         <Text style={styles.subTitle}> </Text>
                         <View style={styles.fila}>
-                            <Text style={styles.parrafoSubTitle}>Almacen: {props.data?.AlmacenNombre}</Text>
+                            <Text style={styles.parrafoSubTitle}>Almacén: {props.data?.AlmacenNombre}</Text>
                         </View>
                         <View style={styles.fila}>
                             <Text style={styles.parrafoSubTitle}>Destinatario: {props.data?.PersonaRecibeNombre}</Text>
@@ -260,7 +260,7 @@ export default function PDFGuiaEntregaSalida(props: props) {
 
                 <View style={styles.sectionSubTitle}>
                     <View style={styles.columna}>
-                        <Text style={styles.subTitle}>Articulos salidos:</Text>
+                        <Text style={styles.subTitle}>Artículos salidos:</Text>
                     </View>
                 </View>
 
@@ -285,7 +285,7 @@ export default function PDFGuiaEntregaSalida(props: props) {
                             <Text style={styles.tableCellHeader}>Cantidad salida</Text>
                         </View>
                         <View style={styles.tableColHeader}>
-                            <Text style={styles.tableCellHeader}>Estado Articulo</Text>
+                            <Text style={styles.tableCellHeader}>Estado Artículo</Text>
                         </View>
                         <View style={styles.tableColHeader}>
                             <Text style={styles.tableCellHeader}>Observaciones</Text>

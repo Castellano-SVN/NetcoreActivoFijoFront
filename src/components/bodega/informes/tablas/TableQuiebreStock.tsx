@@ -27,9 +27,6 @@ interface props {
 }
 
 export default function TablaQuiebreStock(props: props) {
-  useEffect(() => {
-    console.log("este es la data q llega a la tabla", props.dataQuiebre);
-  }, []);
   const { jwt } = useUserStore();
   const { empresa } = router.query;
 
@@ -41,6 +38,7 @@ export default function TablaQuiebreStock(props: props) {
         empresa as string,
         0,
       );
+      console.log("data llegada:", props)
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
 
       // Crear un enlace temporal y simular un clic para descargar el archivo
@@ -58,6 +56,8 @@ export default function TablaQuiebreStock(props: props) {
       console.error("Error al descargar el archivo Excel:", error);
     }
   };
+
+  useEffect(()=>{console.log(props.dataQuiebrePdf)},[])
 
   return (
     <>
@@ -84,10 +84,10 @@ export default function TablaQuiebreStock(props: props) {
                 <span>
                   <>
                     <span className="block font-semibold">
-                      {data.articulo.subFamilia.familia.codigo}
+                      {data.articulo.subFamilia.familia?.codigo}
                     </span>
                     <span className="block text-sm text-gray-500">
-                      {data.articulo.subFamilia.familia.nombre}
+                      {data.articulo.subFamilia.familia?.nombre}
                     </span>
                   </>
                 </span>

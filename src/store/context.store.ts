@@ -15,7 +15,7 @@ interface IMenuChildren extends IMenu {
 const Menus: IMenuChildren[] = [
   { name: "Prestadores", active: false, href: "/empresa", children: [] },
   {
-    name: "Recepcion", active: false, href: "/recepcion",
+    name: "Recepción", active: false, href: "/recepcion",
     children: [
       { name: "Ingreso", active: false, href: '/recepcion/ingreso' }
     ]

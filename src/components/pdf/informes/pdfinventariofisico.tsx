@@ -200,7 +200,7 @@ export default function PDFInventarioFisico(props: props) {
             <View style={styles.fila}>
               <View style={styles.columnaLeft}>
                 <View style={styles.fila}>
-                  <Text style={styles.subTitle}>Numero inventario Físico</Text>
+                  <Text style={styles.subTitle}>Número inventario Físico</Text>
                 </View>
                 <Text style={styles.parrafo}>{props.numeroIn}</Text>
               </View>

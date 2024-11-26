@@ -84,7 +84,7 @@ export default function DireccionCentro({ errors }: Props) {
             <div className="flex flex-wrap">
                 <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
                     <label className="label">
-                        <span className="label-text">Direccion</span>
+                        <span className="label-text">Dirección</span>
                     </label>
                     <Input {...register("Direccion", { setValueAs: (value) => value === "" ? undefined : value })} />
                     <label className="label text-error">

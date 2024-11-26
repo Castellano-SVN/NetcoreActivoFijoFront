@@ -53,7 +53,7 @@ export default function UbicacionRecepcion(props: props) {
         props.filterCC.includes(obj.id)
       );
       setCC(filteredArray);
-      setValue("cc", filteredArray[0].id);
+      setValue("cc", filteredArray[0]?.id);
     }
     setCC(cc.data.dataList);
     setValue("cc", cc.data.dataList[0].id);
@@ -66,6 +66,7 @@ export default function UbicacionRecepcion(props: props) {
       ccWatch
     );
     setBodegas(bodegas.data.dataList);
+    //if(!bodegas ||  !bodegas.data || !bodegas.data.dataList || bodegas.data.dataList.length === 0) return;
     setValue("bodega", bodegas.data.dataList[0].id);
   };
   const getAlmacens = async () => {
@@ -81,6 +82,7 @@ export default function UbicacionRecepcion(props: props) {
   useEffect(() => {
     if (!ccWatch) return;
     getBodegas();
+    
   }, [ccWatch]);
 
   useEffect(() => {
