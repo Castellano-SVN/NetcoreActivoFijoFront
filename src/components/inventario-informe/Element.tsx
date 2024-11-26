@@ -22,7 +22,7 @@ export default function Element({ element, label }: ElementProps) {
     <div className="hover:shado-wmd border rounded-md shadow animate-fadein">
       <div className="flex flex-row justify-between p-2">
         <div className="basis-1/2 flex flex-col justify-left text-left">
-          <span className="font-bold mb-2">Razon social</span>
+          <span className="font-bold mb-2">Razón social</span>
           <span className="text-sm align-left">{element.razonSocial}</span>
         </div>
         <div className="basis-1/2 flex flex-col justify-left text-right ">

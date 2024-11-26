@@ -524,7 +524,7 @@ function ViewLocation(props: {
                   <th>Lugar Fisico</th>
                   <th>Observaciones</th>
                   <th>Código</th>
-                  <th>Numero de unidades</th>
+                  <th>Número de unidades</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -671,7 +671,7 @@ function ViewLocation(props: {
                       <Input {...register(`InvFisRegistro.${index}.NumeroUnidades`, { setValueAs: (value) => value === 0 || "" ? undefined : Number(value) })}
                         type="number"
                         className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Numero de unidades"
+                        placeholder="Número de unidades"
                       />
                       {errors.InvFisRegistro?.[index]?.NumeroUnidades && (
                         <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades?.message}</span>

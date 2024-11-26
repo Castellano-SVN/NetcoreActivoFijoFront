@@ -315,13 +315,13 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
                 <h3 className="font-bold text-lg">Centro de costos</h3>
                 <div className="flex flex-col">
                   <span>No existen Centros de costos</span>
-                  <span>Desea crear uno?</span>
+                  {/* <span>Desea crear uno?</span>
                   <button
                     onClick={() => FirstChildren(empresa.id, empresa.razonSocial)}
                     className="btn btn-outline btn-primary mt-2"
                   >
                     Crear
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </dialog>

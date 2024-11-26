@@ -318,7 +318,7 @@ export default function ViewInventoryTaking() {
                   <div className="flex flex-wrap">
                     <div className="flex flex-col w-full">
                       <label className="label">
-                        <span className="label-text">Fecha de termino: </span>
+                        <span className="label-text">Fecha de término: </span>
                       </label>
                       <Controller
                         control={control}
@@ -432,7 +432,7 @@ export function TableInventory(props: props) {
       </div>
 
       <div className="text-start p-2">
-        <label className="font-semibold">Fecha de Termino:</label>{" "}
+        <label className="font-semibold">Fecha de Término:</label>{" "}
         <span className="">
           {props.inventarioFisico.fechaTermino
             ? new Date(props.inventarioFisico.fechaTermino).toLocaleDateString(

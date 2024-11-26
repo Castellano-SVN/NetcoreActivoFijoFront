@@ -90,7 +90,7 @@ const ArticulosSchema = z.object({
   codigo: z.string().optional(),
   nombre: z.string().optional(),
   valor: z.number().optional(),
-  // cantidadAlmacen: z.number().optional(),
+  cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
 });
 
@@ -237,7 +237,7 @@ export default function SinOrden(props: props) {
         setLocationStringPDF(locationString);
         toast.success('Recepción Sin orden de compra creada correctamente');
         setShowPdf(true);
-        console.log(data);
+        console.log("esta es la data que se guarda en el pdf",data);
         setPdfData(data); 
         reset();
       } else {
@@ -402,7 +402,7 @@ function Recepcion(props: recepcionProps ) {
         ...item1,
         cantidadAlmacen: matchingItem2
           ? matchingItem2.cantidad
-          : "No recepcionado anteriormente", // Usa la propiedad existente si no hay coincidencia
+          : 0, 
       };
     });
     remove();

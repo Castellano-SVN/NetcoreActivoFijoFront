@@ -109,13 +109,9 @@ export default function ConOrden(props: props) {
   //     }
   // }
 
-  useEffect(() => {
-    getTipos();
-    CCAvailable();
-  }, []);
   const CCAvailable = () => {
     const ids: string[] = [];
-    props.dataConOrdenCompra[0].ordenCompraDetalles.forEach((element) => {
+    props.dataConOrdenCompra[0].ordenCompraDetalles?.forEach((element) => {
       ids.push(element.cotizacionDetalle.solicitudDetalle.centroCostoId);
     });
     setIds(ids);
@@ -124,6 +120,13 @@ export default function ConOrden(props: props) {
     const fetch = await api_tipoDocumentoRecepcion(jwt);
     setTipos(fetch.data.dataList);
   };
+
+  
+  useEffect(() => {
+    getTipos();
+    CCAvailable();
+  }, []);
+  
   const methods = useForm<recepcionCOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
@@ -155,7 +158,7 @@ export default function ConOrden(props: props) {
 
   useEffect(() => {
     remove([0, 1]);
-    props.dataConOrdenCompra[0].ordenCompraDetalles.forEach((element) => {
+    props.dataConOrdenCompra[0].ordenCompraDetalles?.forEach((element) => {
       const articulo: articulosI = {
         id: element.cotizacionDetalle.articulo.id,
         codigo: element.cotizacionDetalle.articulo.codigo as string,
@@ -355,7 +358,7 @@ export default function ConOrden(props: props) {
                   <span>Cantidad</span>
                   <span>Precio</span>
                   <span>Observación</span>
-                  <span>Recepcionado</span>
+                  {/* <span>Recepcionado</span> */}
                   <span>Por recepcionar</span>
                   <span>Cantidad recibida</span>
                   <span>Observaciones</span>
@@ -369,9 +372,9 @@ export default function ConOrden(props: props) {
                       <span>{articulo.cantidad}</span>
                       <span>{articulo.precio}</span>
                       <span>{articulo.observacion}</span>
-                      <span className="font-bold">
+                      {/* <span className="font-bold">
                         {getValues(`articulos.${index}.recepcionado`)}
-                      </span>
+                      </span> */}
                       <input
                         key={articulo.id}
                         type="number"

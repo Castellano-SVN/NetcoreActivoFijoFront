@@ -151,7 +151,6 @@ export default function CreateArticulo(props: props) {
         setValue("AnoNumero", editArticulo.articulo.anoNumero);
         setValue("SubFamiliaId", editArticulo.articulo.subFamiliaId);
         setValue("Id", editArticulo.articulo.id);
-        setValue("TipoUnidadCodigo", editArticulo.articulo.tipoUnidadCodigo);
         setValue("Codigo", editArticulo.articulo.codigo);
         setValue("Nombre", editArticulo.articulo.nombre);
         setValue("Valor", editArticulo.articulo.valor);

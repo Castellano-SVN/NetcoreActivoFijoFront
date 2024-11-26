@@ -366,7 +366,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                 render={({ field: { onChange, value, name, ref } }) => (
                   <Select
                     className="mt-2 px-0 md:px-8 "
-                    placeholder="Seleccione una almacen"
+                    placeholder="Seleccione un almacén"
                     getOptionValue={(option) => option.id}
                     getOptionLabel={(option) => option.nombre}
                     value={dataAlmacen.find((e) => e.id === value)}

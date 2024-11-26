@@ -118,8 +118,9 @@ export default function InstitucionalCentro({ errors }: props) {
       setValue("CentroCostoId", data.CentroCostoId);
       setValue("EmpresaId", data.EmpresaId);
       visualEmpresa.CentroCosto = data.centroCostoNombre,
-        visualEmpresa.Empresa = data.empresaName
-      localStorage.removeItem("CentroCostoElements")
+      visualEmpresa.Empresa = data.empresaName
+      /* localStorage.removeItem("CentroCostoElements") */
+      console.log('cc = ',data.centroCostoNombre)
     }
   }, [])
   const openModal = (action: string) => {
@@ -129,7 +130,7 @@ export default function InstitucionalCentro({ errors }: props) {
   const assignPersona = (element: IPersona) => {
     console.log(element)
     visualEmpresa.administrador = `${element.runCuerpo}-${element.runDigito} - ${element.nombres} ${element.apellidoPaterno}`
-    setValue("AdministradorId",element.id);
+    setValue("AdministradorId", element.id);
     setModalState(false);
   }
   const defineName = (razonSocial: string) => {
@@ -187,7 +188,7 @@ export default function InstitucionalCentro({ errors }: props) {
               value={visualEmpresa.Empresa}
               id="voice-search"
 
-              className="border focus:ring-0 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5"
+              className="border border-gray-400 input bg-white text-sm rounded-lg block w-full p-2.5"
               placeholder={"Empresa"}
               required
             />
@@ -203,7 +204,7 @@ export default function InstitucionalCentro({ errors }: props) {
               value={visualEmpresa.CentroCosto}
               id="voice-search"
 
-              className="border focus:ring-0 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5"
+              className="border border-gray-400 input bg-white text-sm rounded-lg block w-full p-2.5"
               placeholder={"Centro costo"}
               required
             />
@@ -216,6 +217,7 @@ export default function InstitucionalCentro({ errors }: props) {
           }}
           clean={resetCentro}
           registerString={visualEmpresa.administrador}
+
         />
         {modalState && <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -255,8 +257,8 @@ export default function InstitucionalCentro({ errors }: props) {
         </div>}
       </div>
       <div className="flex flex-wrap">
-        
-      <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
+
+        <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
           <label className="label">
             <span className="label-text">Establecimiento de salud</span>
           </label>
@@ -321,7 +323,7 @@ export default function InstitucionalCentro({ errors }: props) {
           <label className="label">
             <span className="label-text">Código gesparvu</span>
           </label>
-          <Input {...register("CodigoGesparvu", { setValueAs: (value) => value === "" ? undefined : value })} onChange={handleChange} />
+          <Input type='number' {...register("CodigoGesparvu", { setValueAs: (value) => value === "" ? undefined : Number(value) })} onChange={handleChange} />
           <label className="label text-error">
             {errors.CodigoGesparvu ? errors.CodigoGesparvu.message : ""}
           </label>
@@ -399,7 +401,7 @@ const BusquedaEmpresa = ({
             readOnly
             type="text"
             id="voice-search"
-            className="border-none text-sm rounded-lg focus:ring-0 focus:border-none block w-full  py-2.5"
+            className="border border-gray-400 input bg-white text-sm rounded-lg block w-full p-2.5"
             placeholder={title}
             required
           />
