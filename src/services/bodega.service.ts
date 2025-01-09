@@ -24,8 +24,12 @@ export function api_getPersonas(bearer: string, page: number) {
   return api.get(`persona?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getAllPersonas(bearer: string) {
-  return api.get(`personaall`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getAllPersonas(bearer: string, search?: string) {
+  const url = `personaall` + (search ? `?search=${search}` : '');
+  
+  return api.get(url, {
+    headers: { "Authorization": `Bearer ${bearer}` },
+  });
 }
 
 export function api_postPersonas(bearer: string, data: any) {

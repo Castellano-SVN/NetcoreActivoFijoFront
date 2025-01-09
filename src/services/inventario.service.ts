@@ -46,8 +46,10 @@ export function api_postInventarioFisicoRegistro(bearer: string, data: any) {
   });
 }
 
-export function api_getAllPersonasByEmpresa(bearer: string, empresaId: string) {
-  return api.get(`funcionarioempresa?empresaId=${empresaId}`, {
+export function api_getAllPersonasByEmpresa(bearer: string, empresaId: string, search?: string) {
+  const url = `funcionarioempresa?empresaId=${empresaId}` + (search ? `&search=${search}` : '');
+  
+  return api.get(url, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
