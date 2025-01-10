@@ -337,13 +337,13 @@ export default function Salidas() {
                                             onInputChange={(newValue) => setFuncionarioSearch(newValue)}
                                             className="border-2 border-primary rounded-md"
                                             placeholder="Rut formato 12123123-1"
-                                            getOptionValue={(option) => option.persona.runCuerpo + "-" + option?.persona.runDigito || ""}
+                                            getOptionValue={(option) => option.funcionarioId}
                                             getOptionLabel={(option) =>
                                                 `${option.persona.nombres} ${option.persona.apellidoPaterno}`
                                             }
                                             options={dataFuncionario}
                                             onChange={(val) => {
-                                                field.onChange(val?.persona.id);
+                                                field.onChange(val?.funcionarioId);
                                                 if (val) {
                                                     setValue("FuncionarioEntregaNombre",
                                                         `${val.persona.nombres} ${val.persona.apellidoPaterno}`,
@@ -351,9 +351,18 @@ export default function Salidas() {
                                                     );
                                                 }
                                             }}
-                                            value={dataFuncionario?.find(e => e.persona.id === field.value)}
+                                            value={dataFuncionario?.find(e => e.funcionarioId === field.value)}
                                             menuPortalTarget={document.body}
                                             isClearable
+                                            loadingMessage={() => "Cargando..."}
+                                            isLoading={funcionarioSearch.length >= 8 && !dataFuncionario}
+                                            noOptionsMessage={({ inputValue }) =>
+                                                inputValue.length < 8
+                                                    ? "Ingrese al menos 8 caracteres"
+                                                    : "No se encontraron resultados"
+                                            }
+                                            filterOption={null}
+
                                         />
                                     )}
                                 />
@@ -377,7 +386,7 @@ export default function Salidas() {
                                             onInputChange={(newValue) => setPersonaSearch(newValue)}
                                             className="border-2 border-primary rounded-md"
                                             placeholder="Rut formato 12123123-1"
-                                            getOptionValue={(option) => option.runCuerpo + "-" + option.runDigito || ""}
+                                            getOptionValue={(option) => option.id || ""}
                                             getOptionLabel={(option) =>
                                                 `${option.nombres} ${option.apellidoPaterno}`
                                             }
@@ -394,6 +403,14 @@ export default function Salidas() {
                                             value={dataPersona?.find(e => e.id === field.value)}
                                             menuPortalTarget={document.body}
                                             isClearable
+                                            loadingMessage={() => "Cargando..."}
+                                            isLoading={personaSearch.length >= 8 && !dataPersona}
+                                            noOptionsMessage={({ inputValue }) =>
+                                                inputValue.length < 8
+                                                    ? "Ingrese al menos 8 caracteres"
+                                                    : "No se encontraron resultados"
+                                            }
+                                            filterOption={null}
                                         />
                                     )}
                                 />

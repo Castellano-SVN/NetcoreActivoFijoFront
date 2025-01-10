@@ -25,7 +25,7 @@ import { api_getAllPersonasByEmpresa, api_postInventarioFisicoRegistro } from "@
 import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import Select from "react-select";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface estadosI {
@@ -161,21 +161,45 @@ export default function Inventariar() {
     }
   };
 
-  const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>([]);
-  const getFuncionarios = async () => {
+  // const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>([]);
+  // const getFuncionarios = async () => {
+  //   try {
+  //     const data = await api_getAllPersonasByEmpresa(jwt, empresa);
+  //     setDataFuncionario(data.data.dataList);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const [dataPersona, setDataPersona] = useState<IFuncionarioEmpresa[]>([]);
+  const [funcionarioSearch, setFuncionarioSearch] = useState("");
+  const getFuncionarios = async (search: string) => {
     try {
-      const data = await api_getAllPersonasByEmpresa(jwt, empresa);
-      setDataFuncionario(data.data.dataList);
+      if (search.length >= 8) {
+        const data = await api_getAllPersonasByEmpresa(jwt, empresa as string, search);
+        setDataPersona(data.data.dataList);
+      }
+      // Ya no limpiamos dataPersona aquí
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
+    const delay = setTimeout(() => {
+      if (funcionarioSearch.length >= 8) {
+        getFuncionarios(funcionarioSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [funcionarioSearch]);
+
+
+  useEffect(() => {
     if (!empresa) return;
     getInvFisEstado();
     getPrograma();
-    getFuncionarios();
   }, [empresa]);
 
   return (
@@ -247,7 +271,9 @@ export default function Inventariar() {
                   handleShowModal={handleShowModal}
                   ife={invFisEstado}
                   programa={programa}
-                  funcionario={dataFuncionario}
+                  funcionario={dataPersona}
+                  funcionarioSearch={funcionarioSearch}
+                  setFuncionarioSearch={setFuncionarioSearch}
                 />
               ))}
             </div>
@@ -295,6 +321,8 @@ interface props {
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
+  funcionarioSearch: string;
+  setFuncionarioSearch: (value: string) => void;
 }
 interface articuloI {
   articuloId: string;
@@ -375,6 +403,8 @@ function ViewAlmacen(props: props) {
                   ife={props.ife}
                   programa={props.programa}
                   funcionario={props.funcionario}
+                  funcionarioSearch={props.funcionarioSearch}
+                  setFuncionarioSearch={props.setFuncionarioSearch}
                 />
               )
           )}
@@ -405,6 +435,8 @@ function ViewLocation(props: {
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
+  funcionarioSearch: string;
+  setFuncionarioSearch: (value: string) => void;
 }) {
 
   const [selectedPersona, setSelectedPersona] =
@@ -426,7 +458,7 @@ function ViewLocation(props: {
     Codigo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
     NumeroUnidades: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
   });
-  
+
   const InvFisRegistroSchema = z.object({
     InvFisRegistro: z.array(ValidationSchema),
     InventarioFisicoDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
@@ -473,6 +505,8 @@ function ViewLocation(props: {
     control,
     name: "InvFisRegistro",
   });
+
+
 
   const onSubmit = async (data: InventarioFisicoRegistroFormValues) => {
     try {
@@ -545,26 +579,57 @@ function ViewLocation(props: {
                     <td>{props.articulos[index].anoNumero}</td>
 
                     <td>
-                      <select
-                        {...register(`InvFisRegistro.${index}.PersonaConteoId`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-
-                      >
-                        <option value={""} selected disabled>
-                          Seleccione Persona
-                        </option>
-                        {props.funcionario.sort((a, b) => {
-                          if (a.persona.apellidoPaterno < b.persona.apellidoPaterno) return -1;
-                          if (a.persona.apellidoPaterno > b.persona.apellidoPaterno) return 1;
-                          return a.persona.nombres.localeCompare(b.persona.nombres);
-                        }).map((funcionario, index) => (
-                          <option key={index} value={funcionario.funcionarioId}>{funcionario.persona.apellidoMaterno ? funcionario.persona.apellidoPaterno + " " + funcionario.persona.apellidoMaterno + " " + funcionario.persona.nombres : funcionario.persona.apellidoPaterno + " " + funcionario.persona.nombres}</option>
-                        ))}
-                      </select>
+                      <Controller
+                        control={control}
+                        name={`InvFisRegistro.${index}.PersonaConteoId`}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            onInputChange={(newValue) => {
+                              props.setFuncionarioSearch(newValue);
+                            }}
+                            className="w-full "
+                            styles={{
+                              control: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                minWidth: '200px', // Ajusta este valor según tus necesidades
+                              }),
+                              container: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                              }),
+                            }}
+                            placeholder="Rut formato 12123123-1"
+                            getOptionValue={(option) => option.funcionarioId}
+                            getOptionLabel={(option) =>
+                              option.persona.apellidoMaterno
+                                ? `${option.persona.apellidoPaterno} ${option.persona.apellidoMaterno} ${option.persona.nombres}`
+                                : `${option.persona.apellidoPaterno} ${option.persona.nombres}`
+                            }
+                            options={props.funcionario || []}
+                            onChange={(option) => {
+                              field.onChange(option?.funcionarioId);
+                            }}
+                            value={props.funcionario?.find(persona => persona.funcionarioId === field.value)}
+                            menuPortalTarget={document.body}
+                            isClearable
+                            loadingMessage={() => "Cargando..."}
+                            isLoading={props.funcionarioSearch.length >= 8 && props.funcionario.length === 0}
+                            noOptionsMessage={({ inputValue }) =>
+                              inputValue.length < 8
+                                ? "Ingrese al menos 8 caracteres"
+                                : "No se encontraron resultados"
+                            }
+                            filterOption={null}
+                          />
+                        )}
+                      />
                       {errors.InvFisRegistro?.[index]?.PersonaConteoId && (
                         <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId?.message}</span>
                       )}
                     </td>
+
                     <td>
                       <select
                         {...register(`InvFisRegistro.${index}.MarcaId`, { setValueAs: (value) => value === "" ? undefined : value })}
