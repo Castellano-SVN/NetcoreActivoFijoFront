@@ -220,6 +220,10 @@ export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: stri
   return api.get(`almacenes/${empresaId}/${centroCostoId}/${bodegaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
+export function api_getAllAlmacenByEmpByCenByBodPage(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string,page:number) {
+  return api.get(`almacenesp/${empresaId}/${centroCostoId}/${bodegaId}?page=${page}&perPage=10`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
 export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string, almacenId: string) {
   return api.get(`almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

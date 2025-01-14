@@ -80,6 +80,7 @@ export interface InventarioFisicoRegistroFormValues {
     PersonaConteoId: string;
     SubFamiliaId: string;
     ArticuloId: string;
+    AnoNumero:number;
     MarcaId: string;
     EstadoCodigo: number;
     LugarFisicoConteo: string;
