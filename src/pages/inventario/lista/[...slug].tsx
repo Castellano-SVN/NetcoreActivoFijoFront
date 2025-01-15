@@ -1,10 +1,11 @@
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import router from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import {
   api_getAllAlmacenArticuloByEmpByCenByBodByAlm,
   api_getAllAlmacenByEmpByCenByBod,
+  api_getAllAlmacenByEmpByCenByBodPage,
   api_getAllInventarioFisicoEstados,
   api_getAllMarcas,
   api_getAllPersonas,
@@ -25,7 +26,7 @@ import { api_getAllPersonasByEmpresa, api_postInventarioFisicoRegistro } from "@
 import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import Select from "react-select";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface estadosI {
@@ -54,13 +55,24 @@ export default function Inventariar() {
     if (!ifdid) return;
   }, [ifdid]);
 
+  const [meta, setMeta] = useState<{ total: number; pages: number }>({
+    total: 0,
+    pages: 0,
+  });
+
+  const [page, setPage] = useState<number>(1);
   const getAlmacens = async () => {
-    const alm = await api_getAllAlmacenByEmpByCenByBod(
+    const alm = await api_getAllAlmacenByEmpByCenByBodPage(
       jwt,
       empresa,
       centrocosto,
-      bodega
+      bodega,
+      page
     );
+    setMeta({
+      total: alm.data.total,
+      pages: alm.data.pages,
+    });
     setAlmacens(alm.data.dataList);
   };
   const [estadosArticulos, setEstadosArticulos] = useState<estadosI[]>([]);
@@ -74,7 +86,7 @@ export default function Inventariar() {
     if (!empresa) return;
     getAlmacens();
     estadosArtGet();
-  }, [router.query]);
+  }, [router.query, page]);
 
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
 
@@ -161,21 +173,45 @@ export default function Inventariar() {
     }
   };
 
-  const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>([]);
-  const getFuncionarios = async () => {
+  // const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>([]);
+  // const getFuncionarios = async () => {
+  //   try {
+  //     const data = await api_getAllPersonasByEmpresa(jwt, empresa);
+  //     setDataFuncionario(data.data.dataList);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const [dataPersona, setDataPersona] = useState<IFuncionarioEmpresa[]>([]);
+  const [funcionarioSearch, setFuncionarioSearch] = useState("");
+  const getFuncionarios = async (search: string) => {
     try {
-      const data = await api_getAllPersonasByEmpresa(jwt, empresa);
-      setDataFuncionario(data.data.dataList);
+      if (search.length >= 8) {
+        const data = await api_getAllPersonasByEmpresa(jwt, empresa as string, search);
+        setDataPersona(data.data.dataList);
+      }
+      // Ya no limpiamos dataPersona aquí
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
+    const delay = setTimeout(() => {
+      if (funcionarioSearch.length >= 8) {
+        getFuncionarios(funcionarioSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [funcionarioSearch]);
+
+
+  useEffect(() => {
     if (!empresa) return;
     getInvFisEstado();
     getPrograma();
-    getFuncionarios();
   }, [empresa]);
 
   return (
@@ -247,9 +283,16 @@ export default function Inventariar() {
                   handleShowModal={handleShowModal}
                   ife={invFisEstado}
                   programa={programa}
-                  funcionario={dataFuncionario}
+                  funcionario={dataPersona}
+                  funcionarioSearch={funcionarioSearch}
+                  setFuncionarioSearch={setFuncionarioSearch}
                 />
               ))}
+              <AlmacenPagination
+                page={page}
+                totalPages={meta.pages}
+                setPage={setPage}
+              />
             </div>
           </>
         ) : (
@@ -261,6 +304,40 @@ export default function Inventariar() {
         )}
       </div>
     </>
+  );
+}
+
+function AlmacenPagination({
+  totalPages,
+  page,
+  setPage,
+}: {
+  totalPages: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+}) {
+  return (
+    <div className="container mx-auto px-4 md:px-8 lg:px-16 py-6">
+      <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Página anterior
+        </button>
+        <div className="text-lg text-accent">
+          Página {page} de {totalPages}
+        </div>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Próxima página
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -295,6 +372,8 @@ interface props {
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
+  funcionarioSearch: string;
+  setFuncionarioSearch: (value: string) => void;
 }
 interface articuloI {
   articuloId: string;
@@ -311,6 +390,13 @@ interface articuloI {
 
 function ViewAlmacen(props: props) {
   const [almacenArituclos, setAlmacenArticulos] = useState<articuloI[]>([]);
+  const [currentLocPage, setCurrentLocPage] = useState(1);
+  const locationsPerPage = 1;
+  const [metaLocaciones, setMetaLocaciones] = useState<{ total: number; pages: number }>({
+    total: 0,
+    pages: 0,
+  });
+  const [currentLocations, setCurrentLocations] = useState<IAllLocations[]>([]);
 
   const getArticles = async () => {
     const articles = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
@@ -348,20 +434,57 @@ function ViewAlmacen(props: props) {
     getArticles();
   }, [props.empresa, props.centrocosto, props.bodega, props.almacen]);
 
+  useEffect(() => {
+    if (!props.almacen.locacions || !almacenArituclos.length) {
+      setMetaLocaciones({ total: 0, pages: 0 });
+      setCurrentLocations([]);
+      return;
+    }
+
+    const locationsWithArticles = props.almacen.locacions.filter(
+      location => almacenArituclos.some(art => art.locacion === location.id)
+    );
+
+    setMetaLocaciones({
+      total: locationsWithArticles.length,
+      pages: Math.ceil(locationsWithArticles.length / locationsPerPage)
+    });
+
+    // Calcular locaciones para la página actual
+    const indexOfLastLoc = currentLocPage * locationsPerPage;
+    const indexOfFirstLoc = indexOfLastLoc - locationsPerPage;
+    setCurrentLocations(locationsWithArticles.slice(indexOfFirstLoc, indexOfLastLoc));
+
+  }, [props.almacen.locacions, almacenArituclos, currentLocPage]);
+
   return (
     <>
-      <div className="flex flex-col bordered rounded shadow-md mt-2">
+      <div className="flex flex-col border rounded shadow-md mt-2">
         <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
           <h3 className="text-large font-bold text-base-100 text-center">
             {props.almacen.nombre}
           </h3>
         </div>
         <div className="w-full grid grid-cols-1 gap-4 p-2">
-          {props.almacen.locacions?.map(
-            (locacion, index) =>
-              almacenArituclos.filter((e) => e.locacion === locacion.id)
-                .length !== 0 && (
+          {!props.almacen.locacions || props.almacen.locacions.length === 0 ? (
+            <div className="text-center py-4 text-gray-600">
+              <div className="bg-gray-100 rounded-lg p-6">
+                <p className="text-lg font-semibold">Sin locaciones disponibles</p>
+                <p className="text-sm mt-2">Este almacén no tiene locaciones asignadas</p>
+              </div>
+            </div>
+          ) : metaLocaciones.total === 0 ? (
+            <div className="text-center py-4 text-gray-600">
+              <div className="bg-gray-100 rounded-lg p-6">
+                <p className="text-lg font-semibold">Sin artículos en las locaciones</p>
+                <p className="text-sm mt-2">Las locaciones de este almacén no contienen artículos</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {currentLocations.map((locacion) => (
                 <ViewLocation
+                  key={locacion.id}
                   locacions={locacion}
                   articulos={almacenArituclos.filter(
                     (e) => e.locacion === locacion.id
@@ -375,12 +498,65 @@ function ViewAlmacen(props: props) {
                   ife={props.ife}
                   programa={props.programa}
                   funcionario={props.funcionario}
+                  funcionarioSearch={props.funcionarioSearch}
+                  setFuncionarioSearch={props.setFuncionarioSearch}
                 />
-              )
+              ))}
+              {metaLocaciones.total > 0 && (
+                <LocationPagination
+                  page={currentLocPage}
+                  totalPages={metaLocaciones.pages}
+                  setPage={setCurrentLocPage}
+                  meta={metaLocaciones}
+                  almacenName={props.almacen.nombre}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
     </>
+  );
+}
+
+function LocationPagination({
+  totalPages,
+  page,
+  setPage,
+  meta,
+  almacenName
+}: {
+  totalPages: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  meta: { total: number; pages: number };
+  almacenName: string;
+}) {
+  return (
+    <div className="container mx-auto px-4 md:px-8 lg:px-16 py-6">
+      <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="btn btn-secondary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Locación anterior
+        </button>
+        <div className="text-lg text-accent">
+          Locación {page} de {meta.pages}
+          <div className="text-sm text-gray-500">
+            Total de locaciones: {meta.total}
+          </div>
+        </div>
+        <button
+          disabled={page === meta.pages}
+          onClick={() => setPage(page + 1)}
+          className="btn btn-secondary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+        >
+          Siguiente locación
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -405,11 +581,17 @@ function ViewLocation(props: {
   ife: IInventarioFisicoEstado[];
   programa: IPrograma[];
   funcionario: IFuncionarioEmpresa[];
+  funcionarioSearch: string;
+  setFuncionarioSearch: (value: string) => void;
 }) {
+  const [currentArticlePage, setCurrentArticlePage] = useState(1);
+  const articlesPerPage = 10;
+  const [selectedPersona, setSelectedPersona] = useState<IPersona | null>(null);
 
-  const [selectedPersona, setSelectedPersona] =
-    useState<IPersona | null>(null);
-
+  const indexOfLastArticle = currentArticlePage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = props.articulos.slice(indexOfFirstArticle, indexOfLastArticle);
+  const totalArticlePages = Math.ceil(props.articulos.length / articlesPerPage);
 
   const ValidationSchema = z.object({
     EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
@@ -418,6 +600,7 @@ function ViewLocation(props: {
     ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     MarcaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     EstadoCodigo: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
+    AnoNumero: z.number(),
     LugarFisicoConteo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
     LocacionId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
     ProgramaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
@@ -426,7 +609,7 @@ function ViewLocation(props: {
     Codigo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).optional(),
     NumeroUnidades: z.number({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido", }),
   });
-  
+
   const InvFisRegistroSchema = z.object({
     InvFisRegistro: z.array(ValidationSchema),
     InventarioFisicoDetalleId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
@@ -434,7 +617,7 @@ function ViewLocation(props: {
 
   const defaultValues: InventarioFisicoRegistroFormValues = {
     InventarioFisicoDetalleId: props.invFisDetalleId,
-    InvFisRegistro: props.articulos.map((articulo) => ({
+    InvFisRegistro: currentArticles.map((articulo) => ({
       EmpresaId: props.empresa,
       FuncionarioId: '',
       PersonaConteoId: '',
@@ -474,6 +657,12 @@ function ViewLocation(props: {
     name: "InvFisRegistro",
   });
 
+  useEffect(() => {
+    reset(defaultValues);
+  }, [currentArticlePage]);
+
+
+
   const onSubmit = async (data: InventarioFisicoRegistroFormValues) => {
     try {
       const response = await api_postInventarioFisicoRegistro(props.jwt, data);
@@ -490,7 +679,6 @@ function ViewLocation(props: {
         toast.error('Ha ocurrido un error inesperado');
       }
     }
-    console.log(data);
   };
 
 
@@ -499,7 +687,7 @@ function ViewLocation(props: {
 
   return (
     <>
-      <div className="flex flex-col bordered rounded shadow-md mt-2">
+      <div className="flex flex-col border rounded shadow-md mt-2">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
             <h3 className="text-large font-bold text-base-100 text-center">
@@ -528,159 +716,224 @@ function ViewLocation(props: {
                 </tr>
               </thead>
               <tbody className="text-center">
-                {fields.map((field, index) => (
-                  <tr className="hover" key={field.id}>
-                    <th>{index + 1}</th>
+                {fields.map((field, index) => {
+                  const articulo = currentArticles[index];
+                  return (
+                    <tr className="hover" key={field.id}>
+                      <th>{indexOfFirstArticle + index + 1}</th>
 
-                    <td>{props.articulos[index].nombre}</td>
+                      <td>{articulo?.nombre}</td>
 
-                    <td>
-                      {props.articulos[index].familia}
-                      <br />
-                      {props.articulos[index].subfamilia}
-                    </td>
+                      <td>
+                        {articulo?.familia}
+                        <br />
+                        {articulo?.subfamilia}
+                      </td>
 
-                    <td className="font-bold">{props.articulos[index].cantidad}</td>
+                      <td className="font-bold">{articulo?.cantidad}</td>
 
-                    <td>{props.articulos[index].anoNumero}</td>
+                      <td>{articulo?.anoNumero}</td>
 
-                    <td>
-                      <select
-                        {...register(`InvFisRegistro.${index}.PersonaConteoId`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      <td>
+                        <Controller
+                          control={control}
+                          name={`InvFisRegistro.${index}.PersonaConteoId`}
+                          render={({ field }) => (
+                            <Select
+                              {...field}
+                              onInputChange={(newValue) => {
+                                props.setFuncionarioSearch(newValue);
+                              }}
+                              className="w-full "
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: '100%',
+                                  minWidth: '200px', // Ajusta este valor según tus necesidades
+                                }),
+                                container: (provided) => ({
+                                  ...provided,
+                                  width: '100%',
+                                }),
+                              }}
+                              placeholder="Rut formato 12123123-1"
+                              getOptionValue={(option) => option.funcionarioId}
+                              getOptionLabel={(option) =>
+                                option.persona.apellidoMaterno
+                                  ? `${option.persona.apellidoPaterno} ${option.persona.apellidoMaterno} ${option.persona.nombres}`
+                                  : `${option.persona.apellidoPaterno} ${option.persona.nombres}`
+                              }
+                              options={props.funcionario || []}
+                              onChange={(option) => {
+                                field.onChange(option?.funcionarioId);
+                              }}
+                              value={props.funcionario?.find(persona => persona.funcionarioId === field.value)}
+                              menuPortalTarget={document.body}
+                              isClearable
+                              loadingMessage={() => "Cargando..."}
+                              isLoading={props.funcionarioSearch.length >= 8 && props.funcionario.length === 0}
+                              noOptionsMessage={({ inputValue }) =>
+                                inputValue.length < 8
+                                  ? "Ingrese al menos 8 caracteres"
+                                  : "No se encontraron resultados"
+                              }
+                              filterOption={null}
+                            />
+                          )}
+                        />
+                        {errors.InvFisRegistro?.[index]?.PersonaConteoId && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId?.message}</span>
+                        )}
+                      </td>
 
-                      >
-                        <option value={""} selected disabled>
-                          Seleccione Persona
-                        </option>
-                        {props.funcionario.sort((a, b) => {
-                          if (a.persona.apellidoPaterno < b.persona.apellidoPaterno) return -1;
-                          if (a.persona.apellidoPaterno > b.persona.apellidoPaterno) return 1;
-                          return a.persona.nombres.localeCompare(b.persona.nombres);
-                        }).map((funcionario, index) => (
-                          <option key={index} value={funcionario.funcionarioId}>{funcionario.persona.apellidoMaterno ? funcionario.persona.apellidoPaterno + " " + funcionario.persona.apellidoMaterno + " " + funcionario.persona.nombres : funcionario.persona.apellidoPaterno + " " + funcionario.persona.nombres}</option>
-                        ))}
-                      </select>
-                      {errors.InvFisRegistro?.[index]?.PersonaConteoId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.PersonaConteoId?.message}</span>
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        {...register(`InvFisRegistro.${index}.MarcaId`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        onChange={(e) => {
-                          if (e.target.value === "Otras") {
-                            e.target.value = '';
-                            props.handleShowModal();
-                          };
-                        }}
-                      >
-                        <option value={""} disabled selected>
-                          Seleccione Marca
-                        </option>
-                        {props.marcas.map((marca, index) => (
-                          <option key={index} value={marca.id}>{marca.nombre}</option>
-                        ))}
-                        <option value={"Otras"}>Otras</option>
-                      </select>
-                      {errors.InvFisRegistro?.[index]?.MarcaId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.MarcaId?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <select
+                          {...register(`InvFisRegistro.${index}.MarcaId`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          onChange={(e) => {
+                            if (e.target.value === "Otras") {
+                              e.target.value = '';
+                              props.handleShowModal();
+                            };
+                          }}
+                        >
+                          <option value={""} disabled selected>
+                            Seleccione Marca
+                          </option>
+                          {props.marcas.map((marca, index) => (
+                            <option key={index} value={marca.id}>{marca.nombre}</option>
+                          ))}
+                          <option value={"Otras"}>Otras</option>
+                        </select>
+                        {errors.InvFisRegistro?.[index]?.MarcaId && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.MarcaId?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <select
-                        {...register(`InvFisRegistro.${index}.EstadoCodigo`, { setValueAs: (value) => value === 0 ? undefined : Number(value) })}
-                        className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      >
-                        <option value={0} disabled selected>
-                          Seleccione Estado
-                        </option>
-                        {props.ife.map((estado, index) => (
-                          <option key={index} value={estado.codigo}>{estado.nombre}</option>
-                        ))}
-                      </select>
-                      {errors.InvFisRegistro?.[index]?.EstadoCodigo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.EstadoCodigo?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <select
+                          {...register(`InvFisRegistro.${index}.EstadoCodigo`, { setValueAs: (value) => value === 0 ? undefined : Number(value) })}
+                          className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                        >
+                          <option value={0} disabled selected>
+                            Seleccione Estado
+                          </option>
+                          {props.ife.map((estado, index) => (
+                            <option key={index} value={estado.codigo}>{estado.nombre}</option>
+                          ))}
+                        </select>
+                        {errors.InvFisRegistro?.[index]?.EstadoCodigo && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.EstadoCodigo?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <select
-                        {...register(`InvFisRegistro.${index}.ProgramaId`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      >
-                        <option value={""} disabled selected>
-                          Seleccione Programa
-                        </option>
-                        {props.programa.map((programa, index) => (
-                          <option key={index} value={programa.id}>{programa.nombre}</option>
-                        ))}
-                      </select>
-                      {errors.InvFisRegistro?.[index]?.ProgramaId && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.ProgramaId?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <select
+                          {...register(`InvFisRegistro.${index}.ProgramaId`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          className="select border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                        >
+                          <option value={""} disabled selected>
+                            Seleccione Programa
+                          </option>
+                          {props.programa.map((programa, index) => (
+                            <option key={index} value={programa.id}>{programa.nombre}</option>
+                          ))}
+                        </select>
+                        {errors.InvFisRegistro?.[index]?.ProgramaId && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.ProgramaId?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <Input {...register(`InvFisRegistro.${index}.Presentacion`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        type="text"
-                        className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Presentacion"
-                      />
-                      {errors.InvFisRegistro?.[index]?.Presentacion && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Presentacion?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <Input {...register(`InvFisRegistro.${index}.Presentacion`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          type="text"
+                          className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          placeholder="Presentacion"
+                        />
+                        {errors.InvFisRegistro?.[index]?.Presentacion && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Presentacion?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <Input {...register(`InvFisRegistro.${index}.LugarFisicoConteo`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        type="text"
-                        className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Lugar Fisico del Conteo"
-                      />
-                      {errors.InvFisRegistro?.[index]?.LugarFisicoConteo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.LugarFisicoConteo?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <Input {...register(`InvFisRegistro.${index}.LugarFisicoConteo`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          type="text"
+                          className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          placeholder="Lugar Fisico del Conteo"
+                        />
+                        {errors.InvFisRegistro?.[index]?.LugarFisicoConteo && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.LugarFisicoConteo?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <Input {...register(`InvFisRegistro.${index}.Observaciones`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        type="text"
-                        className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Observacion"
-                      />
-                      {errors.InvFisRegistro?.[index]?.Observaciones && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Observaciones?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <Input {...register(`InvFisRegistro.${index}.Observaciones`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          type="text"
+                          className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          placeholder="Observacion"
+                        />
+                        {errors.InvFisRegistro?.[index]?.Observaciones && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Observaciones?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <Input {...register(`InvFisRegistro.${index}.Codigo`, { setValueAs: (value) => value === "" ? undefined : value })}
-                        type="text"
-                        className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Codigo"
-                      />
-                      {errors.InvFisRegistro?.[index]?.Codigo && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Codigo?.message}</span>
-                      )}
-                    </td>
+                      <td>
+                        <Input {...register(`InvFisRegistro.${index}.Codigo`, { setValueAs: (value) => value === "" ? undefined : value })}
+                          type="text"
+                          className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          placeholder="Codigo"
+                        />
+                        {errors.InvFisRegistro?.[index]?.Codigo && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.Codigo?.message}</span>
+                        )}
+                      </td>
 
-                    <td>
-                      <Input {...register(`InvFisRegistro.${index}.NumeroUnidades`, { setValueAs: (value) => value === 0 || "" ? undefined : Number(value) })}
-                        type="number"
-                        className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="Número de unidades"
-                      />
-                      {errors.InvFisRegistro?.[index]?.NumeroUnidades && (
-                        <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades?.message}</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      <td>
+                        <Input {...register(`InvFisRegistro.${index}.NumeroUnidades`, { setValueAs: (value) => value === 0 || "" ? undefined : Number(value) })}
+                          type="number"
+                          className="border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                          placeholder="Número de unidades"
+                        />
+                        {errors.InvFisRegistro?.[index]?.NumeroUnidades && (
+                          <span className="text-red-600">{errors.InvFisRegistro?.[index]?.NumeroUnidades?.message}</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
+            {/* Paginación de Artículos */}
+            <div className="container mx-auto px-4 md:px-8 lg:px-16 py-6">
+              <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
+                <button
+                  type="button"
+                  disabled={currentArticlePage === 1}
+                  onClick={() => setCurrentArticlePage(prev => prev - 1)}
+                  className="btn btn-accent btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                    <path fillRule="evenodd" d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                <div className="text-lg text-accent">
+                  Página {currentArticlePage} de {totalArticlePages}
+                  <div className="text-sm text-gray-500">
+                    Total de artículos: {props.articulos.length}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={currentArticlePage === totalArticlePages}
+                  onClick={() => setCurrentArticlePage(prev => prev + 1)}
+                  className="btn btn-accent btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                    <path fillRule="evenodd" d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
           <div className="w-1/6 m-auto my-2">
             <button type="submit" className="btn btn-outline btn-primary">

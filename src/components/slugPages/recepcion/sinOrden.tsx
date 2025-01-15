@@ -63,7 +63,7 @@ interface props {
 }
 interface recepcionProps extends props {
   tipos: { codigo: number; nombre: string }[]
-  setLocationString:Dispatch<SetStateAction<{centrocosto?: string;bodega?: string;almacen?: string;}>>
+  setLocationString: Dispatch<SetStateAction<{ centrocosto?: string; bodega?: string; almacen?: string; }>>
 }
 
 interface propsArticulo extends props {
@@ -124,11 +124,11 @@ export default function SinOrden(props: props) {
       empresa: props.empresa,
     },
   });
-  const [locationString,setLocationString] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
-  const [locationStringPDF,setLocationStringPDF] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
+  const [locationString, setLocationString] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
+  const [locationStringPDF, setLocationStringPDF] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
 
   const [tab, setTab] = useState<number>(0);
-  
+
   const {
     register,
     handleSubmit,
@@ -201,10 +201,21 @@ export default function SinOrden(props: props) {
     console.log(errors)
     console.log(getValues())
   }, [errors]);
-  
+
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [dataArticulo, setDataArticulo] = useState<articulosSOC[]>([]);
   const ArticleSearch = async () => {
+    // Verificar que la familia y la subfamilia estén seleccionadas
+    if (!selectedFamilia || !selectedSubFamilia) {
+      toast.error("Por favor, seleccione una familia y una subfamilia.");
+      return;
+    }
+
+    if (textArticle.trim().length <= 3) {
+      toast.error("El texto del artículo debe tener más de 3 letras.");
+      return;
+    }
+
     try {
       const res = await api_getArticulos(
         jwt,
@@ -227,6 +238,7 @@ export default function SinOrden(props: props) {
       console.log(error);
     }
   };
+
   const [showPdf, setShowPdf] = useState(false);
   const [pdfData, setPdfData] = useState<recepcionSOC>({} as recepcionSOC);
   const onSubmit = async (data: recepcionSOC) => {
@@ -237,8 +249,8 @@ export default function SinOrden(props: props) {
         setLocationStringPDF(locationString);
         toast.success('Recepción Sin orden de compra creada correctamente');
         setShowPdf(true);
-        console.log("esta es la data que se guarda en el pdf",data);
-        setPdfData(data); 
+        console.log("esta es la data que se guarda en el pdf", data);
+        setPdfData(data);
         reset();
       } else {
         toast.error('ha ocurrido un error en generar la Salida');
@@ -247,7 +259,7 @@ export default function SinOrden(props: props) {
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
-        setShowPdf(false); 
+        setShowPdf(false);
       } else {
         toast.error('Ha ocurrido un error inesperado');
         setShowPdf(false);
@@ -303,10 +315,10 @@ export default function SinOrden(props: props) {
         {tab == 1 && (
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Recepcion empresa={props.empresa} tipos={tipos} setLocationString={setLocationString}/>
-              {showPdf && pdfData &&(
-              
-              <Modal open={showPdf}>
+              <Recepcion empresa={props.empresa} tipos={tipos} setLocationString={setLocationString} />
+              {showPdf && pdfData && (
+
+                <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepción?
                   </Modal.Header>
@@ -359,7 +371,7 @@ export default function SinOrden(props: props) {
   );
 }
 
-function Recepcion(props: recepcionProps ) {
+function Recepcion(props: recepcionProps) {
   const {
     register,
     handleSubmit,
@@ -402,7 +414,7 @@ function Recepcion(props: recepcionProps ) {
         ...item1,
         cantidadAlmacen: matchingItem2
           ? matchingItem2.cantidad
-          : 0, 
+          : 0,
       };
     });
     remove();
@@ -453,7 +465,7 @@ function Recepcion(props: recepcionProps ) {
               control={control}
               name="fecha"
               render={({ field }) => (
-                
+
                 <DatePicker
                   portalId="root-portal"
                   selected={field.value}
@@ -514,7 +526,7 @@ function Recepcion(props: recepcionProps ) {
                   name="fechaDoc"
                   render={({ field }) => (
                     <DatePicker
-                    portalId="root-portal"
+                      portalId="root-portal"
                       selected={field.value}
                       onChange={(date) => field.onChange(date)}
                       onBlur={field.onBlur}
@@ -548,12 +560,12 @@ function Recepcion(props: recepcionProps ) {
                     <label key={tipo.codigo} className="mr-4">
                       <br />
                       <input
-                              {...field}
-                              type="radio"
-                              value={tipo.codigo}
-                              className="radio radio-xs radio-primary ml-2 mr-2"
-                              onChange={(e) => field.onChange(Number(e.target.value))}
-                            />
+                        {...field}
+                        type="radio"
+                        value={tipo.codigo}
+                        className="radio radio-xs radio-primary ml-2 mr-2"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
                       {tipo.nombre}
                     </label>
                   ))}
@@ -596,13 +608,13 @@ function Recepcion(props: recepcionProps ) {
                         </span>
                       </div>
                       <span className="font-semibold">{articulo.valor}</span>
-                      
+
                       <input
                         key={articulo.id}
                         onInput={handleInput}
                         className={`block w-20 py-1 px-1 border ${errors.articulos && errors.articulos[index]?.cantidad
-                            ? "border-red-600"
-                            : "border-primary"
+                          ? "border-red-600"
+                          : "border-primary"
                           } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
                         {...register(`articulos.${index}.cantidad`, { setValueAs: (value) => (value === "" ? undefined : Number(value)) })}
                       />
@@ -655,7 +667,7 @@ function Articulos(props: propsArticulo) {
           <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 ">
             <legend>Busqueda de artículos</legend>
             <Select
-              placeholder="Seleccione Familia"
+              placeholder="Seleccione Familia*"
               value={props.selectedFamilia}
               className="px-0 md:px-8"
               onChange={(option) => props.setSelectedFamilia(option)}
@@ -667,7 +679,7 @@ function Articulos(props: propsArticulo) {
             />
             <Select
               className="mt-2 px-0 md:px-8 "
-              placeholder="Seleccione SubFamilia "
+              placeholder="Seleccione SubFamilia* "
               options={props.subFamilias}
               onChange={(option) => props.setSelectedSubFamilia(option)}
               value={props.selectedSubFamilia}
@@ -681,7 +693,7 @@ function Articulos(props: propsArticulo) {
             <div className="w-full px-0 md:px-8 mt-2">
               <label className="border inline-flex w-full rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary items-center">
                 <span className="whitespace-normal md:whitespace-nowrap px-3  border-r-2 select-none">
-                  Nombre artículo
+                  Nombre o Código del artículo
                 </span>
                 <input
                   value={props.textArticle}

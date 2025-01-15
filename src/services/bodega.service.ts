@@ -24,8 +24,12 @@ export function api_getPersonas(bearer: string, page: number) {
   return api.get(`persona?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getAllPersonas(bearer: string) {
-  return api.get(`personaall`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getAllPersonas(bearer: string, search?: string) {
+  const url = `personaall` + (search ? `?search=${search}` : '');
+  
+  return api.get(url, {
+    headers: { "Authorization": `Bearer ${bearer}` },
+  });
 }
 
 export function api_postPersonas(bearer: string, data: any) {
@@ -214,6 +218,10 @@ export function api_getAllBodegaByEmpresaYCentroCosto(bearer: string, empresaId:
 
 export function api_getAllAlmacenByEmpByCenByBod(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string) {
   return api.get(`almacenes/${empresaId}/${centroCostoId}/${bodegaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
+
+export function api_getAllAlmacenByEmpByCenByBodPage(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string,page:number) {
+  return api.get(`almacenesp/${empresaId}/${centroCostoId}/${bodegaId}?page=${page}&perPage=10`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
 export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(bearer: string, empresaId: string, centroCostoId: string, bodegaId: string, almacenId: string) {

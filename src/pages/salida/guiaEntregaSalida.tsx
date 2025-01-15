@@ -10,7 +10,6 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import Select from "react-select";
 import { IFuncionarioEmpresa } from "@/interfaces/inventario.interface";
-import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
 import { Button, Input, Modal, Table } from "react-daisyui";
 import { useMixStore } from "@/store/mix.store";
 import { useQuery } from "react-query";
@@ -23,6 +22,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import PDFGuiaEntregaSalida from "@/components/pdf/guiaEntregaSalida";
 import { api_postGuiaEntregaSalidas } from "@/services/salidas.service";
 import { format } from 'date-fns';
+import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
 
 
 
@@ -54,18 +54,21 @@ export default function Salidas() {
     };
 
     const [dataFuncionario, setDataFuncionario] = useState<IFuncionarioEmpresa[]>();
-    const getFuncionarios = async () => {
+    const [funcionarioSearch, setFuncionarioSearch] = useState("");
+    const getFuncionarios = async (search: string) => {
         try {
-            const data = await api_getAllPersonasByEmpresa(jwt, idEmpresa);
+            const data = await api_getAllPersonasByEmpresa(jwt, idEmpresa, search);
             setDataFuncionario(data.data.dataList);
         } catch (error) {
             console.log(error);
         }
     };
+
     const [dataPersona, setDataPersona] = useState<IPersona[]>();
-    const getPersonas = async () => {
+    const [personaSearch, setPersonaSearch] = useState("");
+    const getPersonas = async (search: string) => {
         try {
-            const data = await api_getAllPersonas(jwt);
+            const data = await api_getAllPersonas(jwt, search);
             setDataPersona(data.data.dataList);
         } catch (error) {
             console.log(error);
@@ -73,10 +76,28 @@ export default function Salidas() {
     };
 
     useEffect(() => {
+        const delay = setTimeout(() => {
+            if (funcionarioSearch.length >= 8) {
+                getFuncionarios(funcionarioSearch);
+            }
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [funcionarioSearch]);
+
+    useEffect(() => {
+        const delay = setTimeout(() => {
+            if (personaSearch.length >= 8) {
+                getPersonas(personaSearch);
+            }
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [personaSearch]);
+
+    useEffect(() => {
+        console.log(idEmpresa)
         if (!idEmpresa) return;
         getCentroCostos();
-        getFuncionarios();
-        getPersonas();
+
     }, [idEmpresa]);
 
     const GuiSalidaDetalles = z.object({
@@ -195,42 +216,6 @@ export default function Salidas() {
         }
     }, [almacenId, dataAlmacen]);
 
-    // Obtener el valor de FuncionarioEntregaId del formulario
-    const funcionarioEntregaId = watch('FuncionarioEntregaId');
-
-    // useEffect para actualizar FuncionarioEntregaNombre
-    useEffect(() => {
-        if (!funcionarioEntregaId || !dataFuncionario) return;
-
-        const selectedFuncionario = dataFuncionario.find(
-            (funcionario) => funcionario.persona.id === funcionarioEntregaId
-        );
-        if (selectedFuncionario) {
-            setValue(
-                "FuncionarioEntregaNombre",
-                `${selectedFuncionario.persona.nombres} ${selectedFuncionario.persona.apellidoPaterno}`
-            );
-        }
-    }, [funcionarioEntregaId, dataFuncionario]);
-
-    // Obtener el valor de PersonaRecibeId del formulario
-    const personaRecibeId = watch('PersonaRecibeId');
-
-    // useEffect para actualizar PersonaRecibeNombre
-    useEffect(() => {
-        if (!personaRecibeId || !dataPersona) return;
-
-        const selectedPersona = dataPersona.find(
-            (persona) => persona.id === personaRecibeId
-        );
-        if (selectedPersona) {
-            setValue(
-                "PersonaRecibeNombre",
-                `${selectedPersona.nombres} ${selectedPersona.apellidoPaterno}`
-            );
-        }
-    }, [personaRecibeId, dataPersona]);
-
     const modalRef = useRef<HTMLDialogElement>(null);
 
     const handleShowModal = useCallback(() => {
@@ -346,21 +331,38 @@ export default function Salidas() {
                                 <Controller
                                     control={control}
                                     name="FuncionarioEntregaId"
-                                    render={({ field: { onChange, value, name, ref } }) => (
+                                    render={({ field }) => (
                                         <Select
+                                            {...field}
+                                            onInputChange={(newValue) => setFuncionarioSearch(newValue)}
                                             className="border-2 border-primary rounded-md"
                                             placeholder="Rut formato 12123123-1"
-                                            getOptionValue={(option) => option.persona.runCuerpo + "-" + option?.persona.runDigito || ""}
-                                            getOptionLabel={(option) => option.persona.nombres + " " + option.persona.apellidoPaterno}
-                                            value={dataFuncionario?.find((e) => e.persona.id === value)}
-                                            options={dataFuncionario}
-                                            onChange={(val) =>
-                                                setValue("FuncionarioEntregaId", val?.persona.id as string)
+                                            getOptionValue={(option) => option.funcionarioId}
+                                            getOptionLabel={(option) =>
+                                                `${option.persona.nombres} ${option.persona.apellidoPaterno}`
                                             }
+                                            options={dataFuncionario}
+                                            onChange={(val) => {
+                                                field.onChange(val?.funcionarioId);
+                                                if (val) {
+                                                    setValue("FuncionarioEntregaNombre",
+                                                        `${val.persona.nombres} ${val.persona.apellidoPaterno}`,
+                                                        { shouldValidate: false }
+                                                    );
+                                                }
+                                            }}
+                                            value={dataFuncionario?.find(e => e.funcionarioId === field.value)}
                                             menuPortalTarget={document.body}
-                                            loadingMessage={() => "Cargando opciones..."}
-                                            isLoading={dataFuncionario?.length === 0}
                                             isClearable
+                                            loadingMessage={() => "Cargando..."}
+                                            isLoading={funcionarioSearch.length >= 8 && !dataFuncionario}
+                                            noOptionsMessage={({ inputValue }) =>
+                                                inputValue.length < 8
+                                                    ? "Ingrese al menos 8 caracteres"
+                                                    : "No se encontraron resultados"
+                                            }
+                                            filterOption={null}
+
                                         />
                                     )}
                                 />
@@ -378,21 +380,37 @@ export default function Salidas() {
                                 <Controller
                                     control={control}
                                     name="PersonaRecibeId"
-                                    render={({ field: { onChange, value, name, ref } }) => (
+                                    render={({ field }) => (
                                         <Select
+                                            {...field}
+                                            onInputChange={(newValue) => setPersonaSearch(newValue)}
                                             className="border-2 border-primary rounded-md"
                                             placeholder="Rut formato 12123123-1"
-                                            getOptionValue={(option) => option.runCuerpo + "-" + option.runDigito || ""}
-                                            getOptionLabel={(option) => option.nombres + " " + option.apellidoPaterno}
-                                            value={dataPersona?.find((e) => e.id === value)}
-                                            options={dataPersona}
-                                            onChange={(val) =>
-                                                setValue("PersonaRecibeId", val?.id as string)
+                                            getOptionValue={(option) => option.id || ""}
+                                            getOptionLabel={(option) =>
+                                                `${option.nombres} ${option.apellidoPaterno}`
                                             }
+                                            options={dataPersona}
+                                            onChange={(val) => {
+                                                field.onChange(val?.id);
+                                                if (val) {
+                                                    setValue("PersonaRecibeNombre",
+                                                        `${val.nombres} ${val.apellidoPaterno}`,
+                                                        { shouldValidate: false }
+                                                    );
+                                                }
+                                            }}
+                                            value={dataPersona?.find(e => e.id === field.value)}
                                             menuPortalTarget={document.body}
-                                            loadingMessage={() => "Cargando opciones..."}
-                                            isLoading={dataPersona?.length === 0}
                                             isClearable
+                                            loadingMessage={() => "Cargando..."}
+                                            isLoading={personaSearch.length >= 8 && !dataPersona}
+                                            noOptionsMessage={({ inputValue }) =>
+                                                inputValue.length < 8
+                                                    ? "Ingrese al menos 8 caracteres"
+                                                    : "No se encontraron resultados"
+                                            }
+                                            filterOption={null}
                                         />
                                     )}
                                 />
@@ -614,7 +632,7 @@ export default function Salidas() {
 
 interface ModalPersonaRecibeProps {
     modalRef: React.RefObject<HTMLDialogElement>;
-    actualizarPersonas: () => Promise<void>;
+    actualizarPersonas: (search: string) => Promise<void>;
 }
 
 interface FormModalPersona {
@@ -711,7 +729,7 @@ function ModalPersonaRecibe({ modalRef, actualizarPersonas }: ModalPersonaRecibe
             toast.success('Destinatario agregado con exito.');
             reset();
             modalRef.current?.close();
-            actualizarPersonas();  //para actualizar la data de personas se vuelve a llamar.
+            actualizarPersonas(data.RunCuerpo.toString());  //para actualizar la data de personas se vuelve a llamar.
         } catch (error) {
             console.error('Error al guardar la persona:', error);
         }

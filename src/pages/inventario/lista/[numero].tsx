@@ -49,14 +49,29 @@ export default function ShowInventarioFisico() {
   };
 
   const [dataPersona, setDataPersona] = useState<IFuncionarioEmpresa[]>();
-  const getFuncionarios = async () => {
+  const [funcionarioSearch, setFuncionarioSearch] = useState("");
+  const getFuncionarios = async (search: string) => {
     try {
-      const data = await api_getAllPersonasByEmpresa(jwt, empresa as string);
-      setDataPersona(data.data.dataList);
+      if (search.length >= 8) {
+        const data = await api_getAllPersonasByEmpresa(jwt, empresa as string, search);
+        setDataPersona(data.data.dataList);
+      }
+      // Ya no limpiamos dataPersona aquí
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (funcionarioSearch.length >= 8) {
+        getFuncionarios(funcionarioSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [funcionarioSearch]);
+
 
   useEffect(() => {
     if (!numero) return;
@@ -78,11 +93,10 @@ export default function ShowInventarioFisico() {
   useEffect(() => {
     if (!empresa) return;
     getCentroCostos();
-    getFuncionarios();
   }, [empresa]);
 
-  const [selectedPersona, setSelectedPersona] =
-    useState<IFuncionarioEmpresa | null>(null);
+  /*   const [selectedPersona, setSelectedPersona] =
+      useState<IFuncionarioEmpresa | null>(null); */
   const [selectedCc, setSelectedCc] = useState<ICentroCosto | null>(null);
   const [selectedBodega, setSelectedBodega] = useState<IBodega | null>(null);
 
@@ -117,7 +131,7 @@ export default function ShowInventarioFisico() {
     CentroCostoId: z
       .string({ invalid_type_error: "Tipo de dato invalido" })
       .optional(),
-    BodegaId: z.string({ invalid_type_error: "Tipo de dato invalido", required_error:"Campo Requerido." }),
+    BodegaId: z.string({ invalid_type_error: "Tipo de dato invalido", required_error: "Campo Requerido." }),
   });
 
   const methods = useForm<InventarioFisicoDetalleFormValues>({
@@ -149,11 +163,11 @@ export default function ShowInventarioFisico() {
     }
   };
 
-  useEffect(() => {
-    if (selectedPersona) {
-      setValue("FuncionarioId", selectedPersona.funcionarioId);
-    }
-  }, [selectedPersona]);
+  /*   useEffect(() => {
+      if (selectedPersona) {
+        setValue("FuncionarioId", selectedPersona.funcionarioId);
+      }
+    }, [selectedPersona]); */
 
   useEffect(() => {
     if (selectedCc) {
@@ -261,30 +275,50 @@ export default function ShowInventarioFisico() {
               className="border rounded-lg mt-2 shadow-md w-10/12 grid grid-cols-1 lg:grid-cols-12 gap-4 mx-auto p-2"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <div className="col-span-3">
-                {dataPersona?.length !== 0 && (
-                  <>
+              <div className="flex flex-col items-center col-span-3">
+                <label htmlFor="Encargado" className="label font-semibold tex-left">Encargado</label>
+                <Controller
+                  control={control}
+                  name="FuncionarioId"
+                  render={({ field }) => (
                     <Select
+                      {...field}
+                      onInputChange={(newValue) => {
+                        setFuncionarioSearch(newValue);
+                      }}
                       className="my-2 w-full px-0 md:px-8"
-                      placeholder="Seleccione el Funcionario "
-                      options={dataPersona}
-                      onChange={(option) => setSelectedPersona(option)}
-                      value={selectedPersona}
-                      loadingMessage={() => "Cargando opciones..."}
-                      isLoading={dataPersona?.length === 0}
+                      placeholder="Rut formato 12123123-1"
                       getOptionValue={(option) => option.funcionarioId}
                       getOptionLabel={(option) =>
-                        option.persona.nombres +
-                        " " +
-                        option.persona.apellidoPaterno
+                        option.persona.nombres + " " + option.persona.apellidoPaterno
                       }
+                      options={dataPersona || []}
+                      onChange={(option) => {
+                        field.onChange(option?.funcionarioId);
+                      }}
+                      value={dataPersona?.find(persona => persona.funcionarioId === field.value)}
                       menuPortalTarget={document.body}
+                      isClearable
+                      loadingMessage={() => "Cargando..."}
+                      isLoading={funcionarioSearch.length >= 8 && !dataPersona}
+                      noOptionsMessage={({ inputValue }) =>
+                        inputValue.length < 8
+                          ? "Ingrese al menos 8 caracteres"
+                          : "No se encontraron resultados"
+                      }
+                      filterOption={null}
                     />
-                  </>
+                  )}
+                />
+                {errors.FuncionarioId && (
+                  <span className="text-red-600 block">
+                    {errors.FuncionarioId.message}
+                  </span>
                 )}
               </div>
 
-              <div className="col-span-3">
+              <div className="flex flex-col items-center col-span-3">
+                <label htmlFor="CentroCosto" className="label font-semibold tex-left">Centro de costo</label>
                 {dataCc?.length !== 0 && (
                   <Select
                     className="my-2 w-full px-0 md:px-8 "
@@ -301,7 +335,8 @@ export default function ShowInventarioFisico() {
                 )}
               </div>
 
-              <div className="col-span-3">
+              <div className="flex flex-col items-center col-span-3">
+              <label htmlFor="Bodega" className="label font-semibold tex-left">Bodega</label>
                 <Controller
                   control={control}
                   name="BodegaId"
@@ -322,10 +357,10 @@ export default function ShowInventarioFisico() {
                   )}
                 />
                 {errors.BodegaId && (
-                <span className="text-red-600 block">
-                  {errors.BodegaId.message}
-                </span>
-              )}
+                  <span className="text-red-600 block">
+                    {errors.BodegaId.message}
+                  </span>
+                )}
               </div>
 
               <div className="col-span-3">
@@ -410,9 +445,9 @@ export function TableInvDetalle(props: props) {
                 );
               }
             }}
-            
+
             className={`${!props.inventarioFisico.status ? 'bg-primary hover:font-bold' : 'bg-slate-500 cursor-not-allowed	'} flex items-center cursor-pointer  text-primary-content p-1 px-2 rounded-md`}
-            >
+          >
             <span className="text-sm">Inventariar</span>
             <FaBoxesStacked className="ml-2" />
           </button>
