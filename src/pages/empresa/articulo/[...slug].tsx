@@ -1,4 +1,11 @@
-import { FamiliaFormValues, IEmpresa, IFamilia, IYears, ICuenta, ITipoUnidad } from "@/interfaces/creation";
+import {
+  FamiliaFormValues,
+  IEmpresa,
+  IFamilia,
+  IYears,
+  ICuenta,
+  ITipoUnidad,
+} from "@/interfaces/creation";
 import {
   api_getCuenta,
   api_getFamilias,
@@ -22,7 +29,7 @@ import {
 } from "react";
 import { Button, Divider, Modal } from "react-daisyui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { FaArchive, FaEye, FaPencilAlt } from "react-icons/fa";
+import { FaArchive, FaArrowLeft, FaEye, FaPencilAlt } from "react-icons/fa";
 import { FaCircleXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -30,20 +37,23 @@ import { useContextStore } from "../../../store/context.store";
 import CreateSubFamily from "@/components/slugPages/empresa/createSubfamilia";
 import Familia from "@/components/slugPages/empresa/familia";
 import CreateArticulo from "@/components/slugPages/empresa/createArticulo";
-import SubFamilia from "@/components/slugPages/empresa/subfamilia"
+import SubFamilia from "@/components/slugPages/empresa/subfamilia";
 import Articulo from "@/components/slugPages/empresa/articulo";
 import { api_getTipoUnidad } from "@/services/tipos.service";
 
 export default function Index() {
-
-  const { setActive } = useContextStore()
+  const { setActive } = useContextStore();
   useEffect(() => {
     setActive("Prestadores");
-  }, [])
+  }, []);
 
   const router = useRouter();
   const { jwt } = useUserStore();
-  const [slugs, setSlugs] = useState<{ familia: string; subFamilia: string, articulo: string }>(); // EMPRESA, FAMILIA, SUBFAMILIA
+  const [slugs, setSlugs] = useState<{
+    familia: string;
+    subFamilia: string;
+    articulo: string;
+  }>(); // EMPRESA, FAMILIA, SUBFAMILIA
   const [dataEmpresa, setDataEmpresa] = useState<IEmpresa>();
   const [dataFamilia, setDataFamilia] = useState<IFamilia>();
   const [dataCuentas, setDataCuentas] = useState<ICuenta[]>([]);
@@ -69,7 +79,6 @@ export default function Index() {
     }
   };
 
-
   const getYears = async () => {
     try {
       const dataGet = await api_getYears(jwt);
@@ -88,7 +97,6 @@ export default function Index() {
     }
   };
 
-
   const getCuentas = async (id: string) => {
     try {
       const dataGet = await api_getCuenta(jwt, id);
@@ -103,14 +111,14 @@ export default function Index() {
     await getFamilia(familia, subfamilia);
     await getYears();
     await getTipoUnidad();
-  }
+  };
 
   useEffect(() => {
     if (!router.query.slug) return;
     const familia = router.query.slug[0];
     const subFamilia = router.query.slug[1];
     const articulo = router.query.slug[2];
-    console.log(router.query.slug)
+    console.log(router.query.slug);
     getEmpresa(familia);
     if (subFamilia) SubfamiliasQuerys(familia, subFamilia);
     setSlugs({
@@ -123,34 +131,63 @@ export default function Index() {
   if (!dataEmpresa) return "cargando";
   if (!router.query) return "cargando";
   if (!slugs?.familia) return "cargando";
-  if (slugs.articulo) return (
-    <div className="flex items-center justify-center">
-      <div className="container shadow-md md:mx-24 mt-2 sm:mt-4 rounded-lg">
-        <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
-          <div className="flex flex-col">
-            <span className="font-bold text-2xl">
-              {dataEmpresa.razonSocial}
-            </span>
-            <span className="text-left">{dataEmpresa.giro}</span>
+  if (slugs.articulo)
+    return (
+      <div className="flex items-center justify-center">
+        <div className="container shadow-md md:mx-24 mt-2 sm:mt-4 rounded-lg">
+          <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
+            <div className="flex flex-row">
+              <FaArrowLeft
+                onClick={() => router.back()}
+                className="cursor-pointer text-primary mr-2 mt-2"
+              />
+              <div className="flex flex-col">
+                <span className="font-bold text-2xl">
+                  {dataEmpresa.razonSocial}
+                </span>
+                <span className="text-left">{dataEmpresa.giro}</span>
+              </div>
+            </div>
           </div>
+          <Divider />
+          {!createArticulo && (
+            <Articulo
+              create={() => setCreateArticulo(true)}
+              guid={slugs.familia}
+              familyGuid={slugs.subFamilia}
+              subFamilyGuid={slugs.articulo}
+            />
+          )}
+          {createArticulo && (
+            <CreateArticulo
+              change={() => setCreateArticulo(false)}
+              guid={slugs.familia}
+              subFamilyGuid={slugs.articulo}
+              yearGuid={dataYears}
+              familyGuid={slugs.subFamilia}
+              tipoUnidad={dataTipoUnidad}
+            />
+          )}
         </div>
-        <Divider />
-        {!createArticulo && <Articulo create={() => setCreateArticulo(true)} guid={slugs.familia} familyGuid={slugs.subFamilia} subFamilyGuid={slugs.articulo} />}
-        {createArticulo && <CreateArticulo change={() => setCreateArticulo(false)} guid={slugs.familia} subFamilyGuid={slugs.articulo} yearGuid={dataYears} familyGuid={slugs.subFamilia} tipoUnidad={dataTipoUnidad} />}
       </div>
-    </div>
-  )
+    );
 
   if (slugs.subFamilia)
     return (
       <div className="flex items-center justify-center">
         <div className="container shadow-md md:mx-24 mt-2 sm:mt-4 rounded-lg">
           <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
-            <div className="flex flex-col">
-              <span className="font-bold text-2xl">
-                {dataEmpresa.razonSocial}
-              </span>
-              <span className="text-left">{dataEmpresa.giro}</span>
+            <div className="flex flex-row">
+              <FaArrowLeft
+                onClick={() => router.back()}
+                className="cursor-pointer text-primary mr-2 mt-2"
+              />
+              <div className="flex flex-col">
+                <span className="font-bold text-2xl">
+                  {dataEmpresa.razonSocial}
+                </span>
+                <span className="text-left">{dataEmpresa.giro}</span>
+              </div>
             </div>
           </div>
           <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
@@ -171,24 +208,45 @@ export default function Index() {
           </div>
           <div className="animate-fadein ">
             <Divider />
-            {!createSubFamily && <SubFamilia create={() => SetCreateSubFamily(true)} guid={slugs?.familia} familyGuid={slugs.subFamilia} />}
-            {createSubFamily && <CreateSubFamily change={() => SetCreateSubFamily(false)} guid={slugs?.familia} familyGuid={slugs.subFamilia} yearGuid={dataYears} cuentasGuid={dataCuentas} />}
+            {!createSubFamily && (
+              <SubFamilia
+                create={() => SetCreateSubFamily(true)}
+                guid={slugs?.familia}
+                familyGuid={slugs.subFamilia}
+              />
+            )}
+            {createSubFamily && (
+              <CreateSubFamily
+                change={() => SetCreateSubFamily(false)}
+                guid={slugs?.familia}
+                familyGuid={slugs.subFamilia}
+                yearGuid={dataYears}
+                cuentasGuid={dataCuentas}
+              />
+            )}
           </div>
         </div>
       </div>
     );
 
   if (slugs.familia) {
-
     return (
       <div className="flex items-center justify-center">
         <div className="container shadow-md md:mx-24 mt-2 sm:mt-4 rounded-lg">
           <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
             <div className="flex flex-col">
-              <span className="font-bold text-2xl">
-                {dataEmpresa.razonSocial}
-              </span>
-              <span className="text-left">{dataEmpresa.giro}</span>
+              <div className="flex flex-row">
+                <FaArrowLeft
+                  onClick={() => router.back()}
+                  className="cursor-pointer text-primary mr-2 mt-2"
+                />
+                <div className="flex flex-col">
+                  <span className="font-bold text-2xl">
+                    {dataEmpresa.razonSocial}
+                  </span>
+                  <span className="text-left">{dataEmpresa.giro}</span>
+                </div>
+              </div>
             </div>
           </div>
           <Divider />
