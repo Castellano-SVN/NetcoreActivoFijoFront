@@ -162,9 +162,25 @@ export function api_deleteArticulo(bearer: string, id: string) {
   return api.delete(`articulo/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getFamilias(bearer: string, id: string, page: number) {
+/* export function api_getFamilias(bearer: string, id: string, page: number) {
   return api.get(`familia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+} */
+
+export function api_getFamilias(bearer: string, id: string, page: number, searchParams?: {
+  searchTerm?: string,
+  searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+}) {
+  let url = `familia/${id}?page=${page}`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
+
 export function api_getAllFamilias(bearer: string, id: string) {
   return api.get(`familia?id=${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
