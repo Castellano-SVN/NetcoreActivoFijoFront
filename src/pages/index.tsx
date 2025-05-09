@@ -42,9 +42,18 @@ function AnoMes({ jwt }: anoMesProp) {
   }, []);
 
   const meses = [
-    'Enero', 'Febrero', 'Marzo', 'Abril',
-    'Mayo', 'Junio', 'Julio', 'Agosto',
-    'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
   ];
 
   return (
@@ -69,12 +78,15 @@ function AnoMes({ jwt }: anoMesProp) {
                     {dataAnoMes[0]?.anoNumero}
                   </div>
                 </div>
-                <div className="text-3xl text-center place-items-center">
-                  <div className="border rounded-lg grid grid-rows-2 gap-2 w-full p-2">
-                    <span>Mes</span>
-                    {meses[dataAnoMes[0]?.mesNumero - 1] || dataAnoMes[0]?.mesNumero}
+                {dataAnoMes[0]?.mesNumero != 0 && (
+                  <div className="text-3xl text-center place-items-center">
+                    <div className="border rounded-lg grid grid-rows-2 gap-2 w-full p-2">
+                      <span>Mes</span>
+                      {meses[dataAnoMes[0]?.mesNumero - 1] ||
+                        dataAnoMes[0]?.mesNumero}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
