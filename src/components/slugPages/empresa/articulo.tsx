@@ -193,22 +193,44 @@ export default function Page(props: props) {
             {/* Paginación y acciones */}
             <div className="flex flex-col mt-4 items-center">
                 {hasNextPage && (
-                    <button
-                        className="px-12 btn btn-outline btn-primary mb-4"
-                        onClick={() => fetchNextPage()}
-                        disabled={!hasNextPage || isFetchingNextPage}
-                    >
-                        {isFetchingNextPage ? "Cargando más..." : "Ver más"}
-                    </button>
+
+                    <>
+                        <div className="mt-2">
+                            <button
+                                className="px-12 btn btn-outline btn-primary"
+                                onClick={() => fetchNextPage()}
+                                disabled={!hasNextPage || isFetchingNextPage}
+                            >
+                                {isFetchingNextPage
+                                    ? "Cargando más..."
+                                    : hasNextPage
+                                        ? "Ver más"
+                                        : "No hay más datos"}
+                            </button>
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                className="px-12 btn btn-primary"
+                                onClick={() => props.create()}
+                            >
+                                Crear Artículo <FaPlus />
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    !noItems && (
+                        <div className="mt-2">
+                            <button
+                                className="px-16 btn btn-primary mb-2"
+                                onClick={() => props.create()}
+                            >
+                                Crear Artículo <FaPlus />
+                            </button>
+                        </div>
+                    )
                 )}
-                
-                    <button className="px-16 btn btn-primary my-4" onClick={() => props.create()}>
-                        Crear Artículo <FaPlus />
-                    </button>
-                    <button className="px-16 btn btn-outline btn-primary mb-2" onClick={() => router.back()}>
-                        Volver
-                    </button>
-               
+
+              
             </div>
         </>
     );

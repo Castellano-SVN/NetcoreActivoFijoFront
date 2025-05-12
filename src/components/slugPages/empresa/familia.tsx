@@ -11,7 +11,12 @@ import { toast } from "react-toastify";
 import { FaCircleXmark, FaPenToSquare } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
 import { useUserStore } from "@/store/user.store";
-import { api_deleteFamilias, api_getFamilias, api_postFamilias, api_putFamilias } from "@/services/bodega.service";
+import {
+  api_deleteFamilias,
+  api_getFamilias,
+  api_postFamilias,
+  api_putFamilias,
+} from "@/services/bodega.service";
 import { FamiliaFormValues, IFamilia } from "@/interfaces/creation";
 import ErrorAlert from "@/components/alerts/errorAlert";
 import WarningAlert from "@/components/alerts/warningAlert";
@@ -180,7 +185,17 @@ export default function Page(props: props) {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Ocurrió un error al guardar la persona");
+      if (isAxiosError(error)) {
+        // Acceder a la respuesta del error
+        const errorMessage =
+          error.response?.data?.message || "Ocurrió un error al guardar";
+        if (errorMessage === "Ya existe una familia con el mismo código.") {
+          toast.error("Ya existe una familia con el mismo código.");
+        }
+      } else {
+        // Manejo de otros tipos de errores
+        toast.error("Ocurrió un error inesperado");
+      }
     }
   };
 
@@ -371,7 +386,7 @@ export default function Page(props: props) {
           </>
         ) : (
           !noItems && (
-            <div className="mt-2">
+            <div className="my-2">
               <button
                 className="px-16 btn btn-primary"
                 onClick={() => handleShow()}
@@ -381,15 +396,6 @@ export default function Page(props: props) {
             </div>
           )
         )}
-
-        <div className="my-2">
-          <button
-            className="px-16 btn btn-outline btn-primary"
-            onClick={() => router.back()}
-          >
-            Volver
-          </button>
-        </div>
       </div>
       <Modal ref={ref}>
         <Modal.Header>
