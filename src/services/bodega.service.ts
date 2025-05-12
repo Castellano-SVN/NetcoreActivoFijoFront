@@ -116,9 +116,30 @@ export function api_postLocation(bearer: string, data: any) {
   return api.post(`locacion`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getSubFamilias(bearer: string, id: string, page: number) {
+/* export function api_getSubFamilias(bearer: string, id: string, page: number) {
   return api.get(`subFamilia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+} */
+
+export function api_getSubFamilias(
+  bearer: string, 
+  id: string, 
+  page: number, 
+  searchParams?: {
+    searchTerm?: string,
+    searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+  }
+) {
+  let url = `subFamilia/${id}?page=${page}`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
+
 export function api_getAllSubFamilias(bearer: string) {
   return api.get(`subfamilia`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
