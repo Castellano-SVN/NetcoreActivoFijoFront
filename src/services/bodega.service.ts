@@ -186,6 +186,9 @@ export function api_deleteFamilias(bearer: string, id: string) {
 export function api_getYears(bearer: string) {
   return api.get(`ano`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
+export function api_getAnoMes(bearer: string) {
+  return api.get(`currentDate`, { headers: { "Authorization": `Bearer ${bearer}` } })
+}
 export function api_getProgramaByEmpresa(bearer: string, empresa: string) {
   return api.get(`programa/${empresa}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
