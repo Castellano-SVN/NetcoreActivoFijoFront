@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useUserStore } from "../../store/user.store";
 import { QueryObserverResult, useQuery } from "react-query";
 import { api_getEmpresas, api_postEmpresas_Bloquear } from "../../services/bodega.service";
-import { FaBox, FaEye, FaPencilAlt, FaPlus } from "react-icons/fa";
+import { FaBox, FaEye, FaPencilAlt, FaPlus, FaSearch } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { Divider, Table } from "react-daisyui";
 import { MdFactory } from "react-icons/md";
@@ -10,6 +10,7 @@ import { CgLock, CgLockUnlock } from "react-icons/cg";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { useContextStore } from "../../store/context.store";
+import { FaCircleXmark } from "react-icons/fa6";
 
 
 interface Persona {
@@ -115,12 +116,19 @@ export default function Index() {
   useEffect(() => {
     setActive("Prestadores");
   }, [])
+
+  // Estados para el buscador 
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchType, setSearchType] = useState<'startsWith' | 'contains' | 'endsWith' | 'exact'>('contains');
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
   const [page, setPage] = useState<number>(1);
+  // Modificar query para incluir parámetros de búsqueda
   const { isLoading, error, data, refetch } = useQuery(
-    "empresas",
-    () => api_getEmpresas(jwt, page),
+    ["empresas", page, searchTerm, searchType, isSearching], // Key con dependencias
+    () => api_getEmpresas(jwt, page, isSearching ? { searchTerm, searchType } : undefined),
     {
-      enabled: true,
+      keepPreviousData: true,
       onSuccess: (data) => {
         setMeta({
           total: data.data.total,
@@ -129,14 +137,113 @@ export default function Index() {
       },
     }
   );
+
   useEffect(() => {
     refetch();
   }, [page]);
+
+  // Manejadores de búsqueda (nuevo)
+  const handleSearch = () => {
+    if (searchTerm.trim() !== "") {
+      setIsSearching(true);
+      setPage(1); // Resetear a primera página
+    } else {
+      toast.info("Ingrese un término de búsqueda");
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setIsSearching(false);
+    setPage(1); // Resetear a primera página
+  };
+  
+
   return (
     <div className="flex items-center justify-center">
 
       <div className="container shadow">
         <MenuEmpresa total={meta.total} isLoading={isLoading} />
+
+        {/* Componente de búsqueda (nuevo) */}
+        <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
+          <div className="w-full md:w-1/2">
+            <div className="flex flex-row items-center">
+              <input
+                type="text"
+                placeholder="Buscar empresas..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-primary w-full"
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <button 
+                className="btn btn-primary ml-2"
+                onClick={handleSearch}
+                disabled={searchTerm.trim() === ""}
+              >
+                <FaSearch />
+              </button>
+              {isSearching && (
+                <button 
+                  className="btn btn-ghost ml-2"
+                  onClick={clearSearch}
+                >
+                  <FaCircleXmark className="text-error" />
+                </button>
+              )}
+            </div>
+          </div>
+          
+          <div className="w-full md:w-1/2 mt-2 md:mt-0">
+            <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "startsWith"}
+                  onChange={() => setSearchType("startsWith")}
+                />
+                <span className="ml-1 text-sm">Comienza con</span>
+              </label>
+              
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "contains"}
+                  onChange={() => setSearchType("contains")}
+                />
+                <span className="ml-1 text-sm">Contiene</span>
+              </label>
+              
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "endsWith"}
+                  onChange={() => setSearchType("endsWith")}
+                />
+                <span className="ml-1 text-sm">Termina con</span>
+              </label>
+              
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "exact"}
+                  onChange={() => setSearchType("exact")}
+                />
+                <span className="ml-1 text-sm">Exacto</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-wrap justify-start">
           {data?.data.dataList.map((option: Empresa, index: number) => (
             <div key={index} className="w-full lg:w-1/3 p-4 md:w-1/3">

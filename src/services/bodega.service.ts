@@ -67,8 +67,25 @@ export function api_getAllCentroCostos(bearer: string, id: string) {
 export function api_getOneCentroCosto(bearer: string, id: string) {
   return api.get(`centrocosto/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getEmpresas(bearer: string, page: number) {
-  return api.get(`empresa?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
+
+export function api_getEmpresas(
+  bearer: string, 
+  page: number,
+  searchParams?: {  // Parámetros de búsqueda opcionales
+    searchTerm?: string,
+    searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+  }
+) {
+  let url = `empresa?page=${page}&perPage=6`;
+  
+  // Agregar parámetros de búsqueda si existen
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
 
 export function api_getOneEmpresa(bearer: string, id: string) {
