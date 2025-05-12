@@ -32,10 +32,12 @@ export default function Page(props: props) {
     pages: 0,
   });
   const { jwt } = useUserStore();
-  
+
   // Estados para el buscador
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchType, setSearchType] = useState<'startsWith' | 'contains' | 'endsWith' | 'exact'>('contains');
+  const [searchType, setSearchType] = useState<
+    "startsWith" | "contains" | "endsWith" | "exact"
+  >("contains");
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const fetchItems = async ({ pageParam = 1 }) => {
@@ -43,7 +45,7 @@ export default function Page(props: props) {
     if (isSearching && searchTerm) {
       const response = await api_getFamilias(jwt, props.guid, pageParam, {
         searchTerm,
-        searchType
+        searchType,
       });
       return response.data;
     } else {
@@ -163,7 +165,7 @@ export default function Page(props: props) {
     setShow(false);
     ref.current?.showModal();
   }, [ref]);
-  
+
   const handleClose = useCallback(() => {
     ref.current?.close();
   }, [ref]);
@@ -237,10 +239,11 @@ export default function Page(props: props) {
       </div>
     );
 
-    const allItems = data?.pages
-    ?.flatMap((page) => page.dataList)
-    .sort((a, b) => a.codigo - b.codigo) || [];
-    
+  const allItems =
+    data?.pages
+      ?.flatMap((page) => page.dataList)
+      .sort((a, b) => a.codigo - b.codigo) || [];
+
   const noItems = allItems.length === 0;
   if (isLoading && noItems) return "Cargando...";
   return (
@@ -261,9 +264,9 @@ export default function Page(props: props) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input input-primary w-full"
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button 
+            <button
               className="btn btn-primary ml-2"
               onClick={handleSearch}
               disabled={searchTerm.trim() === ""}
@@ -271,16 +274,13 @@ export default function Page(props: props) {
               <FaSearch />
             </button>
             {isSearching && (
-              <button 
-                className="btn btn-ghost ml-2"
-                onClick={clearSearch}
-              >
+              <button className="btn btn-ghost ml-2" onClick={clearSearch}>
                 <FaCircleXmark className="text-error" />
               </button>
             )}
           </div>
         </div>
-        
+
         <div className="w-full md:w-1/2 mt-2 md:mt-0">
           <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
             <label className="flex items-center cursor-pointer">
@@ -289,11 +289,11 @@ export default function Page(props: props) {
                 name="searchType"
                 className="radio radio-sm radio-primary"
                 checked={searchType === "startsWith"}
-                onChange={() => {setSearchType("startsWith")}}
+                onChange={() => setSearchType("startsWith")}
               />
               <span className="ml-1 text-sm">Comienza con</span>
             </label>
-            
+
             <label className="flex items-center cursor-pointer ml-2">
               <input
                 type="radio"
@@ -304,7 +304,7 @@ export default function Page(props: props) {
               />
               <span className="ml-1 text-sm">Contiene</span>
             </label>
-            
+
             <label className="flex items-center cursor-pointer ml-2">
               <input
                 type="radio"
@@ -315,7 +315,7 @@ export default function Page(props: props) {
               />
               <span className="ml-1 text-sm">Termina con</span>
             </label>
-            
+
             <label className="flex items-center cursor-pointer ml-2">
               <input
                 type="radio"
@@ -332,7 +332,13 @@ export default function Page(props: props) {
 
       {noItems ? (
         <>
-          <WarningAlert message={isSearching ? "No se encontraron resultados para la búsqueda" : "No existen Familias vinculadas a esta empresa"} />
+          <WarningAlert
+            message={
+              isSearching
+                ? "No se encontraron resultados para la búsqueda"
+                : "No existen Familias vinculadas a esta empresa"
+            }
+          />
           <button
             className="px-12 btn btn-primary"
             onClick={() => handleShow()}
@@ -521,10 +527,7 @@ function Element({
   };
 
   const editFamilia = () => {
-    localStorage.setItem(
-      "editFamilia",
-      JSON.stringify({ familia: element })
-    );
+    localStorage.setItem("editFamilia", JSON.stringify({ familia: element }));
     handleShow();
   };
 
