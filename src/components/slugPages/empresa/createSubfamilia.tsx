@@ -291,14 +291,7 @@ export default function CreateSubFamily(props: props) {
                     </button>
                   </div>
 
-                  <div className="my-2 flex justify-center">
-                    <button
-                      className="px-16 btn btn-outline btn-primary"
-                      onClick={() => props.change()}
-                    >
-                      Volver
-                    </button>
-                  </div>
+                 
                 </div>) : (
                 <div className="mt-2">
                   <div className="flex justify-center">
@@ -310,14 +303,7 @@ export default function CreateSubFamily(props: props) {
                     </button>
                   </div>
 
-                  <div className="my-2 flex justify-center">
-                    <button
-                      className="px-16 btn btn-outline btn-primary"
-                      onClick={() => props.change()}
-                    >
-                      Volver
-                    </button>
-                  </div>
+                  
                 </div>)}
             </form>
           </div>
