@@ -163,9 +163,19 @@ export function api_deleteSubFamilia(bearer: string, id: string) {
   return api.delete(`subFamilia/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getArticulos(bearer: string, id: string, page: number) {
-  return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
-}
+export function api_getArticulos(
+    bearer: string,
+    id: string,
+    page: number,
+    searchParams?: { searchTerm?: string; searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact' }
+  ) {
+    let url = `articulo/${id}?page=${page}`;
+    if (searchParams?.searchTerm && searchParams?.searchType) {
+      url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+    }
+    return api.get(url, { headers: { Authorization: `Bearer ${bearer}` } });
+  }
+
 
 export function api_getArticulosBySubfamilia(bearer: string, empresaId: string, familiaId: string, subFamiliaId: string) {
   return api.get(`articulo?empresa=${empresaId}&familia=${familiaId}&subFamilia=${subFamiliaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
