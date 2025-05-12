@@ -67,8 +67,25 @@ export function api_getAllCentroCostos(bearer: string, id: string) {
 export function api_getOneCentroCosto(bearer: string, id: string) {
   return api.get(`centrocosto/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getEmpresas(bearer: string, page: number) {
-  return api.get(`empresa?page=${page}&perPage=6`, { headers: { "Authorization": `Bearer ${bearer}` } })
+
+export function api_getEmpresas(
+  bearer: string, 
+  page: number,
+  searchParams?: {  // Parámetros de búsqueda opcionales
+    searchTerm?: string,
+    searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+  }
+) {
+  let url = `empresa?page=${page}&perPage=6`;
+  
+  // Agregar parámetros de búsqueda si existen
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
 
 export function api_getOneEmpresa(bearer: string, id: string) {
@@ -116,9 +133,30 @@ export function api_postLocation(bearer: string, data: any) {
   return api.post(`locacion`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getSubFamilias(bearer: string, id: string, page: number) {
+/* export function api_getSubFamilias(bearer: string, id: string, page: number) {
   return api.get(`subFamilia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+} */
+
+export function api_getSubFamilias(
+  bearer: string, 
+  id: string, 
+  page: number, 
+  searchParams?: {
+    searchTerm?: string,
+    searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+  }
+) {
+  let url = `subFamilia/${id}?page=${page}`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
+
 export function api_getAllSubFamilias(bearer: string) {
   return api.get(`subfamilia`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
@@ -142,9 +180,19 @@ export function api_deleteSubFamilia(bearer: string, id: string) {
   return api.delete(`subFamilia/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getArticulos(bearer: string, id: string, page: number) {
-  return api.get(`articulo/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
-}
+export function api_getArticulos(
+    bearer: string,
+    id: string,
+    page: number,
+    searchParams?: { searchTerm?: string; searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact' }
+  ) {
+    let url = `articulo/${id}?page=${page}`;
+    if (searchParams?.searchTerm && searchParams?.searchType) {
+      url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+    }
+    return api.get(url, { headers: { Authorization: `Bearer ${bearer}` } });
+  }
+
 
 export function api_getArticulosBySubfamilia(bearer: string, empresaId: string, familiaId: string, subFamiliaId: string) {
   return api.get(`articulo?empresa=${empresaId}&familia=${familiaId}&subFamilia=${subFamiliaId}`, { headers: { "Authorization": `Bearer ${bearer}` } })
@@ -162,9 +210,25 @@ export function api_deleteArticulo(bearer: string, id: string) {
   return api.delete(`articulo/${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
 
-export function api_getFamilias(bearer: string, id: string, page: number) {
+/* export function api_getFamilias(bearer: string, id: string, page: number) {
   return api.get(`familia/${id}?page=${page}`, { headers: { "Authorization": `Bearer ${bearer}` } })
+} */
+
+export function api_getFamilias(bearer: string, id: string, page: number, searchParams?: {
+  searchTerm?: string,
+  searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+}) {
+  let url = `familia/${id}?page=${page}`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, { 
+    headers: { "Authorization": `Bearer ${bearer}` } 
+  });
 }
+
 export function api_getAllFamilias(bearer: string, id: string) {
   return api.get(`familia?id=${id}`, { headers: { "Authorization": `Bearer ${bearer}` } })
 }

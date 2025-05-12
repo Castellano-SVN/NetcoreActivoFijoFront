@@ -42,20 +42,37 @@ import {
   IAlmacen,
   ILocacion,
 } from "../../../interfaces/modules/IAlmacen.interface";
-import { FaArchive, FaArrowLeft, FaEye, FaPencilAlt, FaPlus } from "react-icons/fa";
+import {
+  FaArchive,
+  FaArrowLeft,
+  FaEye,
+  FaPencilAlt,
+  FaPlus,
+  FaSearch,
+} from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { SlEye } from "react-icons/sl";
-import { FaPencil } from "react-icons/fa6";
+import { FaCircleXmark, FaPencil } from "react-icons/fa6";
 import { useSearchParams } from "next/navigation";
+import WarningAlert from "@/components/alerts/warningAlert";
 
 export default function Page() {
   const router = useRouter();
   const idString = router.query.id as string; // Convertir a cadena
 
-  useEffect (()=>{
-    console.log( idString);
-  },[idString]);
-  
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchType, setSearchType] = useState<
+    "startsWith" | "contains" | "endsWith" | "exact"
+  >("contains");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [filteredBodegas, setFilteredBodegas] = useState<IcentroCosto_Bodega[]>(
+    []
+  );
+
+  useEffect(() => {
+    console.log(idString);
+  }, [idString]);
+
   const { jwt } = useUserStore();
   const [tipoAlmacen, setTipoAlmacen] = useState<ItipoAlmacen[]>([]);
   const [dataCentroCosto, setDataCentroCosto] = useState<IcentroCosto>();
@@ -76,6 +93,46 @@ export default function Page() {
       },
     }
   );
+
+  useEffect(() => {
+    if (dataCentroCosto) {
+      let filtered = dataCentroCosto.bodegas;
+      if (searchTerm.trim()) {
+        filtered = dataCentroCosto.bodegas.filter((bodega) => {
+          const term = searchTerm.toLowerCase();
+          const nombre = bodega.nombre?.toLowerCase() || "";
+          const sigla = bodega.sigla?.toLowerCase() || "";
+          switch (searchType) {
+            case "startsWith":
+              return nombre.startsWith(term) || sigla.startsWith(term);
+            case "contains":
+              return nombre.includes(term) || sigla.includes(term);
+            case "endsWith":
+              return nombre.endsWith(term) || sigla.endsWith(term);
+            case "exact":
+              return nombre === term || sigla === term;
+            default:
+              return true;
+          }
+        });
+      }
+      setFilteredBodegas(filtered);
+      setIsSearching(searchTerm.trim() !== "");
+    }
+  }, [searchTerm, searchType, dataCentroCosto]);
+
+  const handleSearch = () => {
+    if (searchTerm.trim() !== "") {
+      setIsSearching(true);
+    } else {
+      toast.info("Ingrese un término de búsqueda");
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setIsSearching(false);
+  };
 
   const createBodega = () => {
     const bodegaData = {
@@ -181,17 +238,102 @@ export default function Page() {
           <div className="text-left ml-4 mb-4">
             <span className="font-bold text-lg">Lista de Bodegas</span>
           </div>
-          {dataCentroCosto?.bodegas.map(
-            (option: IcentroCosto_Bodega, index: number) => (
-              <div key={index}>
-                <BodegaList
-                  key={index}
-                  bodega={option}
-                  index={index}
-                  tipoalmacen={tipoAlmacen}
-                  edit={editBodega}
+          <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
+            <div className="w-full md:w-1/2">
+              <div className="flex flex-row items-center">
+                <input
+                  type="text"
+                  placeholder="Buscar bodegas..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input input-primary w-full"
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
+                <button
+                  className="btn btn-primary ml-2"
+                  onClick={handleSearch}
+                  disabled={searchTerm.trim() === ""}
+                >
+                  <FaSearch />
+                </button>
+                {isSearching && (
+                  <button className="btn btn-ghost ml-2" onClick={clearSearch}>
+                    <FaCircleXmark className="text-error" />
+                  </button>
+                )}
               </div>
+            </div>
+
+            <div className="w-full md:w-1/2 mt-2 md:mt-0">
+              <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "startsWith"}
+                    onChange={() => setSearchType("startsWith")}
+                  />
+                  <span className="ml-1 text-sm">Comienza con</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "contains"}
+                    onChange={() => setSearchType("contains")}
+                  />
+                  <span className="ml-1 text-sm">Contiene</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "endsWith"}
+                    onChange={() => setSearchType("endsWith")}
+                  />
+                  <span className="ml-1 text-sm">Termina con</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "exact"}
+                    onChange={() => setSearchType("exact")}
+                  />
+                  <span className="ml-1 text-sm">Exacto</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          {filteredBodegas.length === 0 ? (
+            <>
+              <WarningAlert
+                message={
+                  isSearching
+                    ? "No se encontraron resultados para la búsqueda"
+                    : "No existen Bodegas vinculadas a este centro de costo"
+                }
+              />
+              <button className="px-12 btn btn-primary" onClick={createBodega}>
+                Crear Bodega <FaPlus />
+              </button>
+            </>
+          ) : (
+            filteredBodegas.map(
+              (option: IcentroCosto_Bodega, index: number) => (
+                <div key={index}>
+                  <BodegaList
+                    bodega={option}
+                    index={index}
+                    tipoalmacen={tipoAlmacen}
+                    edit={editBodega}
+                  />
+                </div>
+              )
             )
           )}
         </div>
@@ -489,7 +631,8 @@ function BodegaList({
                                   {almacen.codigo}
                                 </td>
                                 <td className="text-gray-700">
-                                  {almacen.nombre?.toUpperCase()}                                </td>
+                                  {almacen.nombre?.toUpperCase()}{" "}
+                                </td>
                                 <td className="text-gray-700">
                                   {
                                     tipoalmacen.find(
@@ -498,12 +641,12 @@ function BodegaList({
                                   }
                                 </td>
                                 <td>
-                                      <button
-                                        onClick={() => editAlmacen(almacen)}
-                                        className="flex items-center justify-center w-8 h-8 rounded-full mr-2"
-                                      >
-                                        <CiEdit className="h-6 w-6 text-primary" />
-                                      </button>
+                                  <button
+                                    onClick={() => editAlmacen(almacen)}
+                                    className="flex items-center justify-center w-8 h-8 rounded-full mr-2"
+                                  >
+                                    <CiEdit className="h-6 w-6 text-primary" />
+                                  </button>
                                   <div
                                     className="tooltip mx-3"
                                     data-tip="Ubicaciones"
@@ -512,16 +655,16 @@ function BodegaList({
                                   </div>
                                 </td>
                                 <td>
-                                <button
-                                        onClick={() =>
-                                          router.push(
-                                            `/empresa/centrocosto/almacen/${almacen.id}`
-                                          )
-                                        }
-                                        className="flex items-center justify-center w-8 h-8 rounded-full"
-                                      >
-                                        <SlEye className="h-5 w-5 text-primary" />
-                                      </button>
+                                  <button
+                                    onClick={() =>
+                                      router.push(
+                                        `/empresa/centrocosto/almacen/${almacen.id}`
+                                      )
+                                    }
+                                    className="flex items-center justify-center w-8 h-8 rounded-full"
+                                  >
+                                    <SlEye className="h-5 w-5 text-primary" />
+                                  </button>
                                 </td>
                               </tr>
                             )
