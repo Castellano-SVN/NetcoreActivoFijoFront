@@ -5,20 +5,65 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Drawer, Dropdown, Menu, Navbar, Tabs } from "react-daisyui";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
+import { api_getAnoMes } from "@/services/bodega.service";
 interface props {
   open: () => void;
 }
+interface IAnoMes {
+  anoNumero: number;
+  mesNumero: number;
+}
+
 export default function InfoBar() {
   const router = useRouter();
+  const { jwt } = useUserStore();
+
+  const [dataAnoMes, setDataAnoMes] = useState<IAnoMes[]>([]);
+  const [loading, setLoading] = useState(false);
+  
   const handleClick = (path: string) => {
     router.push(path); //path es nuestro camino
   };
-
+  const getAnoMes = async () => {
+    try {
+      setLoading(true);
+      const data = await api_getAnoMes(jwt);
+      setDataAnoMes(data.data.dataList);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const mounthWithZero = (input:number) => {
+    if (input < 10) {
+      return `0${input}`;
+    }
+    return input;
+  }
+  useEffect(() => {
+    if (jwt) getAnoMes();
+    console.log(dataAnoMes)
+  }, [jwt]);
+  const meses = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
   return (
     <>
       <Navbar className="shadow-md bg-base-100">
-        <div className="flex-none"></div>
-        <div className="flex flex-row">
+        <div className="flex justify-between w-full">
           <Button
             tag="a"
             color="ghost"
@@ -189,6 +234,9 @@ export default function InfoBar() {
             </svg>
             INVENTARIO
           </Button>
+          {dataAnoMes.length > 0 && <div className="order-last text-lg">
+            <span className="font-semibold ">Periodo</span> {dataAnoMes[0].anoNumero}-{mounthWithZero(Number(dataAnoMes[0].mesNumero))} 
+          </div>}
         </div>
         {/* <Navbar.Center className="hidden lg:flex">
           <Menu horizontal className="px-1">
