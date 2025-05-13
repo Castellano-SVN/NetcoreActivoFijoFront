@@ -111,8 +111,25 @@ export function api_getAllBodegas(bearer: string) {
 export function api_postAlmacen(bearer: string, data: any) {
   return api.post(`almacen`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getAlmacen(bearer: string, page: number, id: string) {
-  return api.get(`almacen?page=${page}&id=${id}&perPage=5`, { headers: { "Authorization": `Bearer ${bearer}` } })
+
+export function api_getAlmacen(
+  bearer: string,
+  page: number,
+  id: string,
+  searchParams?: {
+    searchTerm?: string;
+    searchType?: "startsWith" | "contains" | "endsWith" | "exact";
+  }
+) {
+  let url = `almacen?page=${page}&id=${id}&perPage=5`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
 }
 
 export function api_getAlmacenById(bearer: string, id: string) {

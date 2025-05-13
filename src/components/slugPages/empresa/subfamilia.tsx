@@ -274,7 +274,7 @@ export default function Page(props: props) {
           </>
         ) : (
           !noItems && (
-            <div className="mt-2">
+            <div className="my-4">
               <button
                 className="px-16 btn btn-primary "
                 onClick={() => props.create()}
@@ -285,14 +285,6 @@ export default function Page(props: props) {
           )
         )}
 
-        <div className="my-2">
-          <button
-            className="px-16 btn btn-outline btn-primary"
-            onClick={() => router.back()}
-          >
-            Volver
-          </button>
-        </div>
       </div>
     </React.Fragment>
   );
