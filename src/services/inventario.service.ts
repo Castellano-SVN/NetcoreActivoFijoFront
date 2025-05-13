@@ -19,11 +19,26 @@ api.interceptors.response.use(
   }
 );
 
-export function api_getAllIFByEmpresa(bearer: string, empresaId: string,page: number) {
-  return api.get(`inventariofisico?empresaId=${empresaId}&page=${page}&perPage=6`, {
+export function api_getAllIFByEmpresa(
+  bearer: string, 
+  empresaId: string,
+  page: number,
+  searchParams?: {
+    searchTerm?: string,
+    searchType?: 'startsWith' | 'contains' | 'endsWith' | 'exact'
+  }
+) {
+  let url = `inventariofisico?empresaId=${empresaId}&page=${page}&perPage=6`;
+  
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`;
+  }
+  
+  return api.get(url, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
+
 export function api_getValidation(bearer: string, empresaId: string, numero: number) {
   return api.get(`inventariofisico/lista?empresaId=${empresaId}&numero=${numero}`, {
     headers: { Authorization: `Bearer ${bearer}` },

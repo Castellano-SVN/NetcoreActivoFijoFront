@@ -19,7 +19,7 @@ import {
   InventarioFisicoFormValue,
 } from "../../../interfaces/creation";
 import router from "next/router";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaSearch } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { z } from "zod";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ import { Button, Divider, Loading, Modal } from "react-daisyui";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
-import { FaCircleInfo } from "react-icons/fa6";
+import { FaCircleInfo, FaCircleXmark } from "react-icons/fa6";
 import { useQuery } from "react-query";
 registerLocale("es", es);
 
@@ -78,13 +78,45 @@ export default function ViewInventoryTaking() {
     pages: 0,
   });
 
+  // Estados para el buscador
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchType, setSearchType] = useState<
+    "startsWith" | "contains" | "endsWith" | "exact"
+  >("contains");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
   const [page, setPage] = useState<number>(1);
 
+  // Función de búsqueda
+  const handleSearch = () => {
+    if (searchTerm.trim() !== "") {
+      setIsSearching(true);
+      setPage(1); // Resetear a primera página al buscar
+      refetch();
+    } else {
+      toast.info("Ingrese un término de búsqueda");
+    }
+  };
+
+  // Limpiar búsqueda
+  const clearSearch = () => {
+    setSearchTerm("");
+    setIsSearching(false);
+    setPage(1);
+    refetch();
+  };
+
+  // Modificar la query para incluir parámetros de búsqueda
   const { isLoading, error, data, refetch } = useQuery(
-    "inventariosFisicos",
-    () => api_getAllIFByEmpresa(jwt, empresaId as string, page),
+    ["inventariosFisicos", searchTerm, searchType, isSearching],
+    () =>
+      api_getAllIFByEmpresa(jwt, empresaId as string, page, {
+        searchTerm: isSearching ? searchTerm : undefined,
+        searchType,
+      }),
     {
-      enabled: true,
+      enabled: !!empresaId,
+      keepPreviousData: true,
       onSuccess: (data) => {
         setMeta({
           total: data.data.total,
@@ -96,10 +128,10 @@ export default function ViewInventoryTaking() {
   );
 
   useEffect(() => {
-    if(!empresaId) return;
+    if (!empresaId) return;
     setDataInventarioFisico([]);
     refetch();
-  }, [page,empresaId]);
+  }, [page, empresaId]);
 
   /* const getInventarioFisico = async () => {
     if (empresaId) {
@@ -268,6 +300,81 @@ export default function ViewInventoryTaking() {
             </div>
           )}
         </div>
+        {/* Sección de búsqueda agregada */}
+        <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
+          <div className="w-full md:w-1/2">
+            <div className="flex flex-row items-center">
+              <input
+                type="text"
+                placeholder="Buscar tomas de inventario..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-primary w-full"
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <button
+                className="btn btn-primary ml-2"
+                onClick={handleSearch}
+                disabled={searchTerm.trim() === ""}
+              >
+                <FaSearch />
+              </button>
+              {isSearching && (
+                <button className="btn btn-ghost ml-2" onClick={clearSearch}>
+                  <FaCircleXmark className="text-error" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full md:w-1/2 mt-2 md:mt-0">
+            <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "startsWith"}
+                  onChange={() => setSearchType("startsWith")}
+                />
+                <span className="ml-1 text-sm">Comienza con</span>
+              </label>
+
+              <label className="flex items-center cursor-pointer ml-2">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "contains"}
+                  onChange={() => setSearchType("contains")}
+                />
+                <span className="ml-1 text-sm">Contiene</span>
+              </label>
+
+              <label className="flex items-center cursor-pointer ml-2">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "endsWith"}
+                  onChange={() => setSearchType("endsWith")}
+                />
+                <span className="ml-1 text-sm">Termina con</span>
+              </label>
+
+              <label className="flex items-center cursor-pointer ml-2">
+                <input
+                  type="radio"
+                  name="searchType"
+                  className="radio radio-sm radio-primary"
+                  checked={searchType === "exact"}
+                  onChange={() => setSearchType("exact")}
+                />
+                <span className="ml-1 text-sm">Exacto</span>
+              </label>
+            </div>
+          </div>
+        </div>
         {modalShow && (
           <>
             {
@@ -374,14 +481,13 @@ export default function ViewInventoryTaking() {
         {dataInventarioFisico && empresaId ? (
           <div className="w-full mt-2 ">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {dataInventarioFisico
-                .map((e) => (
-                  <TableInventory
-                    inventarioFisico={e}
-                    empresa={empresaId}
-                    refetch={refetch}
-                  />
-                ))}
+              {dataInventarioFisico.map((e) => (
+                <TableInventory
+                  inventarioFisico={e}
+                  empresa={empresaId}
+                  refetch={refetch}
+                />
+              ))}
             </div>
             <InventarioFisicoPagination
               page={page}
