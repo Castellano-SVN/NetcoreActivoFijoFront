@@ -353,6 +353,30 @@ function BodegaList({
   tipoalmacen: ItipoAlmacen[];
   edit: (almacen: IcentroCosto_Bodega) => void;
 }) {
+  // Estados para el buscador
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchType, setSearchType] = useState<
+    "startsWith" | "contains" | "endsWith" | "exact"
+  >("contains");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
+  // Función de búsqueda
+  const handleSearch = () => {
+    if (searchTerm.trim() !== "") {
+      setIsSearching(true);
+      refetch();
+    } else {
+      toast.info("Ingrese un término de búsqueda");
+    }
+  };
+
+  // Limpiar búsqueda
+  const clearSearch = () => {
+    setSearchTerm("");
+    setIsSearching(false);
+    refetch();
+  };
+
   const router = useRouter();
 
   const validationSchema = z.object({
@@ -433,10 +457,21 @@ function BodegaList({
 
   const [isOpen, setIsOpen] = useState(false);
 
+  // Modificar la función fetchAlmacen
   const fetchAlmacen = async ({ pageParam = 1 }) => {
-    const response = await api_getAlmacen(jwt, pageParam, bodega.id);
-    return response.data;
+    if (isSearching && searchTerm) {
+      const response = await api_getAlmacen(jwt, pageParam, bodega.id, {
+        searchTerm,
+        searchType,
+      });
+      return response.data;
+    } else {
+      const response = await api_getAlmacen(jwt, pageParam, bodega.id);
+      return response.data;
+    }
   };
+
+  // Actualizar useInfiniteQuery
   const {
     data,
     error,
@@ -446,22 +481,28 @@ function BodegaList({
     status,
     refetch,
     isLoading,
-  } = useInfiniteQuery(`almacen-${bodega.id}`, fetchAlmacen, {
-    getNextPageParam: (lastPage, pages) => {
-      if (lastPage.pages > pages.length) {
-        return pages.length + 1;
-      } else {
-        return undefined; // no more pages to load
-      }
-    },
-    onSuccess: (data) => {
-      const lastPage = data.pages[data.pages.length - 1];
-      setMeta({
-        total: lastPage.total,
-        pages: lastPage.pages,
-      });
-    },
-  });
+  } = useInfiniteQuery(
+    [`almacen-${bodega.id}`, searchTerm, searchType, isSearching],
+    fetchAlmacen,
+    {
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage.pages > pages.length) {
+          return pages.length + 1;
+        } else {
+          return undefined;
+        }
+      },
+      keepPreviousData: true,
+      onSuccess: (data) => {
+        const lastPage = data.pages[data.pages.length - 1];
+        setMeta({
+          total: lastPage.total,
+          pages: lastPage.pages,
+        });
+      },
+    }
+  );
+
   const AlmacenSubmit = async (data: AlmacenFormValues) => {
     try {
       await api_postAlmacen(jwt, data);
@@ -498,6 +539,89 @@ function BodegaList({
           {bodega.sigla && `- ${bodega.sigla.toUpperCase()}`}
         </Collapse.Details.Title>
         <Collapse.Content className="p-4">
+          {/* Componente de búsqueda */}
+          <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
+            <div className="w-full md:w-1/2">
+              <div className="flex flex-row items-center">
+                <input
+                  type="text"
+                  placeholder="Buscar almacenes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input input-primary w-full"
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+                <button
+                  className="btn btn-primary ml-2"
+                  onClick={handleSearch}
+                  disabled={searchTerm.trim() === ""}
+                >
+                  <FaSearch />
+                </button>
+                {isSearching && (
+                  <button className="btn btn-ghost ml-2" onClick={clearSearch}>
+                    <FaCircleXmark className="text-error" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="w-full md:w-1/2 mt-2 md:mt-0">
+              <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "startsWith"}
+                    onChange={() => setSearchType("startsWith")}
+                  />
+                  <span className="ml-1 text-sm">Comienza con</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "contains"}
+                    onChange={() => setSearchType("contains")}
+                  />
+                  <span className="ml-1 text-sm">Contiene</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "endsWith"}
+                    onChange={() => setSearchType("endsWith")}
+                  />
+                  <span className="ml-1 text-sm">Termina con</span>
+                </label>
+                <label className="flex items-center cursor-pointer ml-2">
+                  <input
+                    type="radio"
+                    name="searchType"
+                    className="radio radio-sm radio-primary"
+                    checked={searchType === "exact"}
+                    onChange={() => setSearchType("exact")}
+                  />
+                  <span className="ml-1 text-sm">Exacto</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Mensaje cuando no hay resultados */}
+          {allItems.length === 0 && (
+            <WarningAlert
+              message={
+                isSearching
+                  ? "No se encontraron resultados para la búsqueda"
+                  : "No existen Almacenes creados para esta Bodega"
+              }
+            />
+          )}
           {isLoading ? (
             <h1>Cargando</h1>
           ) : (
