@@ -519,13 +519,28 @@ function Element({
     try {
       const dataDelete = await api_deleteFamilias(jwt, element.id);
       if (dataDelete.status === 200) {
-        toast.success("Artículo eliminado con exito");
+        toast.success("Familia eliminada con exito");
         setIsModalOpen(false);
         refetch();
       }
     } catch (error) {
       console.log(error);
-      toast.error("Ha ocurrido un error");
+      if (isAxiosError(error)) {
+        if (
+          error.response?.data?.message ===
+          "No se puede eliminar familia, contiene subfamilias dentro."
+        ) {
+          toast.error(
+            "No se puede eliminar familia, contiene subfamilias dentro."
+          );
+        } else {
+          toast.error("Error en la solicitud");
+        }
+      } else if (error instanceof Error) {
+        toast.error("Ocurrió un error inesperado");
+      } else {
+        toast.error("Ocurrió un error inesperado");
+      }
     }
   };
 
@@ -593,7 +608,7 @@ function Element({
         <dialog open className="modal">
           <div className="modal-box">
             <h3 className="font-bold text-lg mb-2">
-              ¿Estás seguro que deseas eliminar el Artículo?
+              ¿Estás seguro que deseas eliminar la Familia?
             </h3>
             <div className="modal-action flex justify-center">
               <button

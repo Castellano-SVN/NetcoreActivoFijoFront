@@ -120,9 +120,10 @@ export default function Page(props: props) {
         />
       </div>
     );
-  const allItems = data?.pages
-    ?.flatMap((page) => page.dataList)
-    .sort((a, b) => a.codigo - b.codigo) || [];
+  const allItems =
+    data?.pages
+      ?.flatMap((page) => page.dataList)
+      .sort((a, b) => a.codigo - b.codigo) || [];
 
   const noItems = allItems.length === 0;
   if (isLoading && noItems) return "Cargando...";
@@ -284,7 +285,6 @@ export default function Page(props: props) {
             </div>
           )
         )}
-
       </div>
     </React.Fragment>
   );
@@ -320,13 +320,26 @@ function Element({
     try {
       const dataDelete = await api_deleteSubFamilia(jwt, element.id);
       if (dataDelete.status === 200) {
-        toast.success("Artículo eliminado con exito");
+        toast.success("SubFamilia eliminada con exito");
         setIsModalOpen(false);
         refetch();
       }
     } catch (error) {
       console.log(error);
-      toast.error("Ha ocurrido un error");
+      if (isAxiosError(error)) {
+        if (
+          error.response?.data?.message ===
+          "No se puede eliminar subfamilia, contiene artículos dentro."
+        ) {
+          toast.error("No se puede eliminar subfamilia, contiene artículos dentro.");
+        } else {
+          toast.error("Error en la solicitud");
+        }
+      } else if (error instanceof Error) {
+        toast.error("Ocurrió un error inesperado");
+      } else {
+        toast.error("Ocurrió un error inesperado");
+      }
     }
   };
 
@@ -392,7 +405,7 @@ function Element({
         <dialog open className="modal">
           <div className="modal-box">
             <h3 className="font-bold text-lg mb-2">
-              ¿Estás seguro que deseas eliminar el Artículo?
+              ¿Estás seguro que deseas eliminar la SubFamilia?
             </h3>
             <div className="modal-action flex justify-center">
               <button
