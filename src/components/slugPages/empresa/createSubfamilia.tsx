@@ -2,14 +2,24 @@ import { FaPlus } from "react-icons/fa";
 import { Button, Modal } from "react-daisyui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ICuenta, IFamilia, ISubFamilia, IYears, SubFamiliaFormValues } from "@/interfaces/creation";
+import {
+  ICuenta,
+  IFamilia,
+  ISubFamilia,
+  IYears,
+  SubFamiliaFormValues,
+} from "@/interfaces/creation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import { api_getOneFamilias, api_postSubFamilias, api_putSubFamilias } from "@/services/bodega.service";
+import {
+  api_getOneFamilias,
+  api_postSubFamilias,
+  api_putSubFamilias,
+} from "@/services/bodega.service";
 import { useUserStore } from "@/store/user.store";
 import { toast } from "react-toastify";
-
+import { isAxiosError } from "axios";
 
 interface props {
   guid: string;
@@ -24,46 +34,60 @@ export default function CreateSubFamily(props: props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const validationSchema = z.object({
-    EmpresaId: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
+    EmpresaId: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
     AnoNumero: z.number({
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
     }),
-    Id: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
+    Id: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
     Codigo: z.number({
       required_error: "Campo requerido",
       invalid_type_error: "El campo debe ser numerico",
     }),
-    FamiliaId: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
-    CuentaId: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
-    CuentaObligacionId: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
+    FamiliaId: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
+    CuentaId: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
+    CuentaObligacionId: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
     Nombre: z.string({
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
     }),
-    Descripcion: z.string({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).optional(),
-    Eliminado: z.boolean({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }).default(false),
+    Descripcion: z
+      .string({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .optional(),
+    Eliminado: z
+      .boolean({
+        required_error: "Campo requerido",
+        invalid_type_error: "Campo requerido",
+      })
+      .default(false),
   });
 
   const methods = useForm<SubFamiliaFormValues>({
@@ -82,14 +106,16 @@ export default function CreateSubFamily(props: props) {
 
   const [cuentaYear, setCuentaYear] = useState<ICuenta[]>([]); // Cuenta listada segun el año seleccionado
   const selectCuenta = (id: number) => {
-    if (!id) { setCuentaYear([]); return }
-    const yearsFilter = props.cuentasGuid.filter(e => e.anoNumero === id)
+    if (!id) {
+      setCuentaYear([]);
+      return;
+    }
+    const yearsFilter = props.cuentasGuid.filter((e) => e.anoNumero === id);
     setCuentaYear(yearsFilter);
-  }
-
+  };
 
   useEffect(() => {
-    console.log("se ejecuto 1 vez")
+    console.log("se ejecuto 1 vez");
     setValue("EmpresaId", props.guid);
     setValue("FamiliaId", props.familyGuid);
   }, [props.guid, props.familyGuid]);
@@ -109,18 +135,29 @@ export default function CreateSubFamily(props: props) {
       props.change();
     } catch (error) {
       console.log(error);
-      toast.error("Ocurrió un error al guardar la persona");
+      if (isAxiosError(error)) {
+        // Acceder a la respuesta del error
+        const errorMessage =
+          error.response?.data?.message || "Ocurrió un error al guardar";
+        if (errorMessage === "Ya existe una subfamilia con el mismo código.") {
+          toast.error("Ya existe una subfamilia con el mismo código.");
+        }
+      } else {
+        // Manejo de otros tipos de errores
+        toast.error("Ocurrió un error inesperado");
+      }
     }
   };
 
   const [show, setShow] = useState<boolean>(false);
   const setSubFamiliaEdit = async () => {
-    const subFamiliaEditLs = localStorage.getItem("editSubFamilia")
+    const subFamiliaEditLs = localStorage.getItem("editSubFamilia");
     if (!subFamiliaEditLs) {
       setShow(false);
-      return
-    };
-    const editSubFamilia: { subFamilia: ISubFamilia } = JSON.parse(subFamiliaEditLs);
+      return;
+    }
+    const editSubFamilia: { subFamilia: ISubFamilia } =
+      JSON.parse(subFamiliaEditLs);
     toast.info("Editando SubFamilia existente");
     setValue("EmpresaId", editSubFamilia.subFamilia.empresaId);
     setValue("AnoNumero", editSubFamilia.subFamilia.anoNumero);
@@ -128,19 +165,19 @@ export default function CreateSubFamily(props: props) {
     setValue("Codigo", editSubFamilia.subFamilia.codigo);
     setValue("FamiliaId", editSubFamilia.subFamilia.familiaId);
     setValue("CuentaId", editSubFamilia.subFamilia.cuentaId);
-    setValue("CuentaObligacionId", editSubFamilia.subFamilia.cuentaObligacionId);
+    setValue(
+      "CuentaObligacionId",
+      editSubFamilia.subFamilia.cuentaObligacionId
+    );
     setValue("Nombre", editSubFamilia.subFamilia.nombre);
     setValue("Descripcion", editSubFamilia.subFamilia.descripcion);
     setValue("Eliminado", editSubFamilia.subFamilia.eliminado);
     setShow(true);
     localStorage.clear();
-  }
-  useEffect(
-    () => {
-      setSubFamiliaEdit();
-    }, []);
-
-
+  };
+  useEffect(() => {
+    setSubFamiliaEdit();
+  }, []);
 
   /*  const onSubmit: SubmitHandler<SubFamiliaFormValues> = async (
      data: SubFamiliaFormValues
@@ -175,8 +212,7 @@ export default function CreateSubFamily(props: props) {
                   <input
                     type="text"
                     {...register("Nombre", {
-                      setValueAs: (value) =>
-                        value === "" ? undefined : value,
+                      setValueAs: (value) => (value === "" ? undefined : value),
                     })}
                     className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
                   />
@@ -204,7 +240,6 @@ export default function CreateSubFamily(props: props) {
                 </div>
               </div>
 
-
               <span className="mt-1 text-base font-semibold leading-6 text-gray-900">
                 Año:
               </span>
@@ -213,9 +248,9 @@ export default function CreateSubFamily(props: props) {
                   onChange: (e) => {
                     selectCuenta(getValues("AnoNumero"));
                   },
-                  setValueAs: (value) => (value === "" ? undefined : Number(value))
+                  setValueAs: (value) =>
+                    value === "" ? undefined : Number(value),
                 })}
-
                 className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option value="">Seleccione un año</option>
@@ -234,11 +269,13 @@ export default function CreateSubFamily(props: props) {
               </span>
               <select
                 {...register("CuentaId", {
-                  setValueAs: (value) => (value === "" ? undefined : value)
+                  setValueAs: (value) => (value === "" ? undefined : value),
                 })}
                 className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
-                <option key={0} value={""}>Seleccione una cuenta</option>
+                <option key={0} value={""}>
+                  Seleccione una cuenta
+                </option>
                 {cuentaYear.map((option, index) => (
                   <option key={index} value={option.id}>
                     {option.numeroCuenta}
@@ -254,11 +291,13 @@ export default function CreateSubFamily(props: props) {
               </span>
               <select
                 {...register("CuentaObligacionId", {
-                  setValueAs: (value) => (value === "" ? undefined : value)
+                  setValueAs: (value) => (value === "" ? undefined : value),
                 })}
                 className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
-                <option key={0} value={""}>Seleccione una cuenta</option>
+                <option key={0} value={""}>
+                  Seleccione una cuenta
+                </option>
                 {cuentaYear.map((option, index) => (
                   <option key={index} value={option.id}>
                     {option.numeroCuenta}
@@ -266,7 +305,9 @@ export default function CreateSubFamily(props: props) {
                 ))}
               </select>
               <label className="label text-error">
-                {errors.CuentaObligacionId ? errors.CuentaObligacionId.message : ""}
+                {errors.CuentaObligacionId
+                  ? errors.CuentaObligacionId.message
+                  : ""}
               </label>
               <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
                 Descripción:
@@ -283,28 +324,36 @@ export default function CreateSubFamily(props: props) {
               {show ? (
                 <div className="mt-2">
                   <div className="flex justify-center">
-                    <button
-                      className="px-16 btn btn-primary"
-                      type="submit"
-                    >
-                      Modificar Sub-Familia <FaPlus />
+                    <button className="px-16 btn btn-primary" type="submit">
+                      Modificar SubFamilia <FaPlus />
                     </button>
                   </div>
-
-                 
-                </div>) : (
+                  <div className="my-2 flex justify-center">
+                    <button
+                      className="px-16 btn btn-outline btn-primary"
+                      onClick={() => props.change()}
+                    >
+                      Volver
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <div className="mt-2">
                   <div className="flex justify-center">
-                    <button
-                      className="px-16 btn btn-primary"
-                      type="submit"
-                    >
-                      Crear Sub-Familia <FaPlus />
+                    <button className="px-16 btn btn-primary" type="submit">
+                      Crear SubFamilia <FaPlus />
                     </button>
                   </div>
-
-                  
-                </div>)}
+                  <div className="my-2 flex justify-center">
+                    <button
+                      className="px-16 btn btn-outline btn-primary"
+                      onClick={() => props.change()}
+                    >
+                      Volver
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </FormProvider>
