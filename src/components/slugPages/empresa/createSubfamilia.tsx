@@ -50,10 +50,6 @@ export default function CreateSubFamily(props: props) {
         invalid_type_error: "Campo requerido",
       })
       .optional(),
-    Codigo: z.number({
-      required_error: "Campo requerido",
-      invalid_type_error: "El campo debe ser numerico",
-    }),
     FamiliaId: z
       .string({
         required_error: "Campo requerido",
@@ -108,10 +104,22 @@ export default function CreateSubFamily(props: props) {
   const selectCuenta = (id: number) => {
     if (!id) {
       setCuentaYear([]);
+      // Opcional: limpiar selects si deseleccionan año
+      setValue("CuentaId", undefined);
+      setValue("CuentaObligacionId", undefined);
       return;
     }
+    // Filtramos las cuentas por año
     const yearsFilter = props.cuentasGuid.filter((e) => e.anoNumero === id);
     setCuentaYear(yearsFilter);
+
+    if (yearsFilter.length === 0) {
+      // Mostramos un toast informativo si no hay cuentas
+      toast.info("El año seleccionado no tiene cuentas");
+      // Limpiamos el valor de los selects para evitar seguir mostrando opciones antiguas
+      setValue("CuentaId", undefined);
+      setValue("CuentaObligacionId", undefined);
+    }
   };
 
   useEffect(() => {
@@ -135,15 +143,19 @@ export default function CreateSubFamily(props: props) {
       props.change();
     } catch (error) {
       console.log(error);
+
       if (isAxiosError(error)) {
-        // Acceder a la respuesta del error
-        const errorMessage =
-          error.response?.data?.message || "Ocurrió un error al guardar";
-        if (errorMessage === "Ya existe una subfamilia con el mismo código.") {
+        if (
+          error.response?.data?.message ===
+          "Ya existe una subfamilia con el mismo código."
+        ) {
           toast.error("Ya existe una subfamilia con el mismo código.");
+        } else {
+          toast.error("Error en la solicitud");
         }
+      } else if (error instanceof Error) {
+        toast.error("Ocurrió un error inesperado");
       } else {
-        // Manejo de otros tipos de errores
         toast.error("Ocurrió un error inesperado");
       }
     }
@@ -162,7 +174,7 @@ export default function CreateSubFamily(props: props) {
     setValue("EmpresaId", editSubFamilia.subFamilia.empresaId);
     setValue("AnoNumero", editSubFamilia.subFamilia.anoNumero);
     setValue("Id", editSubFamilia.subFamilia.id);
-    setValue("Codigo", editSubFamilia.subFamilia.codigo);
+    setValue("Codigo", editSubFamilia.subFamilia.codigo ?? 0);
     setValue("FamiliaId", editSubFamilia.subFamilia.familiaId);
     setValue("CuentaId", editSubFamilia.subFamilia.cuentaId);
     setValue(
@@ -220,24 +232,6 @@ export default function CreateSubFamily(props: props) {
                     {errors.Nombre ? errors.Nombre.message : ""}
                   </label>
                 </div>
-
-                <div className="flex flex-col">
-                  <span className="text-base font-semibold leading-6 text-gray-900 ">
-                    Código:
-                  </span>
-                  <input
-                    type="number"
-                    {...register("Codigo", {
-                      setValueAs: (value) =>
-                        value === "" ? undefined : Number(value),
-                    })}
-                    className="mt-1 w-full h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
-                    maxLength={4}
-                  />
-                  <label className="label text-error">
-                    {errors.Codigo ? errors.Codigo.message : ""}
-                  </label>
-                </div>
               </div>
 
               <span className="mt-1 text-base font-semibold leading-6 text-gray-900">
@@ -251,7 +245,7 @@ export default function CreateSubFamily(props: props) {
                   setValueAs: (value) =>
                     value === "" ? undefined : Number(value),
                 })}
-                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option value="">Seleccione un año</option>
                 {props.yearGuid.map((option, index) => (
@@ -271,7 +265,7 @@ export default function CreateSubFamily(props: props) {
                 {...register("CuentaId", {
                   setValueAs: (value) => (value === "" ? undefined : value),
                 })}
-                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option key={0} value={""}>
                   Seleccione una cuenta
@@ -293,7 +287,7 @@ export default function CreateSubFamily(props: props) {
                 {...register("CuentaObligacionId", {
                   setValueAs: (value) => (value === "" ? undefined : value),
                 })}
-                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
+                className="mt-1 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content"
               >
                 <option key={0} value={""}>
                   Seleccione una cuenta

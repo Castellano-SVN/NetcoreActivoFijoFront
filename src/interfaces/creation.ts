@@ -468,7 +468,7 @@ interface ISubFamilia {
   empresaId: string;
   anoNumero: number;
   id: string;
-  codigo: number;
+  codigo?: number;
   familiaId: string;
   cuentaId?: string;
   cuentaObligacionId?: string;

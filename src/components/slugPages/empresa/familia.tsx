@@ -188,14 +188,17 @@ export default function Page(props: props) {
     } catch (error) {
       console.log(error);
       if (isAxiosError(error)) {
-        // Acceder a la respuesta del error
-        const errorMessage =
-          error.response?.data?.message || "Ocurrió un error al guardar";
-        if (errorMessage === "Ya existe una familia con el mismo código.") {
+        if (
+          error.response?.data?.message ===
+          "Ya existe una familia con el mismo código."
+        ) {
           toast.error("Ya existe una familia con el mismo código.");
+        } else {
+          toast.error("Error en la solicitud");
         }
+      } else if (error instanceof Error) {
+        toast.error("Ocurrió un error inesperado");
       } else {
-        // Manejo de otros tipos de errores
         toast.error("Ocurrió un error inesperado");
       }
     }
