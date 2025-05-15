@@ -1,26 +1,22 @@
+"use client";
+
+import type React from "react";
+
 import PDFSinOrden from "@/components/pdf/recepcion/recepcionSinOrden";
-import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-daisyui";
 import { FaFilePdf, FaSearch } from "react-icons/fa";
-import {
-  FormValueRecepcionData,
-  FormValueRecepcionSoData,
-  ICotizacion,
-  IFamilia,
-} from "@/interfaces/creation";
-import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   Controller,
-  FieldArrayWithId,
+  type FieldArrayWithId,
   FormProvider,
   useFieldArray,
-  UseFieldArrayAppend,
-  UseFieldArrayRemove,
+  type UseFieldArrayAppend,
+  type UseFieldArrayRemove,
   useForm,
   useFormContext,
 } from "react-hook-form";
@@ -29,25 +25,25 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import {
   api_getAllAlmacenArticuloByEmpByCenByBodByAlm,
   api_getAllFamilias,
-  api_getArticulosBySubfamilia,
   api_getSubFamiliaByEmpresa,
-  api_postRecepcionYDetalle,
 } from "@/services/bodega.service";
 import { toast } from "react-toastify";
-import {
-  articulosI,
+import type {
   articulosSOC,
   recepcionSOC,
-  ubicacionRecepcionI,
 } from "../../../interfaces/recepcion.interface";
 import UbicacionRecepcion from "./ubicacionRecepcion";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 import Select from "react-select";
-import { api_getArticulos, api_postRecepcionSo, api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
+import {
+  api_getArticulos,
+  api_postRecepcionSo,
+  api_tipoDocumentoRecepcion,
+} from "../../../services/ingreso.service";
 import { FaPlus } from "react-icons/fa";
 import WarningAlert from "@/components/alerts/warningAlert";
-import { HiCheck, HiOutlineX, HiX } from "react-icons/hi";
+import { HiCheck, HiX } from "react-icons/hi";
 
 registerLocale("es", es);
 
@@ -62,8 +58,10 @@ interface props {
   empresa: string;
 }
 interface recepcionProps extends props {
-  tipos: { codigo: number; nombre: string }[]
-  setLocationString: Dispatch<SetStateAction<{ centrocosto?: string; bodega?: string; almacen?: string; }>>
+  tipos: { codigo: number; nombre: string }[];
+  setLocationString: Dispatch<
+    SetStateAction<{ centrocosto?: string; bodega?: string; almacen?: string }>
+  >;
 }
 
 interface propsArticulo extends props {
@@ -83,8 +81,18 @@ interface propsArticulo extends props {
   append: UseFieldArrayAppend<recepcionSOC, "articulos">;
   list: FieldArrayWithId<recepcionSOC, "articulos", "id">[];
   remove: UseFieldArrayRemove;
-  search: () => Promise<void>;
+  search: (page?: number) => Promise<void>;
+  paginationInfo: PaginationInfo;
+  setPaginationInfo: React.Dispatch<React.SetStateAction<PaginationInfo>>;
 }
+
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  perPage: number;
+}
+
 const ArticulosSchema = z.object({
   id: z.string(),
   codigo: z.string().optional(),
@@ -124,8 +132,16 @@ export default function SinOrden(props: props) {
       empresa: props.empresa,
     },
   });
-  const [locationString, setLocationString] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
-  const [locationStringPDF, setLocationStringPDF] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
+  const [locationString, setLocationString] = useState<{
+    centrocosto?: string;
+    bodega?: string;
+    almacen?: string;
+  }>({});
+  const [locationStringPDF, setLocationStringPDF] = useState<{
+    centrocosto?: string;
+    bodega?: string;
+    almacen?: string;
+  }>({});
 
   const [tab, setTab] = useState<number>(0);
 
@@ -158,6 +174,13 @@ export default function SinOrden(props: props) {
   );
 
   const [textArticle, setTextArticle] = useState<string>("");
+  const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    perPage: 10,
+  });
+
   const getFamilias = async () => {
     try {
       const data = await api_getAllFamilias(jwt, props.empresa);
@@ -184,8 +207,10 @@ export default function SinOrden(props: props) {
   };
 
   useEffect(() => {
-    setSelectedSubFamilia(null);
-    getSubFamilias();
+    if (selectedFamilia) {
+      setSelectedSubFamilia(null);
+      getSubFamilias();
+    }
   }, [selectedFamilia]);
 
   const getTipos = async () => {
@@ -197,33 +222,31 @@ export default function SinOrden(props: props) {
     getFamilias();
     getTipos();
   }, []);
+
   useEffect(() => {
-    console.log(errors)
-    console.log(getValues())
+    console.log(errors);
+    console.log(getValues());
   }, [errors]);
 
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [dataArticulo, setDataArticulo] = useState<articulosSOC[]>([]);
-  const ArticleSearch = async () => {
-    // Verificar que la familia y la subfamilia estén seleccionadas
-    if (!selectedFamilia || !selectedSubFamilia) {
-      toast.error("Por favor, seleccione una familia y una subfamilia.");
-      return;
-    }
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    if (textArticle.trim().length <= 3) {
-      toast.error("El texto del artículo debe tener más de 3 letras.");
-      return;
-    }
+  const ArticleSearch = async (page = 1) => {
+    setIsLoading(true);
 
+    // Ahora todos los filtros son opcionales
     try {
       const res = await api_getArticulos(
         jwt,
         props.empresa,
         selectedFamilia?.id,
         selectedSubFamilia?.id,
-        textArticle
+        textArticle,
+        page,
+        paginationInfo.perPage
       );
+
       const resulset = res.data.dataList.map((item: { id: string }) => {
         const exists = fields.some(
           (articulo) => articulo.id.toString() === item.id.toString()
@@ -233,9 +256,20 @@ export default function SinOrden(props: props) {
           action: exists ? "success" : "stand",
         };
       });
+
       setDataArticulo(resulset);
+
+      setPaginationInfo({
+        currentPage: page, // <-- Asegurar que viene del backend
+        totalPages: res.data.pages,
+        totalItems: res.data.total,
+        perPage: paginationInfo.perPage,
+      });
     } catch (error) {
       console.log(error);
+      toast.error("Error al buscar artículos");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -244,28 +278,32 @@ export default function SinOrden(props: props) {
   const onSubmit = async (data: recepcionSOC) => {
     console.log(data);
     try {
-      const response = await api_postRecepcionSo(jwt, data)
+      const response = await api_postRecepcionSo(jwt, data);
       if (response) {
         setLocationStringPDF(locationString);
-        toast.success('Recepción Sin orden de compra creada correctamente');
+        toast.success("Recepción Sin orden de compra creada correctamente");
         setShowPdf(true);
         console.log("esta es la data que se guarda en el pdf", data);
         setPdfData(data);
         reset();
       } else {
-        toast.error('ha ocurrido un error en generar la Salida');
+        toast.error("ha ocurrido un error en generar la Salida");
         setShowPdf(false);
       }
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         toast.error(error.response.data.message);
         setShowPdf(false);
       } else {
-        toast.error('Ha ocurrido un error inesperado');
+        toast.error("Ha ocurrido un error inesperado");
         setShowPdf(false);
       }
     }
-  }
+  };
 
   return (
     <>
@@ -275,8 +313,9 @@ export default function SinOrden(props: props) {
             onClick={() => {
               setTab(0);
             }}
-            className={`${tab == 0 && "border-b-2 border-primary font-bold"
-              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${
+              tab == 0 && "border-b-2 border-primary font-bold"
+            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Paso 1: Seleccionar Artículos
           </a>
@@ -284,8 +323,9 @@ export default function SinOrden(props: props) {
             onClick={() => {
               setTab(1);
             }}
-            className={`${tab == 1 && "border-b-2 border-primary font-bold"
-              } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+            className={`${
+              tab == 1 && "border-b-2 border-primary font-bold"
+            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
           >
             Paso 2: Ver Detalle Recepción
           </a>
@@ -309,15 +349,20 @@ export default function SinOrden(props: props) {
           append={append}
           list={fields}
           remove={remove}
+          paginationInfo={paginationInfo}
+          setPaginationInfo={setPaginationInfo}
         />
       )}
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
         {tab == 1 && (
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Recepcion empresa={props.empresa} tipos={tipos} setLocationString={setLocationString} />
+              <Recepcion
+                empresa={props.empresa}
+                tipos={tipos}
+                setLocationString={setLocationString}
+              />
               {showPdf && pdfData && (
-
                 <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepción?
@@ -326,7 +371,12 @@ export default function SinOrden(props: props) {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                       <div className="col-span-2">
                         <PDFDownloadLink
-                          document={<PDFSinOrden data={pdfData} location={locationStringPDF} />}
+                          document={
+                            <PDFSinOrden
+                              data={pdfData}
+                              location={locationStringPDF}
+                            />
+                          }
                           fileName={`Recepcion_SOC_Numero_pdf`}
                         >
                           {({ loading, url, error, blob }) =>
@@ -383,7 +433,8 @@ function Recepcion(props: recepcionProps) {
     watch,
   } = useFormContext<recepcionSOC>();
   const { jwt } = useUserStore();
-  const [loadingAlmacenCantidad, setLoadingAlmacenCantidad] = useState<boolean>(false);
+  const [loadingAlmacenCantidad, setLoadingAlmacenCantidad] =
+    useState<boolean>(false);
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
@@ -392,7 +443,7 @@ function Recepcion(props: recepcionProps) {
     }
   );
   const almacenWatch = watch("almacen");
-  const tipoWatch = watch("tipo")
+  const tipoWatch = watch("tipo");
   const getAlmacenArticulo = async () => {
     setLoadingAlmacenCantidad(true);
     const data = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
@@ -405,21 +456,20 @@ function Recepcion(props: recepcionProps) {
     const commonItems = fields.map((item1) => {
       // Encuentra el elemento en dataList que tenga un ID coincidente
       const matchingItem2 = data.data.dataList.find(
-        (item2: { articuloId: string; cantidad: number, almacenId: string }) =>
-          item2.articuloId === item1.id && item2.almacenId === getValues("almacen")
+        (item2: { articuloId: string; cantidad: number; almacenId: string }) =>
+          item2.articuloId === item1.id &&
+          item2.almacenId === getValues("almacen")
       );
 
       // Si hay una coincidencia, agrega la propiedad cantidadAlmacen; de lo contrario, deja el objeto sin cambios
       return {
         ...item1,
-        cantidadAlmacen: matchingItem2
-          ? matchingItem2.cantidad
-          : 0,
+        cantidadAlmacen: matchingItem2 ? matchingItem2.cantidad : 0,
       };
     });
     remove();
     append(commonItems);
-    setLoadingAlmacenCantidad(false)
+    setLoadingAlmacenCantidad(false);
   };
   useEffect(() => {
     if (fields.length !== 0 && almacenWatch) {
@@ -427,15 +477,13 @@ function Recepcion(props: recepcionProps) {
     }
   }, [fields.length, almacenWatch]);
 
-
-
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Permitir solo dígitos del 0 al 9
     if (/^\d*$/.test(value)) {
       e.target.value = value;
     } else {
-      e.target.value = e.target.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
+      e.target.value = e.target.value.replace(/[^\d]/g, ""); // Elimina caracteres no numéricos
     }
   };
 
@@ -465,7 +513,6 @@ function Recepcion(props: recepcionProps) {
               control={control}
               name="fecha"
               render={({ field }) => (
-
                 <DatePicker
                   portalId="root-portal"
                   selected={field.value}
@@ -489,7 +536,11 @@ function Recepcion(props: recepcionProps) {
       <div className="mt-2 mx-auto">
         <fieldset className="border shadow-md p-4 rounded transition duration-300 transform hover:scale-105">
           <legend>Ubicación</legend>
-          <UbicacionRecepcion empresa={props.empresa} filterCC={[]} dispatchStrings={props.setLocationString} />
+          <UbicacionRecepcion
+            empresa={props.empresa}
+            filterCC={[]}
+            dispatchStrings={props.setLocationString}
+          />
         </fieldset>
       </div>
 
@@ -604,7 +655,11 @@ function Recepcion(props: recepcionProps) {
                       <span>{articulo.nombre}</span>
                       <div className="flex justify-center">
                         <span className="font-bold">
-                          {!loadingAlmacenCantidad ? articulo.cantidadAlmacen : <span className="loading loading-spinner loading-md text-primary"></span>}
+                          {!loadingAlmacenCantidad ? (
+                            articulo.cantidadAlmacen
+                          ) : (
+                            <span className="loading loading-spinner loading-md text-primary"></span>
+                          )}
                         </span>
                       </div>
                       <span className="font-semibold">{articulo.valor}</span>
@@ -612,11 +667,15 @@ function Recepcion(props: recepcionProps) {
                       <input
                         key={articulo.id}
                         onInput={handleInput}
-                        className={`block w-20 py-1 px-1 border ${errors.articulos && errors.articulos[index]?.cantidad
-                          ? "border-red-600"
-                          : "border-primary"
-                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        {...register(`articulos.${index}.cantidad`, { setValueAs: (value) => (value === "" ? undefined : Number(value)) })}
+                        className={`block w-20 py-1 px-1 border ${
+                          errors.articulos && errors.articulos[index]?.cantidad
+                            ? "border-red-600"
+                            : "border-primary"
+                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        {...register(`articulos.${index}.cantidad`, {
+                          setValueAs: (value) =>
+                            value === "" ? undefined : Number(value),
+                        })}
                       />
                     </Table.Row>
                   ))}
@@ -631,6 +690,8 @@ function Recepcion(props: recepcionProps) {
 
 function Articulos(props: propsArticulo) {
   const { jwt } = useUserStore();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const updateArticle = (index: number, article: articulosSOC) => {
     props.setArticle((prevState) => {
       const updatedArticles = [...prevState];
@@ -660,61 +721,73 @@ function Articulos(props: propsArticulo) {
     }
     props.remove(index);
   };
+
+  const handlePageChange = (page: number) => {
+    // si pides menos de 1 o más que el total, aborta
+    if (page < 1 || page > props.paginationInfo.totalPages) return;
+
+    props.setPaginationInfo((prev) => ({ ...prev, currentPage: page }));
+    props.search(page);
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
-        {props.familia.length !== 0 && (
-          <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 ">
-            <legend>Busqueda de artículos</legend>
-            <Select
-              placeholder="Seleccione Familia*"
-              value={props.selectedFamilia}
-              className="px-0 md:px-8"
-              onChange={(option) => props.setSelectedFamilia(option)}
-              getOptionValue={(option) => option.id}
-              options={props.familia}
-              getOptionLabel={(option) => option.nombre}
-              menuPortalTarget={document.body}
-              isClearable
-            />
-            <Select
-              className="mt-2 px-0 md:px-8 "
-              placeholder="Seleccione SubFamilia* "
-              options={props.subFamilias}
-              onChange={(option) => props.setSelectedSubFamilia(option)}
-              value={props.selectedSubFamilia}
-              loadingMessage={() => "Cargando opciones..."}
-              isLoading={props.subFamilias.length === 0}
-              getOptionValue={(option) => option.id}
-              getOptionLabel={(option) => option.nombre}
-              menuPortalTarget={document.body}
-              isClearable
-            />
-            <div className="w-full px-0 md:px-8 mt-2">
-              <label className="border inline-flex w-full rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary items-center">
-                <span className="whitespace-normal md:whitespace-nowrap px-3  border-r-2 select-none">
-                  Nombre o Código del artículo
-                </span>
-                <input
-                  value={props.textArticle}
-                  onChange={(ev) => props.setTextArticle(ev.target.value)}
-                  className="mt-1 h-full block w-full  md:py-2 lg:py-2 pl-3 bg-white   focus:outline-none sm:text-sm"
-                />
-              </label>
-            </div>
+        <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform hover:scale-105 ">
+          <legend>Búsqueda de artículos</legend>
+          <Select
+            placeholder="Seleccione Familia (opcional)"
+            value={props.selectedFamilia}
+            className="px-0 md:px-8"
+            onChange={(option) => props.setSelectedFamilia(option)}
+            getOptionValue={(option) => option.id}
+            options={props.familia}
+            getOptionLabel={(option) => option.nombre}
+            menuPortalTarget={document.body}
+            isClearable
+          />
+          <Select
+            className="mt-2 px-0 md:px-8 "
+            placeholder="Seleccione SubFamilia (opcional)"
+            options={props.subFamilias}
+            onChange={(option) => props.setSelectedSubFamilia(option)}
+            value={props.selectedSubFamilia}
+            loadingMessage={() => "Cargando opciones..."}
+            isLoading={props.subFamilias.length === 0}
+            getOptionValue={(option) => option.id}
+            getOptionLabel={(option) => option.nombre}
+            menuPortalTarget={document.body}
+            isClearable
+            isDisabled={!props.selectedFamilia}
+          />
+          <div className="w-full px-0 md:px-8 mt-2">
+            <label className="border inline-flex w-full rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary items-center">
+              <span className="whitespace-normal md:whitespace-nowrap px-3 border-r-2 select-none">
+                Nombre o Código del artículo (opcional)
+              </span>
+              <input
+                value={props.textArticle}
+                onChange={(ev) => props.setTextArticle(ev.target.value)}
+                className="mt-1 h-full block w-full md:py-2 lg:py-2 pl-3 bg-white focus:outline-none sm:text-sm"
+              />
+            </label>
+          </div>
 
-            <div className="w-full flex flex-row justify-center md:justify-end px-0 md:px-8 mt-2">
-              <a
-                onClick={props.search}
-                className="border-4 border-primary p-1 px-4 rounded-md shadow-sm cursor-pointer hover:bg-primary hover:brightness-90 transition duration-300 ease-in-out hover:text-white active:scale-110"
-              >
-                <span className="font-bold select-none">
+          <div className="w-full flex flex-row justify-center md:justify-end px-0 md:px-8 mt-2">
+            <a
+              onClick={() => props.search(1)}
+              className="border-4 border-primary p-1 px-4 rounded-md shadow-sm cursor-pointer hover:bg-primary hover:brightness-90 transition duration-300 ease-in-out hover:text-white active:scale-110"
+            >
+              <span className="font-bold select-none">
+                {isLoading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
                   <FaSearch />
-                </span>
-              </a>
-            </div>
-          </fieldset>
-        )}
+                )}
+              </span>
+            </a>
+          </div>
+        </fieldset>
         <fieldset className="border shadow-md rounded-lg p-2 transition duration-300 transform">
           <legend>Artículos seleccionados</legend>
           <div className="grid grid-flow-row-dense ggrid-cols-1 md:grid-cols-3 grid-rows-3 gap-1">
@@ -747,43 +820,84 @@ function Articulos(props: propsArticulo) {
       </div>
       <fieldset className="border shadow-md rounded-lg p-6 md:m-10 m-0">
         <legend>Artículos encontrados</legend>
-        {props.article.length !== 0 ? (
-          <div className="grid grid-flow-row-dense grid-cols-1 md:grid-cols-3 grid-rows-3 gap-2">
-            {props.article.map((articulo, index) => (
-              <div
-                className="pl-2 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"
-                key={index}
-              >
-                <div className="w-4/5 flex flex-col text-start">
-                  <label className=" select-none">
-                    <span className="font-semibold">Nombre</span>:{" "}
-                    {articulo.nombre}
-                  </label>
-                  <label className="select-none">
-                    <span className="font-semibold">Descripción</span>:{" "}
-                    {articulo.descripcion}
-                  </label>
-                </div>
-                <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
-                  <button
-                    disabled={articulo.action != "stand"}
-                    onClick={() => updateArticle(index, articulo)}
-                    type="button"
-                    className="flex items-center justify-center h-full w-full text-primary hover:text-success"
-                  >
-                    {articulo.action == "stand" && (
-                      <FaPlus className="h-6 w-6 focus:scale-115" />
-                    )}
-                    {articulo.action == "success" && (
-                      <HiCheck className="h-6 w-6 focus:scale-115" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
+        {isLoading ? (
+          <div className="flex justify-center items-center p-10">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
           </div>
+        ) : props.article.length !== 0 ? (
+          <>
+            <div className="grid grid-flow-row-dense grid-cols-1 md:grid-cols-3 grid-rows-3 gap-2">
+              {props.article.map((articulo, index) => (
+                <div
+                  className="pl-2 border-2 rounded flex justify-between items-center hover:border-primary hover:border-2"
+                  key={index}
+                >
+                  <div className="w-4/5 flex flex-col text-start">
+                    <label className=" select-none">
+                      <span className="font-semibold">Nombre</span>:{" "}
+                      {articulo.nombre}
+                    </label>
+                    <label className="select-none">
+                      <span className="font-semibold">Código</span>:{" "}
+                      {articulo.codigo}
+                    </label>
+                    <label className="select-none">
+                      <span className="font-semibold">Descripción</span>:{" "}
+                      {articulo.descripcion}
+                    </label>
+                  </div>
+                  <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
+                    <button
+                      disabled={articulo.action != "stand"}
+                      onClick={() => updateArticle(index, articulo)}
+                      type="button"
+                      className="flex items-center justify-center h-full w-full text-primary hover:text-success"
+                    >
+                      {articulo.action == "stand" && (
+                        <FaPlus className="h-6 w-6 focus:scale-115" />
+                      )}
+                      {articulo.action == "success" && (
+                        <HiCheck className="h-6 w-6 focus:scale-115" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Componente de paginación */}
+            <div className="flex justify-center mt-6">
+              <div className="btn-group">
+                <button
+                  className="btn btn-outline btn-sm btn-primary"
+                  onClick={() =>
+                    handlePageChange(props.paginationInfo.currentPage - 1)
+                  }
+                  disabled={props.paginationInfo.currentPage <= 1}
+                >
+                  «
+                </button>
+                <button className="btn btn-outline btn-sm btn-primary">
+                  Página {props.paginationInfo.currentPage} de{" "}
+                  {props.paginationInfo.totalPages}
+                </button>
+                <button
+                  className="btn btn-outline btn-sm btn-primary"
+                  onClick={() =>
+                    handlePageChange(props.paginationInfo.currentPage + 1)
+                  }
+                  disabled={
+                    props.paginationInfo.currentPage >=
+                    props.paginationInfo.totalPages
+                  }
+                >
+                  »
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
-          <WarningAlert message="No se ha encontrado ningun artículo" />
+          <WarningAlert message="No se ha encontrado ningún artículo" />
         )}
       </fieldset>
     </>
