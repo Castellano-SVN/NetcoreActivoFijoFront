@@ -96,7 +96,6 @@ interface AlmacenFormValues {
   BodegaId: string;
   Id?: string;
   TipoAlmacenId: string;
-  Codigo: string;
   Nombre: string;
 };
 

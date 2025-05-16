@@ -408,10 +408,6 @@ function BodegaList({
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }),
-    Codigo: z.number({
-      required_error: "Campo inválido",
-      invalid_type_error: "Campo inválido",
-    }),
     Nombre: z
       .string({
         required_error: "Campo requerido",
@@ -519,7 +515,6 @@ function BodegaList({
     setValue("Id", almacen.id);
     setValue("TipoAlmacenId", almacen.tipoAlmacenId);
     setValue("Nombre", almacen.nombre);
-    setValue("Codigo", almacen.codigo);
     handleShowCreation();
   };
   const ref = useRef<HTMLDialogElement>(null);
@@ -672,58 +667,62 @@ function BodegaList({
                   {/* SM SCREEN */}
                   {data?.pages?.map((page, pageIndex) => (
                     <React.Fragment key={pageIndex}>
-                      {page.dataList.map((almacen: IAlmacen, index: number) => (
-                        <div
-                          key={index}
-                          className="md:hidden shadow my-2 border rounded-md  w-full shadow-md"
-                        >
-                          <div className="flex flex-row justify-between p-2">
-                            <div className="basis-1/2 flex flex-col justify-left text-left">
-                              <span className="font-bold mb-2">Nombre</span>
-                              <span className="text-sm align-left">
-                                {almacen.nombre?.toUpperCase()}
-                              </span>
+                      {page.dataList
+                        .sort((a:any, b:any) => parseInt(a.codigo) - parseInt(b.codigo)) // Ordenar por código
+                        .map((almacen: IAlmacen, index: number) => (
+                          <div
+                            key={almacen.id}
+                            className="md:hidden shadow my-2 border rounded-md  w-full shadow-md"
+                          >
+                            <div className="flex flex-row justify-between p-2">
+                              <div className="basis-1/2 flex flex-col justify-left text-left">
+                                <span className="font-bold mb-2">Nombre</span>
+                                <span className="text-sm align-left">
+                                  {almacen.nombre?.toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="basis-1/2 flex flex-col justify-left text-right ">
+                                <span className="font-bold mb-2">Tipo</span>
+                                <span className="text-sm align-left">
+                                  {
+                                    tipoalmacen.find(
+                                      (e) => e.id === almacen.tipoAlmacenId
+                                    )?.nombre
+                                  }
+                                </span>
+                              </div>
                             </div>
-                            <div className="basis-1/2 flex flex-col justify-left text-right ">
-                              <span className="font-bold mb-2">Tipo</span>
-                              <span className="text-sm align-left">
-                                {
-                                  tipoalmacen.find(
-                                    (e) => e.id === almacen.tipoAlmacenId
-                                  )?.nombre
-                                }
+                            <div className="flex flex-row p-3 bg-[#FAF6FF] justify-between">
+                              <span className="font-bold text-sm">
+                                Acciones
                               </span>
+                              <div className="flex space-x-4">
+                                <a
+                                  onClick={() => editAlmacen(almacen)}
+                                  className="flex items-center"
+                                >
+                                  <span className=" underline text-primary">
+                                    Editar
+                                  </span>
+                                  <FaPencil className="text-primary ml-2" />
+                                </a>
+                                <a
+                                  onClick={() =>
+                                    router.push(
+                                      `/empresa/centrocosto/almacen/${almacen.id}`
+                                    )
+                                  }
+                                  className="flex items-center"
+                                >
+                                  <span className="underline text-primary">
+                                    Ver
+                                  </span>
+                                  <FaEye className="text-primary ml-2" />
+                                </a>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex flex-row p-3 bg-[#FAF6FF] justify-between">
-                            <span className="font-bold text-sm">Acciones</span>
-                            <div className="flex space-x-4">
-                              <a
-                                onClick={() => editAlmacen(almacen)}
-                                className="flex items-center"
-                              >
-                                <span className=" underline text-primary">
-                                  Editar
-                                </span>
-                                <FaPencil className="text-primary ml-2" />
-                              </a>
-                              <a
-                                onClick={() =>
-                                  router.push(
-                                    `/empresa/centrocosto/almacen/${almacen.id}`
-                                  )
-                                }
-                                className="flex items-center"
-                              >
-                                <span className="underline text-primary">
-                                  Ver
-                                </span>
-                                <FaEye className="text-primary ml-2" />
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </React.Fragment>
                   ))}
 
@@ -883,7 +882,7 @@ function BodegaList({
                 </label>
               )}
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <label className="label">
                 <span className="label-text">Código</span>
               </label>
@@ -899,7 +898,7 @@ function BodegaList({
                   {errors.Codigo.message}
                 </label>
               )}
-            </div>
+            </div> */}
             <div className="flex flex-col">
               <label className="label">
                 <span className="label-text">Tipo almacén</span>
