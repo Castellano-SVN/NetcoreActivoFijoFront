@@ -119,7 +119,7 @@ export default function NomSigDes({ errors }: props) {
                     <label className="label">
                         <span className="label-text">Sigla</span>
                     </label>
-                    <Input {...register("Sigla", { setValueAs: (value) => value === "" ? undefined : value })} />
+                    <Input {...register("Sigla", { setValueAs: (value) => value === "" ? undefined : value })} onChange={handleChange}/>
                     <label className="label text-error">
                         {errors.Sigla ? errors.Sigla.message : ""}
                     </label>
