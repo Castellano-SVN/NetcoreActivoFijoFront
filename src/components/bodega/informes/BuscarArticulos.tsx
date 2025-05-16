@@ -200,6 +200,68 @@ export default function BuscarArticuloMovTarjeta(props: props) {
   const Almacen = watch("Almacen");
   const Articulo = watch("Articulo");
 
+  // 1. Effect para CentroCosto
+  useEffect(() => {
+    if (!CentroCosto) {
+      setValue("Bodega", "");
+      setValue("Almacen", "");
+      setValue("Articulo", "");
+      setDataBodega([]);
+      setDataAlmacen([]);
+      setDataArticulo([]);
+      setArticulos([]);
+      return;
+    }
+
+    setValue("Bodega", "");
+    setValue("Almacen", "");
+    setValue("Articulo", "");
+    setDataAlmacen([]);
+    setDataArticulo([]);
+    setArticulos([]);
+
+    getAllBodegasByEmpresaYCentroCosto();
+  }, [CentroCosto]);
+
+  // 2. Effect para Bodega
+  useEffect(() => {
+    if (!Bodega) {
+      setValue("Almacen", "");
+      setValue("Articulo", "");
+      setDataAlmacen([]);
+      setDataArticulo([]);
+      setArticulos([]);
+      return;
+    }
+
+    setValue("Almacen", "");
+    setValue("Articulo", "");
+    setDataArticulo([]);
+    setArticulos([]);
+
+    getAllAlmacenByEmpByCenByBod();
+  }, [Bodega]);
+
+  // 3. Effect para Almacen
+  useEffect(() => {
+    if (!Almacen) {
+      setValue("Articulo", "");
+      setDataArticulo([]); // Limpiar datos de artículos
+      setArticulos([]);
+      return;
+    }
+
+    // Limpiar completamente antes de cargar nuevos
+    setValue("Articulo", "");
+    setDataArticulo([]); // <-- Asegúrate de limpiar los datos
+    setArticulos([]);
+
+    // Forzar un estado intermedio antes de cargar
+    setTimeout(() => {
+      getAllArticulosByAlmacen();
+    }, 0);
+  }, [Almacen]);
+
   useEffect(() => {
     if (!CentroCosto) return;
     getAllBodegasByEmpresaYCentroCosto();
@@ -402,6 +464,13 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                     menuPortalTarget={document.body}
                     loadingMessage={() => "Cargando opciones..."}
                     isLoading={dataCentroCosto.length === 0}
+                    noOptionsMessage={() =>
+                      !Almacen
+                        ? "Seleccione un almacén primero"
+                        : dataArticulo.length === 0
+                        ? "Este almacén no tiene artículos"
+                        : "No hay opciones"
+                    }
                     isClearable
                   />
                 )}
@@ -622,7 +691,7 @@ function Article(props: articleProps) {
         };
       }
     );
-    
+
     let combinedArray = [...entradas, ...salidas].sort(
       (a, b) => b.timestamp - a.timestamp
     );
