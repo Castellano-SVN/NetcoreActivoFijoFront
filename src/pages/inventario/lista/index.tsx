@@ -19,7 +19,7 @@ import {
   InventarioFisicoFormValue,
 } from "../../../interfaces/creation";
 import router from "next/router";
-import { FaArrowLeft, FaEye, FaSearch } from "react-icons/fa";
+import { FaArrowLeft, FaCalendarAlt, FaEye, FaSearch } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { z } from "zod";
 import { toast } from "react-toastify";
@@ -450,6 +450,30 @@ export default function ViewInventoryTaking() {
                             startDate={fechaDesde}
                             endDate={fechaHasta}
                             minDate={fechaDesde}
+                            // Oculta el valor de la fecha y muestra solo el icono
+                            customInput={
+                              <div className="flex items-center justify-between w-full cursor-pointer">
+                                {field.value ? (
+                                  <span>
+                                    {new Date(field.value).toLocaleDateString(
+                                      "es-ES",
+                                      {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      }
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500">
+                                    Seleccione la fecha
+                                  </span>
+                                )}
+                                <FaCalendarAlt className="text-primary text-xl" />
+                              </div>
+                            }
                           />
                         )}
                       />
