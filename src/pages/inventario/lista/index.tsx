@@ -180,7 +180,7 @@ export default function ViewInventoryTaking() {
     resolver: zodResolver(programarRevisionSchema),
     defaultValues: {
       FechaInicio: new Date(),
-      FechaTermino: new Date(),
+      FechaTermino: undefined, // Aquí cambiamos a undefined en lugar de new Date()
     },
   });
 
@@ -448,9 +448,9 @@ export default function ViewInventoryTaking() {
                             locale="es"
                             selectsEnd
                             startDate={fechaDesde}
-                            endDate={fechaHasta}
+                            endDate={fechaHasta ? new Date(fechaHasta) : null}
                             minDate={fechaDesde}
-                            // Oculta el valor de la fecha y muestra solo el icono
+                            placeholderText="Seleccionar fecha"
                             customInput={
                               <div className="flex items-center justify-between w-full cursor-pointer">
                                 {field.value ? (
@@ -468,7 +468,7 @@ export default function ViewInventoryTaking() {
                                   </span>
                                 ) : (
                                   <span className="text-gray-500">
-                                    Seleccione la fecha
+                                    Seleccionar fecha
                                   </span>
                                 )}
                                 <FaCalendarAlt className="text-primary text-xl" />
