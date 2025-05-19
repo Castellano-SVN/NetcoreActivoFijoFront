@@ -68,8 +68,23 @@ export function api_postTipoAlmacen(bearer: string, data: any) {
 export function api_putTipoAlmacen(bearer: string, data: any) {
   return api.put(`tipoalmacen/`, data, { headers: { "Authorization": `Bearer ${bearer}` } })
 }
-export function api_getTipoAlmacen(bearer: string) {
-  return api.get(`tipoalmacen/`, { headers: { "Authorization": `Bearer ${bearer}` } })
+export function api_getTipoAlmacen(
+  bearer: string,
+  page = 1,
+  searchParams?: {
+    searchTerm?: string
+    searchType?: "startsWith" | "contains" | "endsWith" | "exact"
+  },
+) {
+  let url = `tipoalmacen/?page=${page}`
+
+  if (searchParams?.searchTerm && searchParams?.searchType) {
+    url += `&searchTerm=${encodeURIComponent(searchParams.searchTerm)}&searchType=${searchParams.searchType}`
+  }
+
+  return api.get(url, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  })
 }
 
 export function api_postAlmacen(bearer: string, data: any) {
