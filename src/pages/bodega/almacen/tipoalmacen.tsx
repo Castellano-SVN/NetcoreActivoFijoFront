@@ -38,7 +38,7 @@ export default function TipoAlmacen() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 5; // Número de elementos por página
+  const itemsPerPage = 20; // Número de elementos por página
 
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState<string>("");
