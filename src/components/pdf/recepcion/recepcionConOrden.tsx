@@ -170,7 +170,7 @@ export default function PDFConOrden(props: props) {
                 <Page style={styles.page}>
                     <Image style={styles.img} src={LogoNetCoreBase64} />
                     <View style={styles.header} >
-                        <Text style={styles.titleRight}>Folio Recepción Nro: {props.data.folio}</Text>
+                        {/* <Text style={styles.titleRight}>Folio Recepción Nro: {props.data.folio}</Text> */}
                         <Text style={styles.titleRight}>Fecha:  {props.data.fecha.toLocaleDateString('es-ES', {
                             year: 'numeric',
                             month: 'long',

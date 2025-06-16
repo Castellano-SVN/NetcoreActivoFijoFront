@@ -45,7 +45,7 @@ const ArticulosSchema = z.object({
 const RecepcionDataSchema = z.object({
   cotizacion: z.string(),
   oc: z.number({ required_error: "Campo requerido" }),
-  folio: z.number({ required_error: "Campo requerido" }),
+ /*  folio: z.number({ required_error: "Campo requerido" }), */
   fecha: z.date({ required_error: "Campo requerido" }),
   empresa: z.string(),
   cc: z
@@ -213,7 +213,7 @@ export default function ConOrden(props: props) {
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-4">
-              <div>
+              {/* <div>
                 <label
                   className="block text-left mb-2"
                   htmlFor="Folio Recepcion"
@@ -231,7 +231,7 @@ export default function ConOrden(props: props) {
                 {errors.folio && (
                   <span className="text-red-600">{errors.folio.message}</span>
                 )}
-              </div>
+              </div> */}
 
               <div className="flex flex-col">
                 <label className="block text-left mb-2">Fecha:</label>
