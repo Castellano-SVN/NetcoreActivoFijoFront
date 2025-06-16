@@ -27,11 +27,11 @@ export default function Layout(props: LayoutProps) {
   const mutation = useMutation(generateToken);
   useEffect(() => {
     const token = async (rut:string) => {
+      setLoading(true)
       try {
         const result = await mutation.mutateAsync(rut);
         if (result.data) {
           const params = new URLSearchParams(window.location.search);
-          setLoading(true)
           setJwt(result.data);
           params.delete('remotetoken');
           router.replace({
@@ -41,15 +41,19 @@ export default function Layout(props: LayoutProps) {
         }
       } catch (error) {
         console.error("Error al generar el token:", error);
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
     if (!rut || rut === null) return;
     token(rut);
   }, [rut]);
   
-  if (!jwt )return ( <div className="flex items-center justify-center min-h-screen">
+  if (!jwt || loading )return ( <div className="flex items-center justify-center min-h-screen">
     <Loading size="lg" color="primary" />
-  </div>)
+  </div>);
+
   return (
     <>
       <Drawer
@@ -60,8 +64,8 @@ export default function Layout(props: LayoutProps) {
           <Menus open={toggleVisible}/>
         }
       >
-        {jwt !== "" && <><InfoBar /><TopBar open={toggleVisible} /></>}
-        {jwt !== "" ? (
+        {jwt !== "" && !loading &&<><InfoBar /><TopBar open={toggleVisible} /></>}
+        {jwt !== "" && !loading ? (
             <Body>{props.children}</Body>
         ) : (
           <div className="flex items-center justify-center h-screen">

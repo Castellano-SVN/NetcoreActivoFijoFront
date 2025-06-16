@@ -55,14 +55,18 @@ function AnoMes({ jwt }: anoMesProp) {
     "Noviembre",
     "Diciembre",
   ];
-
-  return (
-    <>
-      {loading ? (
+  if (loading)
+    return (
+      <>
         <div className="text-primary text-center mt-4 md:col-span-2">
           <Loading size="lg" />
         </div>
-      ) : dataAnoMes && dataAnoMes.length > 0 ? (
+      </>
+    );
+
+  return (
+    <>
+      {!loading && dataAnoMes && dataAnoMes.length > 0 ? (
         <>
           <div className="w-full grid place-items-center mt-2">
             <div className="md:w-2/5 p-4 border border-primary rounded-md shadow-md">
