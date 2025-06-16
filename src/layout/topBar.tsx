@@ -5,13 +5,14 @@ import {
   Modal,
   Navbar,
 } from "react-daisyui";
-import { BellIcon, ArrowPathIcon } from "@heroicons/react/20/solid";
+import { ArrowPathIcon, ArrowPathRoundedSquareIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import { FaAlignJustify } from "react-icons/fa6";
 import { useContextStore } from "../store/context.store";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/store/user.store";
 import { api_getMyNotifys } from "@/services/informes.service";
+import { FiBell } from "react-icons/fi";
 
 interface props {
   open: () => void;
@@ -89,9 +90,9 @@ export default function TopBar(props: props) {
               disabled={loading}
             >
               {loading ? (
-                <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                <ArrowPathRoundedSquareIcon className="w-5 h-5 animate-spin" />
               ) : (
-                <BellIcon className="w-6 h-6" />
+                <FiBell className="w-6 h-6" />
               )}
             </Button>
 
@@ -99,7 +100,7 @@ export default function TopBar(props: props) {
             {loading ? (
               <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center">
                 <span className="animate-spin">
-                  <ArrowPathIcon className="w-4 h-4 text-primary" />
+                  <ArrowPathRoundedSquareIcon className="w-4 h-4 text-primary" />
                 </span>
               </span>
             ) : notificationCount > 0 ? (
