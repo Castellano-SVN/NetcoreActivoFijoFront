@@ -160,3 +160,8 @@ export function api_getIFRByDetalleToExcel(
     { headers: { Authorization: `Bearer ${bearer}` }, responseType: "blob" }
   );
 }
+export function api_getMyNotifys(bearer: string) {
+  return api.get(`/empresa/myNotifys`, {
+    headers: { Authorization: `Bearer ${bearer}` }
+  });
+}

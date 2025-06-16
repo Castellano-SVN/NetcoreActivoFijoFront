@@ -536,11 +536,46 @@ interface props {
 }
 
 export function TableInventory(props: props) {
+
+  // Calcular días restantes para la fecha de término
+  const fechaTermino = props.inventarioFisico.fechaTermino 
+    ? new Date(props.inventarioFisico.fechaTermino) 
+    : null;
+  
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+  
+  let diasRestantes = null;
+  let estaPorExpirar = false;
+  
+  if (fechaTermino) {
+    // Calcular diferencia en días
+    const diffTime = fechaTermino.getTime() - hoy.getTime();
+    diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    // Determinar si está por expirar (0-5 días)
+    estaPorExpirar = diasRestantes >= 0 && diasRestantes <= 5;
+  }
+
+  // Clases CSS condicionales para resaltar
+  const borderClass = estaPorExpirar 
+    ? "border-2 border-error shadow-error shadow-md" 
+    : "border-2 border-gray-300";
+  
+  const numeroClass = estaPorExpirar 
+    ? "font-bold text-error" 
+    : "";
+
   return (
-    <div className="shadow-md hover:border-primary border-2 border-gray-300 rounded-md grid grid-cols-2 gap-4 ">
+    <div className={`shadow-md hover:border-primary rounded-md grid grid-cols-2 gap-4 ${borderClass}`}>
       <div className="col-span-2 text-start p-2">
         <label className="font-semibold">Número:</label>{" "}
-        <span className="">{props.inventarioFisico.numero}</span>
+        <span className={numeroClass}>{props.inventarioFisico.numero}</span>
+        {estaPorExpirar && diasRestantes !== null && (
+          <span className="ml-2 text-error font-semibold">
+            ({diasRestantes === 0 ? "Hoy vence" : `Vence en ${diasRestantes} días`})
+          </span>
+        )}
       </div>
 
       <div className="text-start p-2">
