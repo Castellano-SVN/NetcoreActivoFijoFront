@@ -30,9 +30,9 @@ export interface articulosI {
     oc: number;
     empresa: string;
     cotizacion: string;
-    folio: number;
+    folio?: number;
     fecha: Date;
-    numDoc: number;
+    numDoc?: number;
     fechaDoc: Date;
     tipo : number;
     descripcion:string;

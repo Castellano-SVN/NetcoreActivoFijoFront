@@ -103,7 +103,7 @@ const ArticulosSchema = z.object({
 });
 
 const RecepcionDataSchema = z.object({
-  folio: z.number({ required_error: "Campo requerido" }),
+  /* folio: z.number({ required_error: "Campo requerido" }), */
   fecha: z.date({ required_error: "Campo requerido" }),
   empresa: z.string(),
   cc: z
@@ -115,7 +115,7 @@ const RecepcionDataSchema = z.object({
   almacen: z
     .string({ required_error: "Campo requerido" })
     .min(1, { message: "Campo requerido" }),
-  numDoc: z.number({ required_error: "Campo requerido" }),
+  /* numDoc: z.number({ required_error: "Campo requerido" }), */
   fechaDoc: z.date({ required_error: "Campo requerido" }),
   tipo: z.number({ required_error: "Campo requerido" }),
   descripcion: z.string({ required_error: "Campo requerido" }).optional(),
@@ -490,7 +490,7 @@ function Recepcion(props: recepcionProps) {
   return (
     <div className="">
       <div className="flex flex-col md:flex-row lg:flex-row justify-between shadow-md bordered p-4 my-2 rounded transition duration-300 transform hover:scale-105">
-        <div className="w-full md:mr-2 lg:mr-2">
+        {/* <div className="w-full md:mr-2 lg:mr-2">
           <label className="block text-left mb-2" htmlFor="Folio Recepcion">
             Folio Recepción:
           </label>
@@ -504,8 +504,8 @@ function Recepcion(props: recepcionProps) {
           {errors.folio && (
             <span className="text-red-600">{errors.folio.message}</span>
           )}
-        </div>
-        <div className="w-full">
+        </div> */}
+        <div className="w-full md:w-1/2">
           <div className="flex flex-col">
             <label className="block text-left mb-2">Fecha Recepción:</label>
 
@@ -548,7 +548,7 @@ function Recepcion(props: recepcionProps) {
         <fieldset className="border shadow-md p-4 rounded transition duration-300 transform hover:scale-105">
           <legend>Documento</legend>
           <div className="flex flex-col md:flex-row lg:flex-row justify-between">
-            <div className="w-full md:mr-2 lg:mr-2">
+            {/* <div className="w-full md:mr-2 lg:mr-2">
               <label
                 className="block text-left mb-2"
                 htmlFor="Numero Documento"
@@ -566,8 +566,8 @@ function Recepcion(props: recepcionProps) {
               {errors.numDoc && (
                 <span className="text-red-600">{errors.numDoc.message}</span>
               )}
-            </div>
-            <div className="w-full">
+            </div> */}
+            <div className="w-full md:w-1/2">
               <div className="flex flex-col">
                 <label className="block text-left mb-2">
                   Fecha de documento:

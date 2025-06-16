@@ -174,9 +174,6 @@ export default function PDFSinOrden(props: props) {
           <Image style={styles.img} src={LogoNetCoreBase64} />
           <View style={styles.header}>
             <Text style={styles.titleRight}>
-              Folio Recepción Nro: {props.data.folio}
-            </Text>
-            <Text style={styles.titleRight}>
               Fecha:{" "}
               {props.data.fecha.toLocaleDateString("es-ES", {
                 year: "numeric",
@@ -258,9 +255,9 @@ export default function PDFSinOrden(props: props) {
                   {props.data.tipo == 2 ? "Guía de despacho" : "Factura"}
                 </Text>
                 <View style={styles.brSmall}></View>
-                <View style={styles.fila}>
+                {/* <View style={styles.fila}>
                   <Text style={styles.subTitle}>NUMERO DE DOCUMENTO</Text>
-                </View>
+                </View> */}
                 <Text style={styles.parrafo}>{props.data.numDoc}</Text>
               </View>
             </View>
