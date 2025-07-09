@@ -173,7 +173,7 @@ export default function CreateArticulo(props: props) {
 
   const [show, setShow] = useState<boolean>(false);
   const setArticuloEdit = async () => {
-    const articuloEditLs = localStorage.getItem("editArticulo");
+    const articuloEditLs = sessionStorage.getItem("editArticulo");
     if (!articuloEditLs) {
       setShow(false);
       return;
@@ -190,7 +190,7 @@ export default function CreateArticulo(props: props) {
     setValue("Descripcion", editArticulo.articulo.descripcion);
     setValue("Eliminado", editArticulo.articulo.eliminado);
     setShow(true);
-    localStorage.clear();
+    sessionStorage.clear();
   };
   useEffect(() => {
     setArticuloEdit();

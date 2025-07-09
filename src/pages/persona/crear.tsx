@@ -285,7 +285,7 @@ export default function CreatePerson() {
   }
   const setUserEdit = async () => {
 
-    const personaEditLS = localStorage.getItem("personaEdit")
+    const personaEditLS = sessionStorage.getItem("personaEdit")
     if (!personaEditLS) {
       setShow(true);
       return

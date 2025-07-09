@@ -91,7 +91,7 @@ export default function NomSigDes({ errors }: props) {
 
 
     useEffect(() => {
-        const bodegaNewLS = localStorage.getItem("BodegaNew");
+        const bodegaNewLS = sessionStorage.getItem("BodegaNew");
         if (!bodegaNewLS) return ;
         const bodegaNew:LSDATA = JSON.parse(bodegaNewLS);
 

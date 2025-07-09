@@ -163,7 +163,7 @@ export default function CreateSubFamily(props: props) {
 
   const [show, setShow] = useState<boolean>(false);
   const setSubFamiliaEdit = async () => {
-    const subFamiliaEditLs = localStorage.getItem("editSubFamilia");
+    const subFamiliaEditLs = sessionStorage.getItem("editSubFamilia");
     if (!subFamiliaEditLs) {
       setShow(false);
       return;
@@ -185,7 +185,7 @@ export default function CreateSubFamily(props: props) {
     setValue("Descripcion", editSubFamilia.subFamilia.descripcion);
     setValue("Eliminado", editSubFamilia.subFamilia.eliminado);
     setShow(true);
-    localStorage.clear();
+    sessionStorage.clear();
   };
   useEffect(() => {
     setSubFamiliaEdit();

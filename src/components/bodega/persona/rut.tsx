@@ -28,7 +28,7 @@ export default function Run({ errors }: props) {
   }
   
   useEffect(() => {
-    const rutEditLS = localStorage.getItem("rutedit");
+    const rutEditLS = sessionStorage.getItem("rutedit");
     if (!rutEditLS) return;
     const rutedit: { runcuerpo:number, rundigito:string } = JSON.parse(rutEditLS);
     console.log(rutedit)

@@ -286,7 +286,7 @@ function Element({
   };
 
   const editArticulo = () => {
-    localStorage.setItem("editArticulo", JSON.stringify({ articulo: element }));
+    sessionStorage.setItem("editArticulo", JSON.stringify({ articulo: element }));
     create();
   };
 

@@ -206,7 +206,7 @@ export default function Page(props: props) {
 
   const [show, setShow] = useState<boolean>(false);
   const setFamiliaEdit = async () => {
-    const familiaEditLs = localStorage.getItem("editFamilia");
+    const familiaEditLs = sessionStorage.getItem("editFamilia");
     if (!familiaEditLs) {
       setShow(false);
       return;
@@ -225,7 +225,7 @@ export default function Page(props: props) {
     setValue("Eliminado", editFamilia.familia.eliminado);
     ref.current?.showModal();
     setShow(true);
-    localStorage.clear();
+    sessionStorage.clear();
   };
 
   useEffect(() => {
@@ -545,7 +545,7 @@ function Element({
   };
 
   const editFamilia = () => {
-    localStorage.setItem("editFamilia", JSON.stringify({ familia: element }));
+    sessionStorage.setItem("editFamilia", JSON.stringify({ familia: element }));
     handleShow();
   };
 

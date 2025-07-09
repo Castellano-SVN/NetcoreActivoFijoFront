@@ -112,7 +112,7 @@ export default function InstitucionalCentro({ errors }: props) {
   */
   //EDICION O NUEVO ELEMENTO A PARTIR DE CENTRO COSTO
   useEffect(() => {
-    const newElementChildren = localStorage.getItem("CentroCostoElements");
+    const newElementChildren = sessionStorage.getItem("CentroCostoElements");
     if (newElementChildren) {
       const data: { CentroCostoId: string, centroCostoNombre: string, EmpresaId: string, empresaName: string } = JSON.parse(newElementChildren);
       setValue("CentroCostoId", data.CentroCostoId);
