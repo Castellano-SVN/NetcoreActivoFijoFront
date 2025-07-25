@@ -98,7 +98,7 @@ export default function CreateCost() {
   };
 
   useEffect(() => {
-    const loadDataLS = localStorage.getItem("CentroCostoAll");
+    const loadDataLS = sessionStorage.getItem("CentroCostoAll");
     if (loadDataLS) {
       const loadData: { cc: ICentroCosto, empresa: EmpresaFormValues } = JSON.parse(loadDataLS);
       console.log(loadData.cc)
@@ -125,7 +125,7 @@ export default function CreateCost() {
       setValue("CiudadCodigo",loadData.cc.ciudadCodigo);
       setValue("ComunaCodigo",loadData.cc.comunaCodigo);
       setValue("TipoEstablecimientoSaludCodigo",loadData.cc.tipoEstablecimientoSaludCodigo);
-      localStorage.removeItem("CentroCostoAll")
+      sessionStorage.removeItem("CentroCostoAll")
     }
 
   }, [])

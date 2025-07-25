@@ -344,7 +344,7 @@ function Element({
   };
 
   const editSubFamilia = () => {
-    localStorage.setItem(
+    sessionStorage.setItem(
       "editSubFamilia",
       JSON.stringify({ subFamilia: element })
     );

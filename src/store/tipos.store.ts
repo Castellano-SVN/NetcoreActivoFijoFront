@@ -81,6 +81,6 @@ export const useTiposStore = create<State & Actions>()(
       }),
       {
         name: 'tipos-Store',
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => sessionStorage),
       }))
 );

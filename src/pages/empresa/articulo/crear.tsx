@@ -62,7 +62,7 @@ export default function CreateArticulo() {
   };
 
   useEffect(() => {
-    const loadDataArticulo = localStorage.getItem("articuloEmpresaId");
+    const loadDataArticulo = sessionStorage.getItem("articuloEmpresaId");
     if (loadDataArticulo && loadDataArticulo.length !== 0) {
       setValue("EmpresaId", loadDataArticulo);
     } else {

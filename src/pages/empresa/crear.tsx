@@ -118,7 +118,7 @@ export default function CreateEmpresa() {
   useEffect(
     () => {
 
-      const empresaEditLS = localStorage.getItem("empresaEdit")
+      const empresaEditLS = sessionStorage.getItem("empresaEdit")
       if (!empresaEditLS) return;
       const empresaEdit: { empresa: IEmpresa } = JSON.parse(empresaEditLS);
       toast.info("Editando empresa existente");

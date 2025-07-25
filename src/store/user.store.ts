@@ -22,6 +22,6 @@ export const useUserStore = create<State & Actions>()(
         setJwt: (token: string) => set((state) => ({ ...state, jwt:token })),
       }),
       { name: 'token-Store',
-      storage: createJSONStorage(() => localStorage), 
+      storage: createJSONStorage(() => sessionStorage), 
        }))
 );

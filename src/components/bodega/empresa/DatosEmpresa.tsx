@@ -28,7 +28,7 @@ export default function DatostEmpresa({ errors }: props) {
   }
 
   useEffect(() => {
-    const rutempresaEditLS = localStorage.getItem("rutEmpresaEdit");
+    const rutempresaEditLS = sessionStorage.getItem("rutEmpresaEdit");
     if (!rutempresaEditLS) return;
     const rutEmpresaEdit: { rutCuerpo:number, rutDigito:string } = JSON.parse(rutempresaEditLS);
     console.log(rutEmpresaEdit);

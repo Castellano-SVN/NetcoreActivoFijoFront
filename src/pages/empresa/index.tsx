@@ -304,17 +304,17 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
   const router = useRouter();
 
   const EditElementChildren = (centroCosto: CentroCosto, empresa: Empresa) => {
-    localStorage.setItem("CentroCostoElements", JSON.stringify({ CentroCostoId: centroCosto.id, centroCostoNombre: centroCosto.nombre, EmpresaId: empresa.id, empresaName: empresa.razonSocial }));
-    localStorage.setItem("CentroCostoAll", JSON.stringify({ cc: centroCosto, empresa: empresa }));
+    sessionStorage.setItem("CentroCostoElements", JSON.stringify({ CentroCostoId: centroCosto.id, centroCostoNombre: centroCosto.nombre, EmpresaId: empresa.id, empresaName: empresa.razonSocial }));
+    sessionStorage.setItem("CentroCostoAll", JSON.stringify({ cc: centroCosto, empresa: empresa }));
     router.push("/empresa/centrocosto")
   }
   const FirstChildren = (empresaId: string, empresaName: string) => {
-    localStorage.setItem("CentroCostoElements", JSON.stringify({ EmpresaId: empresaId, empresaName: empresaName }));
+    sessionStorage.setItem("CentroCostoElements", JSON.stringify({ EmpresaId: empresaId, empresaName: empresaName }));
     router.push("/empresa/centrocosto")
   }
   const AddElementChildren = (centroCostoId: string, centroCostoName: string, empresaId: string, empresaName: string) => {
 
-    localStorage.setItem("CentroCostoElements", JSON.stringify({ CentroCostoId: centroCostoId, centroCostoNombre: centroCostoName, EmpresaId: empresaId, empresaName: empresaName }));
+    sessionStorage.setItem("CentroCostoElements", JSON.stringify({ CentroCostoId: centroCostoId, centroCostoNombre: centroCostoName, EmpresaId: empresaId, empresaName: empresaName }));
     router.push("/empresa/centrocosto")
   }
   const [messageLock, setMessageLock] = useState('');
@@ -333,9 +333,9 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
     router.push(`/empresa/articulo/${empresaId}`)
   }
   const editEmpresa = (empresa: Empresa) => {
-    localStorage.setItem("empresaEdit", JSON.stringify({ empresa: empresa }));
-    localStorage.setItem("region", JSON.stringify({ region: empresa.regionCodigo, ciudad: empresa.ciudadCodigo, comuna: empresa.comunaCodigo }));
-    localStorage.setItem("rutEmpresaEdit", JSON.stringify({ rutCuerpo: empresa.rutCuerpo, rutDigito: empresa.rutDigito }));
+    sessionStorage.setItem("empresaEdit", JSON.stringify({ empresa: empresa }));
+    sessionStorage.setItem("region", JSON.stringify({ region: empresa.regionCodigo, ciudad: empresa.ciudadCodigo, comuna: empresa.comunaCodigo }));
+    sessionStorage.setItem("rutEmpresaEdit", JSON.stringify({ rutCuerpo: empresa.rutCuerpo, rutDigito: empresa.rutDigito }));
     push("/empresa/crear"); //  mane
   }
 

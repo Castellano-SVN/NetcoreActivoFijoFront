@@ -141,7 +141,7 @@ export default function Page() {
       centroCostoId: dataCentroCosto?.id,
       centroCostoName: dataCentroCosto?.nombre,
     };
-    localStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
+    sessionStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
     router.push("/bodega/crear");
   };
   const editBodega = (almacen: IcentroCosto_Bodega) => {
@@ -155,7 +155,7 @@ export default function Page() {
       id: almacen.id,
       descripcion: almacen.descripcion,
     };
-    localStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
+    sessionStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
     router.push("/bodega/crear");
   };
   const getTipoAlmacen = async () => {
