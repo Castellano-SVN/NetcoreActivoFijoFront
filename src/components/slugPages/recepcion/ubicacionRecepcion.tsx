@@ -77,7 +77,7 @@ export default function UbicacionRecepcion(props: props) {
       ccBodega
     );
     setAlmacens(alm.data.dataList);
-    setValue("almacen", alm.data.dataList[0].id);
+    setValue("almacen", alm.data.dataList[0]?.id);
   };
   useEffect(() => {
     if (!ccWatch) return;

@@ -109,7 +109,7 @@ export default function Page() {
             <tbody>
               {data?.data.dataList.map((e: ITipoAlmacen, index: number) => (
                 <tr className="hover:bg-[#FAF6FF]">
-                  <th>1</th>
+                  <th>{index + 1}</th>
                   <td align="center">{e.nombre}</td>
                 </tr>
               ))}

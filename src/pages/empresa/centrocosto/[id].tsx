@@ -502,8 +502,8 @@ function BodegaList({
   const AlmacenSubmit = async (data: AlmacenFormValues) => {
     try {
       await api_postAlmacen(jwt, data);
-      if (data.Id) toast.success("¡El nuevo almacén se creo correctamente!");
-      if (!data.Id) toast.success("¡Se modifico el almacén correctamente");
+      if (!data.Id) toast.success("¡El nuevo almacén se creo correctamente!");
+      if (data.Id) toast.success("¡Se modifico el almacén correctamente");
       refetch();
       reset();
       handleCloseCreation();
