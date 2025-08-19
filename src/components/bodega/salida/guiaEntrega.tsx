@@ -40,6 +40,7 @@ export default function GuiaEntrega() {
         CodigoSubFamilia: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
         SubFamilia: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         DescripcionArticulo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }).optional(),
+        anoNumero: z.number()
     });
 
     const OutPutSchema = z.object({
@@ -55,7 +56,7 @@ export default function GuiaEntrega() {
         BodegaDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         /* DireccionOrigen: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         DireccionDestino: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }), */
-        ParteSalida: z.array(ParteSalidaSchema)
+        ParteSalida: z.array(ParteSalidaSchema),
     });
 
     const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema), defaultValues: { ParteSalida: [], } });
@@ -410,8 +411,9 @@ export default function GuiaEntrega() {
 
                                 </Table.Head>
                                 <Table.Body>
+                                    {JSON.stringify(errors)}
                                     {dataAlmacenArticulo.map((almacenArticulo, index) => {
-                                        const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                        const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId && almacenArticulo.anoNumero == field.anoNumero);
                                         return (
                                             <Table.Row key={index} hover={true}>
                                                 <input
@@ -421,6 +423,7 @@ export default function GuiaEntrega() {
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
                                                             append({
+                                                                anoNumero: almacenArticulo.articulo.anoNumero,
                                                                 AlmacenId: almacenArticulo.almacenId,
                                                                 ArticuloId: almacenArticulo.articuloId,
                                                                 Cantidad: 0,

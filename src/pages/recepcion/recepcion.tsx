@@ -60,6 +60,7 @@ export default function recepcion() {
           <div className="p-1">
             <div>
               <>
+              {JSON.stringify(dataOrdenCompra)}
                 <div className="flex flex-row justify-center p-1">
                   <div className="flex flex-col shadow-md border rounded-md w-full p-2">
                     {showConOrden === false ? (

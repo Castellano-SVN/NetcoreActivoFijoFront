@@ -40,6 +40,7 @@ const ArticulosSchema = z.object({
   recibida: z.number(),
   descripcion: z.string().optional(),
   observaciones: z.string().optional(),
+  AnoNumero: z.number(),
 });
 
 const RecepcionDataSchema = z.object({
@@ -155,7 +156,11 @@ export default function ConOrden(props: props) {
     }
   );
   const [showPdf, setShowPdf] = useState(false);
-
+  useEffect(() => {
+    console.log('errores');
+    console.log(errors);
+    console.log(getValues());
+  }, [errors]);
   useEffect(() => {
     remove([0, 1]);
     props.dataConOrdenCompra[0].ordenCompraDetalles?.forEach((element) => {
@@ -169,6 +174,7 @@ export default function ConOrden(props: props) {
         recepcionado: element.cotizacionDetalle.solicitudDetalle.cantidadAprobada,
         porRecepcionar: undefined,
         recibida: undefined,
+        AnoNumero: element.cotizacionDetalle.articulo.anoNumero,
         observaciones: undefined,
       };
       append(articulo);
@@ -349,7 +355,7 @@ export default function ConOrden(props: props) {
                 )}
               </div>
             </div>
-
+                {JSON.stringify(fields)}
             <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
               <Table className="border shadow-lg ">
                 <Table.Head className="bg-primary text-white">

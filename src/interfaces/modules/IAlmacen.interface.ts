@@ -32,6 +32,7 @@ interface IAlmacenArticulo {
     articulo: {
         codigo?: string;
         nombre: string;
+        anoNumero: number;
         descripcion?: string;
         id: string;
         subFamilium: {

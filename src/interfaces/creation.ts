@@ -512,6 +512,7 @@ interface IOrdenCompra {
         codigo?: string;
         id: string;
         nombre?: string;
+        anoNumero: number;
       }
       cantidad: number;
       id: string;
@@ -721,6 +722,7 @@ interface OutPutFormValues {
   DireccionOrigen: string;
   DireccionDestino: string;
   ParteSalida: {
+    anoNumero: number;
     AlmacenId: string;
     ArticuloId: string;
     Cantidad: number;
@@ -896,6 +898,7 @@ interface FormValueGuiaSalidaDetalle {
   GuiaSalidaDetalle: {
     AlmacenId: string;
     SubFamiliaId: string;
+    anoNumero: number;
     ArticuloId: string;
     EstadoArticuloCodigo: number;
     Cantidad: number;

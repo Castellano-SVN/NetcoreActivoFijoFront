@@ -595,7 +595,7 @@ function ViewLocation(props: {
 
   const ValidationSchema = z.object({
     EmpresaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
-    PersonaConteoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
+    PersonaConteoId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }).min(7,{message: 'Ingrese un rut valido'}),
     SubFamiliaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
     MarcaId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo Invalido" }),
@@ -704,7 +704,7 @@ function ViewLocation(props: {
                   <th>Familia</th>
                   <th>Cantidad en almacén</th>
                   <th>Año</th>
-                  <th>Persona Conteo</th>
+                  <th>Responsable</th>
                   <th>Marca</th>
                   <th>Estado</th>
                   <th>Programa</th>

@@ -52,6 +52,7 @@ interface articuloI {
   subfamilia: string;
   familia: string;
   estado: number;
+  anoNumero:number;
 }
 interface estadosI {
   codigo: number; nombre: string;
@@ -150,6 +151,7 @@ export default function Page() {
     const newElementsArticles: articuloI[] = [];
     articles.data.dataList.map((e: any) => {
       newElementsArticles.push({
+        anoNumero: e.anoNumero,
         articuloId: e.articuloId,
         cantidad: e.cantidad,
         descripcion: e.articulo.descripcion,
@@ -160,7 +162,6 @@ export default function Page() {
         estado: e.estadoArticuloCodigo
       })
     })
-
     setArticulos(newElementsArticles);
   }
 
@@ -361,10 +362,11 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }).nullish(),
+    anoNumero: z.number()
   });
   const { jwt } = useUserStore();
 
-  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined }>({
+  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined,anoNumero:number }>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -381,6 +383,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
     
       await api_putAlmacenArticulo(jwt, data);
       await update();
+      handleCloseLocation()
     } catch (error) {
       toast.error("Ha ocurrido un error.");
       console.log(error);
@@ -400,7 +403,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
     setValue("estado", element.estado);
     setValue("locacion", element.locacion);
     setValue("locacionOrigen", element.locacion);
-
+    setValue("anoNumero",element.anoNumero)
     locationRef.current?.showModal();
   }, [locationRef]);
 
@@ -542,8 +545,9 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }).nullish(),
+    anoNumero: z.number()
   });
-  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined }>({
+  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined,anoNumero: number }>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -557,12 +561,12 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
   } = methodsLocation;
   const { jwt } = useUserStore();
 
-  const Submit = async (data: { almacen: string, articulo: string, estado: number, locacion: string | undefined }) => {
+  const Submit = async (data: { anoNumero:number,almacen: string, articulo: string, estado: number, locacion: string | undefined }) => {
     try {
       
       await api_putAlmacenArticulo(jwt, data);
       await update();
-      locationRef.current?.close();
+      handleCloseLocation()
     } catch (error) {
       toast.error("Ha ocurrido un error.");
       
@@ -577,11 +581,13 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
   const locationRef = useRef<HTMLDialogElement>(null);
   const handleShowLocation = useCallback((element: articuloI) => {
     reset();
+    console.log(element);
     setValue("almacen", almacen.id)
     setValue("articulo", element.articuloId);
     setValue("estado", element.estado);
     setValue("locacion", element.locacion);
     setValue("locacionOrigen", element.locacion);
+    setValue("anoNumero",element.anoNumero); 
     locationRef.current?.showModal();
   }, [locationRef]);
 
@@ -668,6 +674,7 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
               <tr>
                 <th></th>
                 <th>Nombre</th>
+                <th>Año</th>
                 <th>Cantidad</th>
                 <th>Estado</th>
               </tr>
@@ -684,6 +691,9 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
                     <br />
                     <span>{e.familia} - {e.subfamilia}</span>
                   </td>
+                  <td><span className="font-bold">
+                      {e.anoNumero}
+                    </span></td>
                   <td>{e.cantidad}</td>
                   <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
                   <td>

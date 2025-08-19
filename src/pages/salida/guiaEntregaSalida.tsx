@@ -112,6 +112,7 @@ export default function Salidas() {
         CodigoArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
         DescripcionArticulo: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }).optional(),
         CantidadSistema: z.number({ required_error: "Campo requerido", invalid_type_error: "tipo invalido" }),
+        anoNumero: z.number(),
         EstadoArticuloNombre: z.string({ required_error: "Campo invalido", invalid_type_error: "Tipo invalido" }),
     });
 
@@ -467,7 +468,7 @@ export default function Salidas() {
                                     </Table.Head>
                                     <Table.Body>
                                         {dataAlmacenArticulo.map((almacenArticulo, index) => {
-                                            const fieldIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId);
+                                            const fieldIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId && field.anoNumero === almacenArticulo.anoNumero);
                                             return (
                                                 <Table.Row key={index} hover={true}>
                                                     <span>
@@ -483,6 +484,7 @@ export default function Salidas() {
                                                                         ArticuloId: almacenArticulo.articuloId,
                                                                         EstadoArticuloCodigo: 0,
                                                                         Cantidad: 0,
+                                                                        anoNumero: almacenArticulo.articulo.anoNumero,
                                                                         Observacion: "",
                                                                         CodigoSubFamilia: almacenArticulo.articulo.subFamilium.codigo,
                                                                         NombreSubFamilia: almacenArticulo.articulo.nombre,

@@ -14,6 +14,7 @@ export interface articulosI {
     porRecepcionar: number | undefined;
     recibida: number  | undefined;
     observaciones: string | undefined;
+    AnoNumero:number;
 }
 
  export interface articulosSOC {
@@ -24,6 +25,7 @@ export interface articulosI {
     nombre: string;
     descripcion: string;
     valor: number;
+    anoNumero: number;
     cantidadAlmacen: string | number;
  }
  interface recepcion extends ubicacionRecepcionI {

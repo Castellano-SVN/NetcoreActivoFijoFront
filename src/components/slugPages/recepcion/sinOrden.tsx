@@ -95,8 +95,9 @@ interface PaginationInfo {
 
 const ArticulosSchema = z.object({
   id: z.string(),
-  codigo: z.string().optional(),
+  codigo: z.string().optional().nullable(),
   nombre: z.string().optional(),
+  anoNumero: z.number().optional(),
   valor: z.number().optional(),
   cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
@@ -224,6 +225,7 @@ export default function SinOrden(props: props) {
   }, []);
 
   useEffect(() => {
+    console.log('errores');
     console.log(errors);
     console.log(getValues());
   }, [errors]);
@@ -844,6 +846,10 @@ function Articulos(props: propsArticulo) {
                     <label className="select-none">
                       <span className="font-semibold">Descripción</span>:{" "}
                       {articulo.descripcion}
+                    </label>
+                    <label className="select-none">
+                      <span className="font-semibold">Año</span>:{" "}
+                      {articulo.anoNumero}
                     </label>
                   </div>
                   <div className="w-1/5 border-l border-gray-300 h-full flex justify-center items-center">
