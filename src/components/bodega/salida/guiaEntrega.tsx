@@ -739,6 +739,7 @@ export default function GuiaEntrega() {
                           <input
                             type="number"
                             min={1}
+                            max={almacenArticulo.cantidad}
                             step="1"
                             onKeyDown={(e) => {
                               if (e.key === "-" || e.key === "e")
