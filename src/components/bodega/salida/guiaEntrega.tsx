@@ -6,14 +6,15 @@ import { IAlmacen, IAlmacenArticulo } from "@/interfaces/modules/IAlmacen.interf
 import { api_getAllAlmacenArticuloByEmpByCenByBodByAlm, api_getAllAlmacenByEmpByCenByBod, api_getAllBodegaByEmpresaYCentroCosto, api_getAllBodegas, api_getAllCentroCostoByEmpresa, api_getAllEmpresas } from "@/services/bodega.service";
 import { api_postGuiaEntrega } from "@/services/salidas.service";
 import { useContextStore } from "@/store/context.store";
+import { useTiposStore } from "@/store/tipos.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useSearchParams } from "next/navigation";
 import router from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Modal, Table } from "react-daisyui";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Button, Modal, Select, Table } from "react-daisyui";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FaFilePdf, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -40,7 +41,8 @@ export default function GuiaEntrega() {
         CodigoSubFamilia: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
         SubFamilia: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         DescripcionArticulo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }).optional().nullable(),
-        anoNumero: z.number()
+        anoNumero: z.number(),
+        estadoArticulo: z.number()
     });
 
     const OutPutSchema = z.object({
@@ -60,7 +62,7 @@ export default function GuiaEntrega() {
     });
 
     const metodos = useForm<OutPutFormValues>({ resolver: zodResolver(OutPutSchema), defaultValues: { ParteSalida: [], } });
-    const { register, handleSubmit, formState: { errors }, setValue, reset, control, watch } = metodos;
+    const { register, handleSubmit, formState: { errors }, setValue, reset, control, watch,getValues } = metodos;
 
     const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
         control,
@@ -185,6 +187,7 @@ export default function GuiaEntrega() {
     const getAllAlmacenArticuloByEmpByCenByBodByAlm = async () => {
         try {
             const data5 = await api_getAllAlmacenArticuloByEmpByCenByBodByAlm(jwt, idEmpresa, CCIdOrigen, BodegaIdOrigen, AlmacenIdOrigen);
+            console.log('data', data5.data.dataList)
             setDataAlmacenArticulo(data5.data.dataList);
         } catch (error) {
             console.error(error);
@@ -209,7 +212,7 @@ export default function GuiaEntrega() {
 
     const [showPdf, setShowPdf] = useState(false);
     const [dataPost, setDataPost] = useState<OutPutFormValues | null>(null);
-    useEffect(() => {console.log(errors)},[errors])
+    useEffect(() => { console.log('errores',errors,'valores',getValues()) }, [errors])
     const onSubmit = async (data: OutPutFormValues) => {
         try {
             const response = await api_postGuiaEntrega(jwt, data)
@@ -230,8 +233,8 @@ export default function GuiaEntrega() {
                 setShowPdf(false);
             }
         }
-        console.log(data);
     };
+    const { EstadoArticulo } = useTiposStore();
 
 
     return (
@@ -408,11 +411,12 @@ export default function GuiaEntrega() {
                                     <span>Descripción artículo</span>
                                     <span>Cantidad sistema</span>
                                     <span>Cantidad salida</span>
+                                    <span>Estado</span>
 
                                 </Table.Head>
                                 <Table.Body>
                                     {dataAlmacenArticulo.map((almacenArticulo, index) => {
-                                        const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId && almacenArticulo.anoNumero == field.anoNumero);
+                                        const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId && almacenArticulo.anoNumero == field.anoNumero && almacenArticulo.estadoArticuloCodigo == field.estadoArticulo);
                                         return (
                                             <Table.Row key={index} hover={true}>
                                                 <input
@@ -431,7 +435,8 @@ export default function GuiaEntrega() {
                                                                 Familia: almacenArticulo.articulo.subFamilium.familium.nombre,
                                                                 CodigoSubFamilia: almacenArticulo.articulo.subFamilium.codigo,
                                                                 SubFamilia: almacenArticulo.articulo.subFamilium.nombre,
-                                                                DescripcionArticulo: almacenArticulo.articulo.descripcion
+                                                                DescripcionArticulo: almacenArticulo.articulo.descripcion,
+                                                                estadoArticulo: almacenArticulo.estadoArticuloCodigo
                                                             });
                                                         } else {
                                                             remove(fieldsIndex);
@@ -446,16 +451,51 @@ export default function GuiaEntrega() {
                                                 <span>{almacenArticulo.articulo.descripcion}</span>
                                                 <span>{almacenArticulo.cantidad}</span>
                                                 {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                    <>
                                                     <input
-                                                        type="number"
                                                         {...register(`ParteSalida.${fieldsIndex}.Cantidad`, {
                                                             setValueAs: (value) => value === "" ? undefined : Number(value)
                                                         })}
                                                         className="mt-1 block w-full py-1 md:py-2 lg:py-2 px-3 border border-primary bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                                                     />
+                                                    </>
                                                 ) : (
                                                     <></>
                                                 )}
+                                     
+                                     {fields.find((field, fieldIndex) => fieldIndex === fieldsIndex) ? (
+                                                    
+                                                    <Controller
+                                                        control={control}
+                                                        name={`ParteSalida.${fieldsIndex}.estadoArticulo`}
+                                                        rules={{
+                                                            required: "Este campo es obligatorio",
+                                                        }}
+                                                        defaultValue={Number(`ParteSalida.${fieldsIndex}.estadoArticulo`)}
+                                                        render={({ field }) => (
+                                                            <Select
+                                                                {...field}
+                                                                value={field.value ?? ""}
+                                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                color={
+                                                                    errors?.ParteSalida?.[fieldsIndex]?.estadoArticulo ? "error" : "neutral"
+                                                                }
+                                                            >
+                                                                <Select.Option value={0} disabled>
+                                                                    Seleccione el tipo de almacén
+                                                                </Select.Option>
+                                                                {EstadoArticulo.map((estado) => (
+                                                                    <Select.Option key={estado.codigo} value={estado.codigo}>
+                                                                        {estado.nombre}
+                                                                    </Select.Option>
+                                                                ))}
+                                                            </Select>
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    <></>
+                                                )}
+
                                             </Table.Row>
                                         );
                                     })}

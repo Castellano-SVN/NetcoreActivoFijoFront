@@ -17,14 +17,14 @@ api.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       console.error("Timeout de la petición:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 2) Sin respuesta (p. ej. servidor caído o CORS bloqueado)
     else if (error.request && !error.response) {
       console.error("No hubo respuesta del servidor:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 3) Error 404: logout
@@ -38,12 +38,12 @@ api.interceptors.response.use(
     else if (error.response?.status! >= 500) {
       console.error(`Error ${error.response!.status} del servidor`);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export function api_getAllIFByEmpresa(
@@ -53,13 +53,13 @@ export function api_getAllIFByEmpresa(
   searchParams?: {
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `inventariofisico?empresaId=${empresaId}&page=${page}&perPage=6`;
 
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
 
@@ -71,25 +71,25 @@ export function api_getAllIFByEmpresa(
 export function api_getValidation(
   bearer: string,
   empresaId: string,
-  numero: number
+  numero: number,
 ) {
   return api.get(
     `inventariofisico/lista?empresaId=${empresaId}&numero=${numero}`,
     {
       headers: { Authorization: `Bearer ${bearer}` },
-    }
+    },
   );
 }
 export function api_getAllInFiDe(
   bearer: string,
   empresaId: string,
-  numero: number
+  numero: number,
 ) {
   return api.get(
     `inventariofisicodetalleall?empresaId=${empresaId}&numero=${numero}`,
     {
       headers: { Authorization: `Bearer ${bearer}` },
-    }
+    },
   );
 }
 
@@ -107,7 +107,7 @@ export function api_postInventarioFisicoRegistro(bearer: string, data: any) {
 export function api_getAllPersonasByEmpresa(
   bearer: string,
   empresaId: string,
-  search?: string
+  search?: string,
 ) {
   const url =
     `funcionarioempresa?empresaId=${empresaId}` +
@@ -120,6 +120,12 @@ export function api_getAllPersonasByEmpresa(
 
 export function api_postInventarioFisicoDetalle(bearer: string, data: any) {
   return api.post(`inventariofisicodetalle`, data, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+}
+
+export function api_getEstadoArticulos(bearer: string) {
+  return api.get(`estadoArticulo`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }

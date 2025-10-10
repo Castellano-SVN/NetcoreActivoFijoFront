@@ -732,6 +732,7 @@ interface OutPutFormValues {
     CodigoSubFamilia: number;
     SubFamilia: string;
     DescripcionArticulo?: string;
+    estadoArticulo:number;
   }[]
 };
 

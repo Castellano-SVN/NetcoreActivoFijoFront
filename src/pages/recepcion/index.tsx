@@ -20,6 +20,8 @@ import {
   FaFilePen,
 } from "react-icons/fa6";
 import { toast } from "react-toastify";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
+import { useTiposStore } from "@/store/tipos.store";
 
 export default function index() {
   const { setActive } = useContextStore();
@@ -39,7 +41,7 @@ export default function index() {
     pages: 0,
   });
   const { jwt } = useUserStore();
-
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
   const fetchItems = async ({ pageParam = 1 }) => {
     if (isSearching && searchTerm) {
       return api_getEmpresas(jwt, pageParam, {
@@ -78,9 +80,23 @@ export default function index() {
           pages: lastPage.pages,
         });
       },
-    }
+    },
   );
 
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length === 0) {
+      try {
+        const _data = await api_getEstadoArticulos(jwt);
+        setEstadoArticulo(_data.data.dataList);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []);
   const handleSearch = () => {
     if (searchTerm.trim() !== "") {
       setIsSearching(true);
@@ -218,8 +234,8 @@ export default function index() {
                     {isFetchingNextPage
                       ? "Cargando más..."
                       : hasNextPage
-                      ? "Ver más"
-                      : "No hay más datos"}
+                        ? "Ver más"
+                        : "No hay más datos"}
                   </button>
                 </div>
                 <div className="mt-4"></div>

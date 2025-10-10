@@ -31,6 +31,7 @@ interface IAlmacenArticulo {
     anoNumero: number;
     articulo: {
         codigo?: string;
+        estadoArticulo:number,
         nombre: string;
         anoNumero: number;
         descripcion?: string;

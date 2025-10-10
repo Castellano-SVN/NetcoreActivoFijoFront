@@ -1,9 +1,16 @@
-import { create } from 'zustand';
-import { createJSONStorage, devtools, persist } from 'zustand/middleware';
-import breadI from '../interfaces/bread.interface';
-import { ICiudad, IComuna, IRegion, ITipoAtencion, IGenericCodigoDescripcion, ISectorActividadEconomica, ITipoEstablecimientoSalud } from '../interfaces/location.interface';
-import { number } from 'zod';
-
+import { create } from "zustand";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import breadI from "../interfaces/bread.interface";
+import {
+  ICiudad,
+  IComuna,
+  IRegion,
+  ITipoAtencion,
+  IGenericCodigoDescripcion,
+  ISectorActividadEconomica,
+  ITipoEstablecimientoSalud,
+} from "../interfaces/location.interface";
+import { number } from "zod";
 
 interface State {
   regiones: IRegion[];
@@ -12,8 +19,8 @@ interface State {
   tipoAdministracion: ITipoAtencion[];
   actividadEconomicaPrincipal: IGenericCodigoDescripcion[]; //Generic USE
   sectorActividadEconomica: ISectorActividadEconomica[];
-  tipoEstablecimientoSalud: ITipoEstablecimientoSalud[],
-
+  tipoEstablecimientoSalud: ITipoEstablecimientoSalud[];
+  EstadoArticulo: { codigo: number; nombre: string }[];
 }
 
 type Actions = {
@@ -22,12 +29,20 @@ type Actions = {
   setComunas(comunas: IComuna[]): void;
   getCiudades(region: number): ICiudad[];
   getRegiones(): IRegion[];
-  getComunas(region: number, ciudad: number): IComuna[]
+  getComunas(region: number, ciudad: number): IComuna[];
   setTipoAdministracion: (tipoAtencion: ITipoAtencion[]) => void;
-  setActividadEconomicaPrincipal: (actividadEconomicaPrincipal: IGenericCodigoDescripcion[]) => void;
-  setSectorActividadEconomica: (sectorActividadEconomica: ISectorActividadEconomica[]) => void;
+  setActividadEconomicaPrincipal: (
+    actividadEconomicaPrincipal: IGenericCodigoDescripcion[],
+  ) => void;
+  setSectorActividadEconomica: (
+    sectorActividadEconomica: ISectorActividadEconomica[],
+  ) => void;
   getSectorActividadEconomica(sector: number): ISectorActividadEconomica[];
-  setTipoEstablecimientoSalud(tipoestablecimientosalud:ITipoEstablecimientoSalud[]):void;
+  setTipoEstablecimientoSalud(
+    tipoestablecimientosalud: ITipoEstablecimientoSalud[],
+  ): void;
+  setEstadoArticulo(data: { codigo: number; nombre: string }[]): void;
+  getEstadoArticulo(): { codigo: number; nombre: string }[];
 };
 
 export const useTiposStore = create<State & Actions>()(
@@ -37,11 +52,14 @@ export const useTiposStore = create<State & Actions>()(
         regiones: [],
         ciudades: [],
         comunas: [],
+        EstadoArticulo: [],
         tipoAdministracion: [],
         actividadEconomicaPrincipal: [],
         sectorActividadEconomica: [],
-        tipoEstablecimientoSalud:[],
-        setTipoEstablecimientoSalud: (tipoestablecimientosalud: ITipoEstablecimientoSalud[]) => set({ tipoEstablecimientoSalud: tipoestablecimientosalud }),
+        tipoEstablecimientoSalud: [],
+        setTipoEstablecimientoSalud: (
+          tipoestablecimientosalud: ITipoEstablecimientoSalud[],
+        ) => set({ tipoEstablecimientoSalud: tipoestablecimientosalud }),
         setRegiones: (newRegion: IRegion[]) => set({ regiones: newRegion }),
         // setCiudades: (newCiudad: ICiudad[]) => set({ ciudades: newCiudad }),
         setCiudades: (newElements: ICiudad[]) => {
@@ -54,33 +72,58 @@ export const useTiposStore = create<State & Actions>()(
             comunas: [...state.comunas, ...newElements],
           }));
         },
-        setTipoAdministracion: (newElements) => set({ tipoAdministracion: newElements }),
+        setTipoAdministracion: (newElements) =>
+          set({ tipoAdministracion: newElements }),
         getCiudades: (region: any) => {
-          if (typeof region !== 'number') return [];
-          const { ciudades } = get()
-          return ciudades.filter(e => e.regionCodigo === region)
+          if (typeof region !== "number") return [];
+          const { ciudades } = get();
+          return ciudades.filter((e) => e.regionCodigo === region);
         },
         getRegiones: () => {
-          const { regiones } = get()
-          return regiones
+          const { regiones } = get();
+          return regiones;
         },
         getComunas: (region: number, ciudad: number) => {
-          if (typeof region !== 'number' || typeof ciudad !== 'number') return [];
+          if (typeof region !== "number" || typeof ciudad !== "number")
+            return [];
           const { comunas } = get();
-          return comunas.filter(e => e.regionCodigo === region && e.ciudadCodigo === ciudad);
+          return comunas.filter(
+            (e) => e.regionCodigo === region && e.ciudadCodigo === ciudad,
+          );
         },
-        setActividadEconomicaPrincipal: (newElements: IGenericCodigoDescripcion[]) => set({ actividadEconomicaPrincipal: newElements }),
-        setSectorActividadEconomica: (newElements: ISectorActividadEconomica[]) => {
+        setActividadEconomicaPrincipal: (
+          newElements: IGenericCodigoDescripcion[],
+        ) => set({ actividadEconomicaPrincipal: newElements }),
+        setSectorActividadEconomica: (
+          newElements: ISectorActividadEconomica[],
+        ) => {
           set((state) => ({
-            sectorActividadEconomica: [...state.sectorActividadEconomica, ...newElements],
+            sectorActividadEconomica: [
+              ...state.sectorActividadEconomica,
+              ...newElements,
+            ],
           }));
-        }, getSectorActividadEconomica: (sector: number) => {
+        },
+        getSectorActividadEconomica: (sector: number) => {
           const { sectorActividadEconomica } = get();
-          return sectorActividadEconomica.filter(e => e.actividadEconomicaPrincipalCodigo === sector)
-        }
+          return sectorActividadEconomica.filter(
+            (e) => e.actividadEconomicaPrincipalCodigo === sector,
+          );
+        },
+        getEstadoArticulo: () => {
+          const { EstadoArticulo } = get();
+          return EstadoArticulo;
+        },
+        setEstadoArticulo: (data: { codigo: number; nombre: string }[]) => {
+          set((state) => ({
+            EstadoArticulo: data,
+          }));
+        },
       }),
       {
-        name: 'tipos-Store',
+        name: "tipos-Store",
         storage: createJSONStorage(() => sessionStorage),
-      }))
+      },
+    ),
+  ),
 );

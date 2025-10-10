@@ -6,6 +6,9 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { recepcionCOC } from "../../interfaces/recepcion.interface";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
+import { useTiposStore } from "@/store/tipos.store";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
+import { useUserStore } from "@/store/user.store";
 const ArticulosSchema = z.object({
   id: z.string(),
   codigo: z.string(),
@@ -45,6 +48,22 @@ export default function soc() {
   const searchParams = useSearchParams();
   const search = searchParams.get("empresa");
   const idEmpresa = search; // Convertir a cadena
-	if (!idEmpresa) return;
-  return <SinOrden empresa={idEmpresa}/>
+  const { jwt } = useUserStore();
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length !== 0) return;
+
+    try {
+      const _data = await api_getEstadoArticulos(jwt);
+      setEstadoArticulo(_data.data.dataList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []);
+  if (!idEmpresa) return;
+  return <SinOrden empresa={idEmpresa} />;
 }
