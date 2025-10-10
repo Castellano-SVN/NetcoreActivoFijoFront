@@ -33,13 +33,13 @@ export default function GuiaEntrega() {
     const ParteSalidaSchema = z.object({
         AlmacenId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         ArticuloId: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
+        Cantidad: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }).positive("La cantidad debe ser un número positivo"),
         CodigoArticulo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }).optional(),
         CodigoFamilia: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
         Familia: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
         CodigoSubFamilia: z.number({ required_error: "Campo inválido", invalid_type_error: "Tipo inválido" }),
         SubFamilia: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }),
-        DescripcionArticulo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }).optional(),
+        DescripcionArticulo: z.string({ required_error: "Campo requerido", invalid_type_error: "Tipo invalido" }).optional().nullable(),
         anoNumero: z.number()
     });
 
@@ -209,7 +209,7 @@ export default function GuiaEntrega() {
 
     const [showPdf, setShowPdf] = useState(false);
     const [dataPost, setDataPost] = useState<OutPutFormValues | null>(null);
-
+    useEffect(() => {console.log(errors)},[errors])
     const onSubmit = async (data: OutPutFormValues) => {
         try {
             const response = await api_postGuiaEntrega(jwt, data)
@@ -411,7 +411,6 @@ export default function GuiaEntrega() {
 
                                 </Table.Head>
                                 <Table.Body>
-                                    {JSON.stringify(errors)}
                                     {dataAlmacenArticulo.map((almacenArticulo, index) => {
                                         const fieldsIndex = fields.findIndex((field) => field.ArticuloId === almacenArticulo.articuloId && almacenArticulo.anoNumero == field.anoNumero);
                                         return (

@@ -36,7 +36,7 @@ const ArticulosSchema = z.object({
   precio: z.number(),
   observacion: z.string(),
   recepcionado: z.number(),
-  porRecepcionar: z.number(),
+  porRecepcionar: z.number().optional(),
   recibida: z.number(),
   descripcion: z.string().optional(),
   observaciones: z.string().optional(),
@@ -355,7 +355,6 @@ export default function ConOrden(props: props) {
                 )}
               </div>
             </div>
-                {JSON.stringify(fields)}
             <div className="overflow-x-auto md:overflow-x-auto lg:overflow-visible lg:flex lg:justify-center mb-4">
               <Table className="border shadow-lg ">
                 <Table.Head className="bg-primary text-white">
