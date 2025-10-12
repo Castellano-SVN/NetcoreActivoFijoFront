@@ -1,5 +1,8 @@
 import GuiaEntrega from "@/components/bodega/salida/guiaEntrega";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
 import { useContextStore } from "@/store/context.store";
+import { useTiposStore } from "@/store/tipos.store";
+import { useUserStore } from "@/store/user.store";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 

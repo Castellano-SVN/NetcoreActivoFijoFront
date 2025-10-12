@@ -21,14 +21,15 @@ import {
 } from "@/services/bodega.service";
 import { api_postGuiaEntrega } from "@/services/salidas.service";
 import { useContextStore } from "@/store/context.store";
+import { useTiposStore } from "@/store/tipos.store";
 import { useUserStore } from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useSearchParams } from "next/navigation";
 import router from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Modal, Table } from "react-daisyui";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Button, Modal, Select, Table } from "react-daisyui";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FaFilePdf, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -695,6 +696,7 @@ export default function GuiaEntrega() {
                           onChange={(e) => {
                             if (e.target.checked) {
                               append({
+                                estadoArticulo: almacenArticulo.estadoArticuloCodigo,
                                 anoNumero: almacenArticulo.articulo.anoNumero,
                                 AlmacenId: almacenArticulo.almacenId,
                                 ArticuloId: almacenArticulo.articuloId,

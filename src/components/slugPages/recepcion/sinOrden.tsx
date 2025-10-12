@@ -44,7 +44,8 @@ import {
 import { FaPlus } from "react-icons/fa";
 import WarningAlert from "@/components/alerts/warningAlert";
 import { HiCheck, HiX } from "react-icons/hi";
-
+import { useTiposStore } from "@/store/tipos.store";
+import { Select as SelectDy } from "react-daisyui";
 registerLocale("es", es);
 
 interface familiaI {
@@ -101,6 +102,7 @@ const ArticulosSchema = z.object({
   valor: z.number().optional(),
   cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
+  estadoArticulo: z.number(),
 });
 
 const RecepcionDataSchema = z.object({
@@ -161,7 +163,7 @@ export default function SinOrden(props: props) {
       control, // control props comes from useForm (optional: if you are using FormProvider)
       name: "articulos", // unique name for your Field Array
       keyName: "code",
-    }
+    },
   );
   const [tipos, setTipos] = useState<{ codigo: number; nombre: string }[]>([]);
 
@@ -171,7 +173,7 @@ export default function SinOrden(props: props) {
   const [dataSubFamilia, setDataSubFamilia] = useState<familiaI[]>([]);
   const [selectedFamilia, setSelectedFamilia] = useState<familiaI | null>(null);
   const [selectedSubFamilia, setSelectedSubFamilia] = useState<familiaI | null>(
-    null
+    null,
   );
 
   const [textArticle, setTextArticle] = useState<string>("");
@@ -181,7 +183,9 @@ export default function SinOrden(props: props) {
     totalItems: 0,
     perPage: 10,
   });
-
+  useEffect(() => {
+    console.log('errores',errors);
+  }, [errors]);
   const getFamilias = async () => {
     try {
       const data = await api_getAllFamilias(jwt, props.empresa);
@@ -198,7 +202,7 @@ export default function SinOrden(props: props) {
         const data = await api_getSubFamiliaByEmpresa(
           jwt,
           props.empresa,
-          selectedFamilia.id
+          selectedFamilia.id,
         );
         setDataSubFamilia(data.data.dataList); //variable datos y luego el datalist
       }
@@ -224,12 +228,6 @@ export default function SinOrden(props: props) {
     getTipos();
   }, []);
 
-  useEffect(() => {
-    console.log('errores');
-    console.log(errors);
-    console.log(getValues());
-  }, [errors]);
-
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [dataArticulo, setDataArticulo] = useState<articulosSOC[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -246,12 +244,12 @@ export default function SinOrden(props: props) {
         selectedSubFamilia?.id,
         textArticle,
         page,
-        paginationInfo.perPage
+        paginationInfo.perPage,
       );
 
       const resulset = res.data.dataList.map((item: { id: string }) => {
         const exists = fields.some(
-          (articulo) => articulo.id.toString() === item.id.toString()
+          (articulo) => articulo.id.toString() === item.id.toString(),
         );
         return {
           ...item,
@@ -278,14 +276,12 @@ export default function SinOrden(props: props) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfData, setPdfData] = useState<recepcionSOC>({} as recepcionSOC);
   const onSubmit = async (data: recepcionSOC) => {
-    console.log(data);
     try {
       const response = await api_postRecepcionSo(jwt, data);
       if (response) {
         setLocationStringPDF(locationString);
         toast.success("Recepción Sin orden de compra creada correctamente");
         setShowPdf(true);
-        console.log("esta es la data que se guarda en el pdf", data);
         setPdfData(data);
         reset();
       } else {
@@ -442,7 +438,7 @@ function Recepcion(props: recepcionProps) {
       control, // control props comes from useForm (optional: if you are using FormProvider)
       name: "articulos", // unique name for your Field Array
       keyName: "code",
-    }
+    },
   );
   const almacenWatch = watch("almacen");
   const tipoWatch = watch("tipo");
@@ -453,24 +449,29 @@ function Recepcion(props: recepcionProps) {
       props.empresa,
       getValues("cc"),
       getValues("bodega"),
-      getValues("almacen")
+      getValues("almacen"),
     );
-    const commonItems = fields.map((item1) => {
-      // Encuentra el elemento en dataList que tenga un ID coincidente
-      const matchingItem2 = data.data.dataList.find(
-        (item2: { articuloId: string; cantidad: number; almacenId: string }) =>
-          item2.articuloId === item1.id &&
-          item2.almacenId === getValues("almacen")
-      );
-
-      // Si hay una coincidencia, agrega la propiedad cantidadAlmacen; de lo contrario, deja el objeto sin cambios
-      return {
-        ...item1,
-        cantidadAlmacen: matchingItem2 ? matchingItem2.cantidad : 0,
-      };
-    });
+    const newData = fields.map((item) => {
+      const search = data.data.dataList.find((item2: {
+          articuloId: string;
+          cantidad: number;
+          almacenId: string;
+          estadoArticuloCodigo: number;
+          anoNumero: number;
+        }) => item.id === item2.articuloId && item.anoNumero === item2.anoNumero && item2.almacenId === getValues("almacen"),
+      )
+        if (search) {
+          item.estadoArticulo = search.estadoArticuloCodigo;
+          item.cantidadAlmacen =  search.cantidad;
+        } else {
+          item.cantidadAlmacen =  0;
+          item.estadoArticulo = 0;
+        }
+        return item;
+    })
+    console.log(newData);
     remove();
-    append(commonItems);
+    append(newData);
     setLoadingAlmacenCantidad(false);
   };
   useEffect(() => {
@@ -488,6 +489,7 @@ function Recepcion(props: recepcionProps) {
       e.target.value = e.target.value.replace(/[^\d]/g, ""); // Elimina caracteres no numéricos
     }
   };
+  const { EstadoArticulo } = useTiposStore();
 
   return (
     <div className="">
@@ -642,6 +644,7 @@ function Recepcion(props: recepcionProps) {
                 </div>
                 <span>Precio</span>
                 <span>Cantidad a recepcionar</span>
+                <span>Estado de articulo</span>
               </Table.Head>
 
               <Table.Body>
@@ -679,6 +682,28 @@ function Recepcion(props: recepcionProps) {
                             value === "" ? undefined : Number(value),
                         })}
                       />
+                      <SelectDy
+                        color={
+                          errors.articulos &&
+                          errors.articulos[index]?.estadoArticulo
+                            ? "error"
+                            : "neutral"
+                        }
+                        defaultValue={articulo.estadoArticulo}
+                        {...register(`articulos.${index}.estadoArticulo`, {
+                          setValueAs: (value) =>
+                            value === "" ? undefined : Number(value),
+                        })}
+                      >
+                        <SelectDy.Option value={0} disabled>
+                          Seleccione el tipo de almacén
+                        </SelectDy.Option>
+                        {EstadoArticulo.map((estado, index) => (
+                          <SelectDy.Option key={index} value={estado.codigo}>
+                            {estado.nombre}
+                          </SelectDy.Option>
+                        ))}
+                      </SelectDy>
                     </Table.Row>
                   ))}
               </Table.Body>

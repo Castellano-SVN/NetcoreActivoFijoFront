@@ -5,7 +5,9 @@ import {
   api_getOneConOrdenCompra,
   api_getOneSinOrdenCompra,
 } from "@/services/bodega.service";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
 import { useContextStore } from "@/store/context.store";
+import { useTiposStore } from "@/store/tipos.store";
 import { useUserStore } from "@/store/user.store";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
@@ -52,7 +54,21 @@ export default function recepcion() {
       }
     }
   };
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length !== 0) return;
 
+    try {
+      const _data = await api_getEstadoArticulos(jwt);
+      setEstadoArticulo(_data.data.dataList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []);
   return (
     <React.Fragment>
       <div className="flex items-center justify-center">
@@ -60,13 +76,12 @@ export default function recepcion() {
           <div className="p-1">
             <div>
               <>
-              {JSON.stringify(dataOrdenCompra)}
                 <div className="flex flex-row justify-center p-1">
                   <div className="flex flex-col shadow-md border rounded-md w-full p-2">
                     {showConOrden === false ? (
                       <>
                         <h5 className="text-2xl font-bold mb-4">
-                          Orden de compra 
+                          Orden de compra
                         </h5>
                         <div className="flex flex-col w-full items-center">
                           <label className="py-2 px-3 ml-4">
