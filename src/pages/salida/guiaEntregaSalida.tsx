@@ -724,7 +724,13 @@ export default function Salidas() {
                             {fieldIndex !== -1 && (
                               <>
                                 <input
+                                  onKeyDown={(e) => {
+                                    if (e.key === "-" || e.key === "e")
+                                      e.preventDefault();
+                                  }}
                                   type="number"
+                                  min={1}
+                                  max={almacenArticulo.cantidad}
                                   {...register(
                                     `GuiaSalidaDetalle.${fieldIndex}.Cantidad`,
                                     {

@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { ItipoAlmacen } from "../../../../schemas/tipo_almacen.schema";
 import { FiPlus } from "react-icons/fi";
-import { FaArchive, FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArchive, FaArrowLeft, FaEye, FaSave } from "react-icons/fa";
 import {
   Button,
   Divider,
@@ -38,6 +38,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HiOutlineArchive } from "react-icons/hi";
 import { ArchiveBoxIcon } from "@heroicons/react/20/solid";
+import { FaArrowsLeftRight } from "react-icons/fa6";
 interface IAlmacenTA extends IAlmacen {
   tipoAlmacen: ItipoAlmacen;
   locacions: ILocacion[];
@@ -52,7 +53,7 @@ interface articuloI {
   subfamilia: string;
   familia: string;
   estado: number;
-  anoNumero:number;
+  anoNumero: number;
 }
 interface estadosI {
   codigo: number; nombre: string;
@@ -118,20 +119,20 @@ export default function Page() {
   const [articulos, setArticulos] = useState<articuloI[]>([])
   const [almacen, setAlmacen] = useState<IAlmacenTA>();
 
-  const getAlmacen= async () =>{
-    try{
-        const response = await api_getAlmacenById(jwt, router.query.id as string)
-        setAlmacen(response.data.dataList[0])
-      }
-    catch{
-      
+  const getAlmacen = async () => {
+    try {
+      const response = await api_getAlmacenById(jwt, router.query.id as string)
+      setAlmacen(response.data.dataList[0])
+    }
+    catch {
+
       toast.error("Ocurrio un error buscando al buscar el almacén");
     }
   }
-  useEffect(()=>{
-    if(!router.query.id) return 
+  useEffect(() => {
+    if (!router.query.id) return
     getAlmacen();
-  },[router.query.id])
+  }, [router.query.id])
 
   const locationRef = useRef<HTMLDialogElement>(null);
   const handleShowLocation = useCallback(() => {
@@ -167,7 +168,7 @@ export default function Page() {
 
   const LocationSubmit = async (data: LocationFormValues) => {
     try {
-      
+
       await api_postLocation(jwt, data);
       toast.success("¡La nueva ubicación se creo correctamente!");
       reset();
@@ -175,7 +176,7 @@ export default function Page() {
       await getAlmacen();
     } catch (error) {
       toast.error("Ha ocurrido un error.");
-      
+
     }
   };
   const [dataLocation, setDataLocation] = useState<ITipoLocation[]>([]);
@@ -185,7 +186,7 @@ export default function Page() {
       const data = await api_getTipoLocation(jwt, almacen?.empresaId);
       setDataLocation(data.data.dataList);
     } catch (error) {
-      
+
     }
   };
 
@@ -194,20 +195,20 @@ export default function Page() {
     setValue("AlmacenId", almacen.id);
     setValue("BodegaId", almacen.bodegaId);
     setValue("CentroCostoId", almacen.centroCostoId);
-    
+
     setValue("EmpresaId", almacen.empresaId);
   };
 
-  useEffect(()=>{
-  console.warn(errors)
-  },[errors])
+  useEffect(() => {
+    console.warn(errors)
+  }, [errors])
 
   useEffect(() => {
     if (!almacen) return;
     getTipoLocation();
     defaultValues();
     getArticles();
-    
+
   }, [almacen]);
 
   return (
@@ -309,20 +310,20 @@ export default function Page() {
 
         <div className="flex md:flex-row lg:flex-row flex-col-reverse justify-around items-center mt-4 md:mt-4 lg:mt-2  rounded-lg border shadow-md hover:shadow-xl py-2 ">
           <button type="button" className="btn btn-primary mt-2 md:mt-0" onClick={() => router.back()}><FaArrowLeft />Volver</button>
-            {almacen && (
-          <div className="join">
+          {almacen && (
+            <div className="join">
               <button
-                onClick={() => {reset();defaultValues();handleShowLocation()}}
+                onClick={() => { reset(); defaultValues(); handleShowLocation() }}
                 className="btn btn-primary join-item animate-fadein"
               >
                 <FiPlus />
                 Crear locación
               </button>
-            <button onClick={() => router.push(`/empresa/centrocosto/almacen/tipolocacion/${almacen?.empresaId}`)} className="btn btn-primary join-item">
-              <FiPlus /> Tipo Locación
-            </button>
-          </div>
-            )}
+              <button onClick={() => router.push(`/empresa/centrocosto/almacen/tipolocacion/${almacen?.empresaId}`)} className="btn btn-primary join-item">
+                <FiPlus /> Tipo Locación
+              </button>
+            </div>
+          )}
         </div>
         {almacen ? (
           <div className="w-full mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -341,6 +342,7 @@ export default function Page() {
 }
 
 function Locations({ locacion, articulos, estados, locations, almacen, update }: { locacion: ILocacion, articulos: articuloI[], estados: estadosI[], locations: ILocacion[], almacen: IAlmacenTA, update: () => Promise<void> }) {
+  const [cantidad,setCantidad]= useState<number>(0);
   const validationSchemaLocation = z.object({
     almacen: z.string({
       required_error: "Campo inválido",
@@ -354,6 +356,10 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }),
+    estadoInicial: z.number({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
     locacion: z.string({
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
@@ -362,11 +368,12 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }).nullish(),
-    anoNumero: z.number()
+    anoNumero: z.number(),
+    cantidad: z.number({}).min(1, "La cantidad mínima es 1").max(cantidad, `La cantidad máxima es ${cantidad}`),
   });
   const { jwt } = useUserStore();
 
-  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined,anoNumero:number }>({
+  const methodsLocation = useForm<{ cantidad:Number,almacen: string, articulo: string, estado: number, estadoInicial: number, locacion: string | undefined, locacionOrigen: string | undefined, anoNumero: number }>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -378,15 +385,17 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
     setValue,
     formState: { errors },
   } = methodsLocation;
-  const Submit = async (data: { almacen: string, articulo: string, estado: number, locacion: string | undefined }) => {
+  const Submit = async (data: { cantidad:number,almacen: string, articulo: string, estado: number, locacion: string | undefined }) => {
     try {
-    
       await api_putAlmacenArticulo(jwt, data);
       await update();
       handleCloseLocation()
     } catch (error) {
-      toast.error("Ha ocurrido un error.");
-      console.log(error);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message ? error.response.data.message : "Ha ocurrido un error.");
+      } else{ 
+        toast.error("Ha ocurrido un error.");
+      }
     }
   };
   const router = useRouter();
@@ -401,9 +410,12 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
     setValue("almacen", almacen.id)
     setValue("articulo", element.articuloId);
     setValue("estado", element.estado);
+    setValue('estadoInicial', element.estado)
     setValue("locacion", element.locacion);
     setValue("locacionOrigen", element.locacion);
-    setValue("anoNumero",element.anoNumero)
+    setValue("anoNumero", element.anoNumero)
+    setValue('cantidad',element.cantidad);
+    setCantidad(element.cantidad);
     locationRef.current?.showModal();
   }, [locationRef]);
 
@@ -467,6 +479,37 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
                   </label>
                 </div>
               </div>
+                            <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Cantidad</span>
+                  </label>
+                  <Input
+                    {...register("cantidad", {
+                      setValueAs: (value) => (value === "" ? undefined : Number(value)),
+                      pattern: {
+                        value: /^[0-9]+$/,message: "Solo se permiten números",          
+                      },
+                      min: {
+                        value: 1,
+                        message: "El valor mínimo es 1",
+                      },
+                      max: {
+                        value: cantidad,
+                        message: `El valor máximo es ${cantidad}`,
+                      },
+                    })}
+                    onKeyDown={(e) => {
+                      if (!/[0-9]/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                  <label className= "label text-error" >
+                          <span>{errors.cantidad?.message}</span>
+                  </label>
+              </div>
+            </div>
               <div className="my-2">
                 <div className="flex items-center justify-center">
                   <Button type="submit" className="text-base-100" color="primary">Guardar</Button>
@@ -508,7 +551,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
                   <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
                   <td>
                     <button type="button" onClick={() => handleShowLocation(e)}>
-                      <FaEye className="h-4 w-4 text-primary"  />
+                      <FaArrowsLeftRight className="h-4 w-4 text-primary" />
                     </button>
                   </td>
                 </tr>
@@ -524,6 +567,8 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
 }
 
 function WithoutLocations({ articulos, estados, locations, almacen, update }: { articulos: articuloI[], estados: estadosI[], locations: ILocacion[], almacen: IAlmacenTA, update: () => Promise<void> }) {
+  const [cantidad,setCantidad]= useState<number>(0);
+
   const validationSchemaLocation = z.object({
     almacen: z.string({
       required_error: "Campo inválido",
@@ -537,6 +582,10 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }),
+    estadoInicial: z.number({
+      required_error: "Campo inválido",
+      invalid_type_error: "Campo inválido",
+    }),
     locacion: z.string({
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
@@ -545,9 +594,10 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
       required_error: "Campo inválido",
       invalid_type_error: "Campo inválido",
     }).nullish(),
+    cantidad: z.number({}).min(1, "La cantidad mínima es 1").max(cantidad, `La cantidad máxima es ${cantidad}`),
     anoNumero: z.number()
   });
-  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, locacion: string | undefined, locacionOrigen: string | undefined,anoNumero: number }>({
+  const methodsLocation = useForm<{ almacen: string, articulo: string, estado: number, estadoInicial: number, locacion: string | undefined, locacionOrigen: string | undefined, anoNumero: number,cantidad:number }>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {
@@ -561,33 +611,34 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
   } = methodsLocation;
   const { jwt } = useUserStore();
 
-  const Submit = async (data: { anoNumero:number,almacen: string, articulo: string, estado: number, locacion: string | undefined }) => {
+  const Submit = async (data: { anoNumero: number, almacen: string, articulo: string, estado: number, estadoInicial: number, locacion: string | undefined,cantidad:number }) => {
     try {
-      
       await api_putAlmacenArticulo(jwt, data);
       await update();
       handleCloseLocation()
+      console.log(data)
     } catch (error) {
       toast.error("Ha ocurrido un error.");
-      
+
     }
   };
   const router = useRouter();
   const [articulosFilter, setArticulosFilter] = useState<articuloI[]>([])
-
   useEffect(() => {
     setArticulosFilter(articulos.filter(e => !e.locacion))
   }, [articulos])
   const locationRef = useRef<HTMLDialogElement>(null);
   const handleShowLocation = useCallback((element: articuloI) => {
     reset();
-    console.log(element);
     setValue("almacen", almacen.id)
     setValue("articulo", element.articuloId);
     setValue("estado", element.estado);
+    setValue("estadoInicial", element.estado);
     setValue("locacion", element.locacion);
     setValue("locacionOrigen", element.locacion);
-    setValue("anoNumero",element.anoNumero); 
+    setValue("anoNumero", element.anoNumero);
+    setValue('cantidad',element.cantidad);
+    setCantidad(element.cantidad);
     locationRef.current?.showModal();
   }, [locationRef]);
 
@@ -653,15 +704,47 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
                   </label>
                 </div>
               </div>
-              <div className="my-2">
-                <div className="flex items-center justify-center">
-                  <Button type="submit" className="text-base-100" color="primary">Guardar</Button>
-                </div>
+              <div className="flex flex-wrap">
+                <div className="flex flex-col w-full">
+                  <label className="label">
+                    <span className="label-text">Cantidad</span>
+                  </label>
+                  <Input
+                    {...register("cantidad", {
+                      setValueAs: (value) => (value === "" ? undefined : Number(value)),
+                      pattern: {
+                        value: /^[0-9]+$/,message: "Solo se permiten números",          
+                      },
+                      min: {
+                        value: 1,
+                        message: "El valor mínimo es 1",
+                      },
+                      max: {
+                        value: cantidad,
+                        message: `El valor máximo es ${cantidad}`,
+                      },
+                    })}
+                    onKeyDown={(e) => {
+                      if (!/[0-9]/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                  <label className= "label text-error" >
+                          <span>{errors.cantidad?.message}</span>
+                  </label>
               </div>
             </div>
-          </form>
-        </Modal.Body>
-      </Modal>
+
+            <div className="my-2">
+              <div className="flex items-center justify-center">
+                <Button type="submit" className="text-base-100" color="primary">Guardar <FaSave/></Button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </Modal.Body>
+    </Modal >
       <div className="flex flex-col bordered rounded shadow-md ">
         <div className="flex flex-row justify-between bg-error px-6 py-4 rounded-t-lg">
           <h3 className="text-large font-bold text-base-100 text-center">
@@ -692,8 +775,8 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
                     <span>{e.familia} - {e.subfamilia}</span>
                   </td>
                   <td><span className="font-bold">
-                      {e.anoNumero}
-                    </span></td>
+                    {e.anoNumero}
+                  </span></td>
                   <td>{e.cantidad}</td>
                   <td className="font-semibold">{estados.find(estado => e.estado === estado.codigo)?.nombre}</td>
                   <td>
