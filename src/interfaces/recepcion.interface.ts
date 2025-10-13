@@ -11,10 +11,10 @@ export interface articulosI {
   id: string;
   observacion: string;
   recepcionado: number;
-  porRecepcionar: number | undefined;
   recibida: number | undefined;
   observaciones: string | undefined;
   AnoNumero: number;
+  estadoArticulo: number;
 }
 
 export interface articulosSOC {

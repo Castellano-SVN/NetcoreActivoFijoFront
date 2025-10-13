@@ -90,6 +90,7 @@ export default function GuiaEntrega() {
       .optional()
       .nullable(),
     anoNumero: z.number(),
+    estadoArticulo: z.number().min(1)
   });
 
   const OutPutSchema = z.object({
@@ -310,6 +311,7 @@ export default function GuiaEntrega() {
       console.error(error);
     }
   };
+  const { EstadoArticulo } = useTiposStore();
 
   useEffect(() => {
     if (!idEmpresa || !CCIdOrigen || !BodegaIdOrigen || !AlmacenIdOrigen)
@@ -670,22 +672,22 @@ export default function GuiaEntrega() {
             {AlmacenIdOrigen && dataAlmacenArticulo.length > 0 ? (
               <Table className="border shadow-lg">
                 <Table.Head className="bg-primary text-white">
-                  <span>Selección</span>
+                  <span>se Traspasara</span>
                   <span>Código artículo</span>
-                  <span>Código familia</span>
                   <span>Familia</span>
-                  <span>Código sub-familia</span>
                   <span>Sub-familia</span>
-                  <span>Descripción artículo</span>
-                  <span>Cantidad sistema</span>
-                  <span>Cantidad salida</span>
+                  <span>Descripción</span>
+                  <span>Cantidad en almacen</span>
+                  <span>Estado de articulo</span>
+                  <span>{fields.length ? "Cantidad a traspasar" : ""}</span>
                 </Table.Head>
                 <Table.Body>
                   {dataAlmacenArticulo.map((almacenArticulo, index) => {
                     const fieldsIndex = fields.findIndex(
                       (field) =>
                         field.ArticuloId === almacenArticulo.articuloId &&
-                        almacenArticulo.anoNumero == field.anoNumero,
+                        almacenArticulo.anoNumero == field.anoNumero &&
+                        field.estadoArticulo == almacenArticulo.estadoArticuloCodigo,
                     );
                     return (
                       <Table.Row key={index} hover={true}>
@@ -714,6 +716,7 @@ export default function GuiaEntrega() {
                                   almacenArticulo.articulo.subFamilium.nombre,
                                 DescripcionArticulo:
                                   almacenArticulo.articulo.descripcion,
+                                
                               });
                             } else {
                               remove(fieldsIndex);
@@ -722,19 +725,14 @@ export default function GuiaEntrega() {
                         />
                         <span>{almacenArticulo.articulo.codigo}</span>
                         <span>
-                          {almacenArticulo.articulo.subFamilium.familium.codigo}
-                        </span>
-                        <span>
                           {almacenArticulo.articulo.subFamilium.familium.nombre}
-                        </span>
-                        <span>
-                          {almacenArticulo.articulo.subFamilium.codigo}
                         </span>
                         <span>
                           {almacenArticulo.articulo.subFamilium.nombre}
                         </span>
                         <span>{almacenArticulo.articulo.descripcion}</span>
-                        <span>{almacenArticulo.cantidad}</span>
+                        <span className="font-bold">{almacenArticulo.cantidad}</span>
+                        <span>{EstadoArticulo.find(e => e.codigo == almacenArticulo.estadoArticuloCodigo)?.nombre}</span>
                         {fields.find(
                           (field, fieldIndex) => fieldIndex === fieldsIndex,
                         ) ? (

@@ -125,7 +125,7 @@ export function api_postInventarioFisicoDetalle(bearer: string, data: any) {
 }
 
 export function api_getEstadoArticulos(bearer: string) {
-  return api.get(`estadoArticulo`, {
+  return api.get(`almacenarticulosestados`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }

@@ -8,6 +8,8 @@ import { useSearchParams } from "next/navigation";
 import router from "next/router";
 import { useEffect, useState } from "react";
 import { Button, Modal, Table, Textarea } from "react-daisyui";
+import { Select as SelectDy } from "react-daisyui";
+
 import {
   Controller,
   FormProvider,
@@ -21,13 +23,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { api_postRecepcionYDetalle } from "@/services/bodega.service";
 import { toast } from "react-toastify";
 import UbicacionRecepcion from "./ubicacionRecepcion";
-import {es} from "date-fns/locale/es";
+import { es } from "date-fns/locale/es";
 registerLocale("es", es);
 import {
   articulosI,
   recepcionCOC,
 } from "../../../interfaces/recepcion.interface";
 import { api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
+import { useTiposStore } from "@/store/tipos.store";
 const ArticulosSchema = z.object({
   id: z.string(),
   codigo: z.string(),
@@ -41,12 +44,13 @@ const ArticulosSchema = z.object({
   descripcion: z.string().optional(),
   observaciones: z.string().optional(),
   AnoNumero: z.number(),
+  estadoArticulo: z.number({ required_error: "Campo requerido" }).min(1, { message: "Campo requerido" }),
 });
 
 const RecepcionDataSchema = z.object({
   cotizacion: z.string(),
   oc: z.number({ required_error: "Campo requerido" }),
- /*  folio: z.number({ required_error: "Campo requerido" }), */
+  /*  folio: z.number({ required_error: "Campo requerido" }), */
   fecha: z.date({ required_error: "Campo requerido" }),
   empresa: z.string(),
   cc: z
@@ -122,12 +126,12 @@ export default function ConOrden(props: props) {
     setTipos(fetch.data.dataList);
   };
 
-  
+
   useEffect(() => {
     getTipos();
     CCAvailable();
   }, []);
-  
+
   const methods = useForm<recepcionCOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
@@ -139,7 +143,7 @@ export default function ConOrden(props: props) {
       cotizacion: props.dataConOrdenCompra[0].cotizacionId,
     },
   });
-  const [locationString,setLocationString] = useState<{centrocosto?:string;bodega?:string;almacen?:string}>({});
+  const [locationString, setLocationString] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
   const {
     register,
     handleSubmit,
@@ -155,6 +159,7 @@ export default function ConOrden(props: props) {
       name: "articulos", // unique name for your Field Array
     }
   );
+  const { EstadoArticulo } = useTiposStore();
   const [showPdf, setShowPdf] = useState(false);
   useEffect(() => {
     console.log('errores');
@@ -172,10 +177,10 @@ export default function ConOrden(props: props) {
         precio: element.cotizacionDetalle.valorUnitario,
         observacion: element.cotizacionDetalle.observaciones as string,
         recepcionado: element.cotizacionDetalle.solicitudDetalle.cantidadAprobada,
-        porRecepcionar: undefined,
         recibida: undefined,
         AnoNumero: element.cotizacionDetalle.articulo.anoNumero,
         observaciones: undefined,
+        estadoArticulo: 0,
       };
       append(articulo);
     });
@@ -185,10 +190,10 @@ export default function ConOrden(props: props) {
   const onSubmit = async (data: recepcionCOC) => {
     try {
       console.log(data)
-      
+
       // Hacer la solicitud al servicio
       const response = await api_postRecepcionYDetalle(jwt, data);
-      
+
       // // Mostrar el mensaje de éxito
       if (response) {
         toast.success("Articulo recepcionado correctamente");
@@ -200,10 +205,10 @@ export default function ConOrden(props: props) {
       toast.error("ha ocurrido un error");
       setShowPdf(false);
     }
-    
+
     /* console.log('Data del formulario:', data); */
   };
-  
+
   const volverHandleClick = () => {
     props.setShowConOrden(false);
     reset();
@@ -267,7 +272,7 @@ export default function ConOrden(props: props) {
               </div>
             </div>
             {empresaId && ids.length !== 0 && (
-              <UbicacionRecepcion empresa={empresaId} filterCC={ids} dispatchStrings={setLocationString}/>
+              <UbicacionRecepcion empresa={empresaId} filterCC={ids} dispatchStrings={setLocationString} />
             )}
             <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">
               <div>
@@ -364,8 +369,8 @@ export default function ConOrden(props: props) {
                   <span>Precio</span>
                   <span>Observación</span>
                   {/* <span>Recepcionado</span> */}
-                  <span>Por recepcionar</span>
-                  <span>Cantidad recibida</span>
+                  <span>Estado</span>
+                  <span>Cantidad</span>
                   <span>Observaciones</span>
                 </Table.Head>
 
@@ -380,43 +385,67 @@ export default function ConOrden(props: props) {
                       {/* <span className="font-bold">
                         {getValues(`articulos.${index}.recepcionado`)}
                       </span> */}
-                      <input
-                        key={articulo.id}
-                        type="number"
-                        className={`block w-20 py-1 px-1 border ${
-                          errors.articulos &&
-                          errors.articulos[index]?.porRecepcionar
-                            ? "border-red-600"
-                            : "border-primary"
-                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        {...register(`articulos.${index}.porRecepcionar`, {
+                      <select
+                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
+                          errors.articulos[index]?.estadoArticulo
+                          ? "border-red-600"
+                          : "border-primary"
+                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        defaultValue={articulo.estadoArticulo}
+                        {...register(`articulos.${index}.estadoArticulo`, {
                           setValueAs: (value) =>
                             value === "" ? undefined : Number(value),
                         })}
-                      />
+                      >
+                        <option value={0} disabled>
+                          Seleccione el tipo de almacén
+                        </option>
+                        {EstadoArticulo.map((estado, index) => (
+                          <option key={index} value={estado.codigo}>
+                            {estado.nombre}
+                          </option>
+                        ))}
+                      </select>
                       <input
                         key={articulo.id}
                         type="number"
-                        className={`block w-20 py-1 px-1 border ${
-                          errors.articulos &&
+                        min={1}
+                        max={articulo.cantidad}
+                        onKeyDown={(e) => {
+                          // Bloquea letras, signos, y teclas no numéricas
+                          if (
+                            e.key === "e" || // evita notación científica
+                            e.key === "E" ||
+                            e.key === "+" ||
+                            e.key === "-" ||
+                            e.key === "." ||
+                            e.key === ","
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
                           errors.articulos[index]?.recibida
-                            ? "border-red-600"
-                            : "border-primary"
-                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                          ? "border-red-600"
+                          : "border-primary"
+                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
                         {...register(`articulos.${index}.recibida`, {
                           setValueAs: (value) =>
                             value === "" ? undefined : Number(value),
+                          pattern: {
+                            value: /^[0-9]+$/,
+                            message: "Solo se permiten números positivos",
+                          },
                         })}
                       />
                       <input
                         key={articulo.id}
-                        className={`block w-20 py-1 px-1 border ${
-                          errors.articulos &&
+                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
                           errors.articulos[index]?.observaciones
-                            ? "border-red-600"
-                            : "border-primary"
-                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        {...register(`articulos.${index}.observaciones` )}
+                          ? "border-red-600"
+                          : "border-primary"
+                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        {...register(`articulos.${index}.observaciones`)}
                       />
                     </Table.Row>
                   ))}
@@ -449,7 +478,7 @@ export default function ConOrden(props: props) {
                 Volver
               </button>
 
-              {showPdf && pdfData &&(
+              {showPdf && pdfData && (
                 <Modal open={showPdf}>
                   <Modal.Header>
                     ¿Desea crear un reporte de la Recepción?
@@ -488,7 +517,7 @@ export default function ConOrden(props: props) {
                     </div>
                   </Modal.Body>
                 </Modal>
-              
+
               )}
               <button
                 type="submit"
