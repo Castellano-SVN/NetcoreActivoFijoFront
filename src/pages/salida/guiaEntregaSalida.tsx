@@ -107,8 +107,8 @@ export default function Salidas() {
   }, [personaSearch]);
 
   useEffect(() => {
-    console.log(idEmpresa);
     if (!idEmpresa) return;
+    setValue('EmpresaId',idEmpresa)
     getCentroCostos();
   }, [idEmpresa]);
 
@@ -117,17 +117,9 @@ export default function Salidas() {
       required_error: "Campo requerido",
       invalid_type_error: "Tipo invalido",
     }),
-    SubFamiliaId: z.string({
-      required_error: "Campo invalido",
-      invalid_type_error: "Tipo invalido",
-    }),
     ArticuloId: z.string({
       required_error: "Campo requerido",
       invalid_type_error: "Tipo invalido",
-    }),
-    EstadoArticuloCodigo: z.number({
-      required_error: "Campo requerido",
-      invalid_type_error: "tipo invalido",
     }),
     Cantidad: z.number({
       required_error: "Campo requerido",
@@ -138,32 +130,17 @@ export default function Salidas() {
       required_error: "Campo requerido",
       invalid_type_error: "tipo invalido",
     }),
-    NombreSubFamilia: z.string({
-      required_error: "Campo invalido",
-      invalid_type_error: "Tipo invalido",
-    }),
-    CodigoArticulo: z
-      .string({
+    estadoArticulo: z
+      .number({
         required_error: "Campo invalido",
         invalid_type_error: "Tipo invalido",
-      })
-      .optional(),
-    DescripcionArticulo: z
-      .string({
+      }).min(1),
+    estadoArticuloOrigen: z
+      .number({
         required_error: "Campo invalido",
         invalid_type_error: "Tipo invalido",
-      })
-      .optional()
-      .nullable(),
-    CantidadSistema: z.number({
-      required_error: "Campo requerido",
-      invalid_type_error: "tipo invalido",
-    }),
+      }),
     anoNumero: z.number(),
-    EstadoArticuloNombre: z.string({
-      required_error: "Campo invalido",
-      invalid_type_error: "Tipo invalido",
-    }),
   });
 
   const GuiaSalida = z.object({
@@ -230,7 +207,6 @@ export default function Salidas() {
   } = methods;
 
   useEffect(() => {
-    setValue("EmpresaId", idEmpresa);
     console.log("codigo errores: ", errors);
   }, [errors]);
 
@@ -654,7 +630,7 @@ export default function Salidas() {
                     <span>Descripción artículo</span>
                     <span>Cantidad sistema</span>
                     <span>Cantidad salida*</span>
-                    <span>Estado Artículo*</span>
+                    <span>Estado de salida*</span>
                     <span>Observaciones</span>
                   </Table.Head>
                   <Table.Body>
@@ -662,7 +638,8 @@ export default function Salidas() {
                       const fieldIndex = fields.findIndex(
                         (field) =>
                           field.ArticuloId === almacenArticulo.articuloId &&
-                          field.anoNumero === almacenArticulo.anoNumero,
+                          field.anoNumero === almacenArticulo.anoNumero &&
+                          field.estadoArticuloOrigen === almacenArticulo.estadoArticuloCodigo,
                       );
                       return (
                         <Table.Row key={index} hover={true}>
@@ -679,6 +656,7 @@ export default function Salidas() {
                                       almacenArticulo.articulo.subFamilium.id,
                                     ArticuloId: almacenArticulo.articuloId,
                                     EstadoArticuloCodigo: 0,
+                                    estadoArticuloOrigen: almacenArticulo.estadoArticuloCodigo,
                                     Cantidad: 0,
                                     anoNumero:
                                       almacenArticulo.articulo.anoNumero,
@@ -688,7 +666,7 @@ export default function Salidas() {
                                         .codigo,
                                     NombreSubFamilia:
                                       almacenArticulo.articulo.nombre,
-                                    CodigoArticulo:
+                                    estadoArticulo:
                                       almacenArticulo.articulo.codigo,
                                     DescripcionArticulo:
                                       almacenArticulo.articulo.descripcion,
@@ -763,7 +741,7 @@ export default function Salidas() {
                               <>
                                 <select
                                   {...register(
-                                    `GuiaSalidaDetalle.${fieldIndex}.EstadoArticuloCodigo`,
+                                    `GuiaSalidaDetalle.${fieldIndex}.estadoArticulo`,
                                     {
                                       setValueAs: (value) => {
                                         if (value === "" || value === 0) {

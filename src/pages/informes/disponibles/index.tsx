@@ -49,7 +49,7 @@ export default function index() {
     setDataQuiebreStockPDF(responsePdf.data.dataList);
   };
   useEffect(() => {
-    fetchQuiebreStockPDF({ pageParam: 1, perPage: 0 });
+    //fetchQuiebreStockPDF({ pageParam: 1, perPage: 0 });
   }, [empresa]);
 
   const fetchQuiebreStock = async ({ pageParam = 1, perPage = 5 }) => {

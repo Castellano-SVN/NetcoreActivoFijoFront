@@ -901,12 +901,13 @@ interface FormValueGuiaSalidaDetalle {
     SubFamiliaId: string;
     anoNumero: number;
     ArticuloId: string;
+    estadoArticuloOrigen: number;
     EstadoArticuloCodigo: number;
     Cantidad: number;
     Observacion?: string;
     CodigoSubFamilia: number;
     NombreSubFamilia: string;
-    CodigoArticulo?: string;
+    estadoArticulo?: string;
     DescripcionArticulo?: string;
     CantidadSistema: number;
     EstadoArticuloNombre:string;
