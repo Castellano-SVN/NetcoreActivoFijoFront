@@ -11,6 +11,8 @@ import { useUserStore } from "@/store/user.store";
 import { api_getinformeQuiebreStock } from "@/services/informes.service";
 import { IBodegaQuiebre } from "@/interfaces/creation";
 import { useInfiniteQuery } from "react-query";
+import { useTiposStore } from "@/store/tipos.store";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
 
 export default function index() {
   const [tab, setTab] = useState<number>(0);
@@ -89,7 +91,22 @@ export default function index() {
   });
 
   const allItems = data?.pages?.flatMap((page) => page.dataList) || [];
+const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
 
+    const getEstadosArticulos = async () => {
+        if (EstadoArticulo.length !== 0) return;
+
+        try {
+            const _data = await api_getEstadoArticulos(jwt);
+            setEstadoArticulo(_data.data.dataList);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    useEffect(() => {
+        if (!jwt) return;
+        getEstadosArticulos();
+    }, []);
   return (
     <>
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">

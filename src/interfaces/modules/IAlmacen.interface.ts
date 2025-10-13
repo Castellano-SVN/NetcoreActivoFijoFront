@@ -25,6 +25,8 @@ interface ILocacion {
 interface IArticulo{
     id: string;
     nombre: string;
+    year: number,
+    estadoArticulo: number,
 }
 interface IAlmacenArticulo {
     almacenId: string;

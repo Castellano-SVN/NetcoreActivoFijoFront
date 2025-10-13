@@ -1,7 +1,9 @@
 import WarningAlert from "@/components/alerts/warningAlert";
 import TablaQuiebreStock from "@/components/bodega/informes/tablas/TableQuiebreStock";
 import { IBodegaQuiebre } from "@/interfaces/creation";
+import { api_getEstadoArticulos } from "@/services/bodega.service";
 import { api_getinformeQuiebreStock } from "@/services/informes.service";
+import { useTiposStore } from "@/store/tipos.store";
 import { useUserStore } from "@/store/user.store";
 import router from "next/router";
 import { useEffect, useState } from "react";
@@ -18,6 +20,22 @@ interface props {
 
 export default function QuiebreStock(props: props) {
   const { jwt } = useUserStore();
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length !== 0) return;
+
+    try {
+      const _data = await api_getEstadoArticulos(jwt);
+      setEstadoArticulo(_data.data.dataList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []);
   return (
     <>
       <div className="">

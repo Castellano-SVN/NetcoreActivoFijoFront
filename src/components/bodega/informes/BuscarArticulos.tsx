@@ -51,6 +51,7 @@ import {
   api_getinformeOutput,
 } from "../../../services/informes.service";
 import { api_tipoDocumentoRecepcion } from "../../../services/ingreso.service";
+import { useTiposStore } from "@/store/tipos.store";
 
 const Schema = z.object({
   CentroCosto: z.string({
@@ -267,16 +268,6 @@ export default function BuscarArticuloMovTarjeta(props: props) {
     getAllBodegasByEmpresaYCentroCosto();
   }, [CentroCosto]);
 
-  useEffect(() => {
-    if (!Bodega) return;
-    getAllAlmacenByEmpByCenByBod();
-  }, [Bodega]);
-
-  useEffect(() => {
-    if (!Almacen) return;
-    getAllArticulosByAlmacen();
-  }, [Almacen]);
-
   const fechaDesde = watch("FechaDesde");
   const fechaHasta = watch("FechaHasta");
 
@@ -292,6 +283,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
       fechaHasta: string;
       provedorNombre: string;
       valor: number;
+      year: number;
+      estado: number;
     }[]
   >([]);
 
@@ -320,6 +313,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         fechaHasta: string;
         provedorNombre: string;
         valor: number;
+        year: number;
+        estado: number;
       }[] = [];
       response.data.dataList.forEach(
         (element: {
@@ -331,6 +326,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
           almacen: string;
           provedorNombre: string;
           valor: number;
+          year: number;
+          estado: number;
         }) => {
           const article: {
             cantidad: number;
@@ -343,6 +340,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
             fechaHasta: string;
             provedorNombre: string;
             valor: number;
+            year: number;
+            estado: number;
           } = {
             ...element,
             almacen: data.Almacen,
@@ -617,6 +616,8 @@ interface articleProps {
     fechaHasta: string;
     codigo?: string;
     valor: number;
+    year: number;
+    estado: number;
   };
   label: string;
 }
@@ -628,7 +629,8 @@ interface ITdr {
 
 function Article(props: articleProps) {
   const { jwt } = useUserStore();
-
+    const { EstadoArticulo } = useTiposStore();
+  
   const [movimientos, setMovimientos] = useState<movimientoI[]>([]);
   const historial = async () => {
     const respEntradas = await api_getinformeInput(
@@ -707,18 +709,11 @@ function Article(props: articleProps) {
       <div className=" border shadow-md rounded-lg p-2 hover:border-primary mt-3">
         <div className="mouse-pointer select-none">
           <span className="font-bold">Movimientos de: </span>
-          {props.article.nombre} <br />
-          {props.article.codigo == undefined ? (
-            "Sin codigo" + " " + props.article.nombre
-          ) : (
-            <>
-              <label>
-                {" "}
-                <span className="font-bold">Código: </span>
-                {props.article.codigo + " "}
-              </label>
-            </>
-          )}
+          {props.article.year} {props.article.nombre} - {props.article.codigo ? `Codigo : ${props.article.codigo}` : "Sin codigo"}<br />
+          
+          <span className="font-bold">
+           Estado: {EstadoArticulo.find(e => e.codigo == props.article.estado)?.nombre} 
+          </span>
           {movimientos.length > 0 ? (
             <>
               <TableMovArtAndTarjetaExi

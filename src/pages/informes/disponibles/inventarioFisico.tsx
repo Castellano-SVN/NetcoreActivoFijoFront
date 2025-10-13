@@ -9,17 +9,34 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import Select from "react-select";
 import { useContextStore } from "@/store/context.store";
+import { useTiposStore } from "@/store/tipos.store";
+import { api_getEstadoArticulos } from "@/services/inventario.service";
 
 
 
 export default function InventarioFisico() {
     const { empresa } = router.query as { empresa: string; };
     const { setActive } = useContextStore();
-
     useEffect(() => {
         setActive("Informes");
     }, []);
+    const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+    const { jwt } = useUserStore();
 
+    const getEstadosArticulos = async () => {
+        if (EstadoArticulo.length !== 0) return;
+
+        try {
+            const _data = await api_getEstadoArticulos(jwt);
+            setEstadoArticulo(_data.data.dataList);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    useEffect(() => {
+        if (!jwt) return;
+        getEstadosArticulos();
+    }, []);
     return (
         <>
             <div className="">
