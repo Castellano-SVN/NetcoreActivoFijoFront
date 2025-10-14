@@ -279,9 +279,6 @@ export default function PDFConOrden(props: props) {
                                         <Text style={styles.tableCell}>{Articulo.recepcionado}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{Articulo.porRecepcionar}</Text>
-                                    </View>
-                                    <View style={styles.tableCol}>
                                         <Text style={styles.tableCell}>{Articulo.recibida}</Text>
                                     </View>
                                     <View style={styles.tableCol}>
