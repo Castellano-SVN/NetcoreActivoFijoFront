@@ -897,6 +897,7 @@ interface FormValueGuiaSalidaDetalle {
   MotivoSalida: string;
   Observacion: string;
   GuiaSalidaDetalle: {
+    CodigoArticulo: number;
     AlmacenId: string;
     SubFamiliaId: string;
     anoNumero: number;

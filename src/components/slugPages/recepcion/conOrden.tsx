@@ -37,9 +37,7 @@ const ArticulosSchema = z.object({
   nombre: z.string(),
   cantidad: z.number(),
   precio: z.number(),
-  observacion: z.string(),
   recepcionado: z.number(),
-  porRecepcionar: z.number().optional(),
   recibida: z.number(),
   descripcion: z.string().optional(),
   observaciones: z.string().optional(),
@@ -381,7 +379,7 @@ export default function ConOrden(props: props) {
                       <span>{articulo.nombre}</span>
                       <span>{articulo.cantidad}</span>
                       <span>{articulo.precio}</span>
-                      <span>{articulo.observacion}</span>
+                      <span>{articulo.observacion ? articulo.observacion : 'Sin observaciónes'}</span>
                       {/* <span className="font-bold">
                         {getValues(`articulos.${index}.recepcionado`)}
                       </span> */}
@@ -441,11 +439,11 @@ export default function ConOrden(props: props) {
                       <input
                         key={articulo.id}
                         className={`block w-20 py-1 px-1 border ${errors.articulos &&
-                          errors.articulos[index]?.observaciones
+                          errors.articulos[index]?.observacion
                           ? "border-red-600"
                           : "border-primary"
                           } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        {...register(`articulos.${index}.observaciones`)}
+                        {...register(`articulos.${index}.observacion`)}
                       />
                     </Table.Row>
                   ))}

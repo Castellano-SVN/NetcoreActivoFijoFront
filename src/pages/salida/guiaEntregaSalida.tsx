@@ -624,7 +624,7 @@ export default function Salidas() {
                 <Table className="border shadow-lg">
                   <Table.Head className="bg-primary text-white">
                     <span>Selección</span>
-                    <span>Código sub-familia</span>
+                    <span>Articulo</span>
                     <span>Sub-familia</span>
                     <span>Código artículo</span>
                     <span>Descripción artículo</span>
@@ -672,6 +672,8 @@ export default function Salidas() {
                                       almacenArticulo.articulo.descripcion,
                                     CantidadSistema: almacenArticulo.cantidad,
                                     EstadoArticuloNombre: "",
+
+                                    CodigoArticulo: almacenArticulo.CodigoArticulo
                                   });
                                 } else {
                                   if (fieldIndex !== -1) {
@@ -682,7 +684,7 @@ export default function Salidas() {
                             />
                           </span>
                           <span>
-                            {almacenArticulo.articulo.subFamilium.codigo}
+                            {almacenArticulo.articulo.nombre}
                           </span>
                           <span>
                             {almacenArticulo.articulo.subFamilium.nombre}

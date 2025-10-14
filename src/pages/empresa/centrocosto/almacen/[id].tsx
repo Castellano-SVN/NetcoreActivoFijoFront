@@ -373,7 +373,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
   });
   const { jwt } = useUserStore();
 
-  const methodsLocation = useForm<{ cantidad:Number,almacen: string, articulo: string, estado: number, estadoInicial: number, locacion: string | undefined, locacionOrigen: string | undefined, anoNumero: number }>({
+  const methodsLocation = useForm<{ cantidad:number,almacen: string, articulo: string, estado: number, estadoInicial: number, locacion: string | undefined, locacionOrigen: string | undefined, anoNumero: number }>({
     resolver: zodResolver(validationSchemaLocation),
   });
   const {

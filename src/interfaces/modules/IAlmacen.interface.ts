@@ -31,6 +31,7 @@ interface IArticulo{
 interface IAlmacenArticulo {
     almacenId: string;
     anoNumero: number;
+    CodigoArticulo: number,
     articulo: {
         codigo?: string;
         estadoArticulo:number,
