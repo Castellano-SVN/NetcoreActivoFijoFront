@@ -174,7 +174,7 @@ export default function ConOrden(props: props) {
         cantidad: element.cotizacionDetalle.cantidad,
         precio: element.cotizacionDetalle.valorUnitario,
         observacion: element.cotizacionDetalle.observaciones as string,
-        recepcionado: element.cotizacionDetalle.solicitudDetalle.cantidadAprobada,
+        recepcionado: element.cotizacionDetalle.cantidad,
         recibida: undefined,
         AnoNumero: element.cotizacionDetalle.articulo.anoNumero,
         observaciones: undefined,
