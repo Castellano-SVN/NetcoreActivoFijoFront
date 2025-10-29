@@ -246,7 +246,7 @@ export default function Index() {
 
         <div className="flex flex-wrap justify-start">
           {data?.data.dataList.map((option: Empresa, index: number) => (
-            <div key={index} className="w-full lg:w-1/3 p-4 md:w-1/3">
+            <div key={index} id={`centro centro-${index}`} className="w-full lg:w-1/3 p-4 md:w-1/3">
               <Show empresa={option} refetch={refetch} />
             </div>
           ))}
@@ -353,7 +353,6 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
   }
 
   return (
-    <>
       <div className="rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out w-full h-full flex flex-col">
         <div className="px-4 py-3 rounded-t-lg flex justify-between items-center bg-primary ">
           <h3 className="text-lg font-semibold text-primary-content">
@@ -464,7 +463,7 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
                         <Table.Row align="center" key={index}>
                           <span>{option.nombre}</span>
                           <span className="flex flex-row justify-around">
-                            <button onClick={() => router.push(`/empresa/centrocosto/${option.id}`)}>
+                            <button id={`showAlmacen showAlmacen-${index}`} onClick={() => router.push(`/empresa/centrocosto/${option.id}`)}>
                               <FaEye className="h-4 w-4 text-primary" />
                             </button>
                           </span>
@@ -478,7 +477,6 @@ function Show({ empresa, refetch }: { empresa: Empresa, refetch: () => void; }) 
           </div>
         )}
       </div>
-    </>
   );
 
 }

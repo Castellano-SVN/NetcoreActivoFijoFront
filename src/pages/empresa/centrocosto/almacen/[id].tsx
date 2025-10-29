@@ -519,7 +519,7 @@ function Locations({ locacion, articulos, estados, locations, almacen, update }:
           </form>
         </Modal.Body>
       </Modal>
-      <div className="flex flex-col bordered rounded shadow-md ">
+      <div id={'location'} className="flex flex-col bordered rounded shadow-md ">
         <div className="flex flex-row justify-between bg-primary px-6 py-4 rounded-t-lg">
           <h3 className="text-large font-bold text-base-100 text-center">
             {locacion.direccion}
@@ -745,7 +745,7 @@ function WithoutLocations({ articulos, estados, locations, almacen, update }: { 
         </form>
       </Modal.Body>
     </Modal >
-      <div className="flex flex-col bordered rounded shadow-md ">
+      <div id={'location'}  className="flex flex-col bordered rounded shadow-md ">
         <div className="flex flex-row justify-between bg-error px-6 py-4 rounded-t-lg">
           <h3 className="text-large font-bold text-base-100 text-center">
             Artículos sin locación
