@@ -510,6 +510,25 @@ export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
     { headers: { Authorization: `Bearer ${bearer}` } }
   );
 }
+export function api_getAllAlmacenArticuloByEmpByCenByBodByAlmStock(
+  bearer: string,
+  empresaId: string,
+  centroCostoId: string,
+  bodegaId: string,
+  almacenId: string
+) {
+  return api.get(
+    `almacenArticulos/stock/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`,
+    { headers: { Authorization: `Bearer ${bearer}` } }
+  );
+}
+export function api_putAlmacenArticuloStock(data:any,bearer:string) {
+  return api.put("almacenArticulos/stock", data, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+
+}
+api_putAlmacenArticuloStock
 export function api_getAllArticulosByAlmacen(
   bearer: string,
   almacenId: string

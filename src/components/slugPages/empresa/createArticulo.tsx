@@ -67,10 +67,6 @@ export default function CreateArticulo(props: props) {
       required_error: "Campo requerido",
       invalid_type_error: "Campo requerido",
     }),
-    Valor: z.number({
-      required_error: "Campo requerido",
-      invalid_type_error: "Campo requerido",
-    }),
     Descripcion: z
       .string({
         required_error: "Campo requerido",
@@ -186,7 +182,6 @@ export default function CreateArticulo(props: props) {
     setValue("Id", editArticulo.articulo.id);
     setValue("Codigo", editArticulo.articulo.codigo);
     setValue("Nombre", editArticulo.articulo.nombre);
-    setValue("Valor", editArticulo.articulo.valor);
     setValue("Descripcion", editArticulo.articulo.descripcion);
     setValue("Eliminado", editArticulo.articulo.eliminado);
     setShow(true);
@@ -243,22 +238,6 @@ export default function CreateArticulo(props: props) {
                   </label>
                 </div>
               </div>
-
-              <span className=" mt-1 text-base font-semibold leading-6 text-gray-900">
-                Valor:
-              </span>
-              <input
-                type="number"
-                step="0.01"
-                {...register("Valor", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
-                className="mt-1 w-2/4 h-10 rounded-md text-base font-semibold leading-6 text-gray-900 border focus:ring-2 focus:ring-primary bg-primary-content "
-              />
-              <label className="label text-error">
-                {errors.Valor ? errors.Valor.message : ""}
-              </label>
 
               <div className="flex flex-col md:flex-row lg:flex-row">
                 <div className="flex flex-col">
