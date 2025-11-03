@@ -99,10 +99,14 @@ const ArticulosSchema = z.object({
   codigo: z.string().optional().nullable(),
   nombre: z.string().optional(),
   anoNumero: z.number().optional(),
-  valor: z.number().optional(),
+  valor: z
+    .number()
+    .min(1, { message: "Se requiere que el valor sea mayor a 1" }),
   cantidadAlmacen: z.number().optional(),
   cantidad: z.number().min(0, { message: "Es necesario al menos 1 unidad" }),
-  estadoArticulo: z.number(),
+  estadoArticulo: z.number().min(1, {
+    message: "Se necesita seleccionar el estado del articulo a recepcionar",
+  }),
 });
 
 const RecepcionDataSchema = z.object({
@@ -129,7 +133,6 @@ export default function SinOrden(props: props) {
   const methods = useForm<recepcionSOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
-      tipo: 2,
       fecha: new Date(),
       fechaDoc: new Date(),
       empresa: props.empresa,
@@ -183,9 +186,6 @@ export default function SinOrden(props: props) {
     totalItems: 0,
     perPage: 10,
   });
-  useEffect(() => {
-    console.log('errores',errors);
-  }, [errors]);
   const getFamilias = async () => {
     try {
       const data = await api_getAllFamilias(jwt, props.empresa);
@@ -302,7 +302,34 @@ export default function SinOrden(props: props) {
       }
     }
   };
+  const getFirstErrorMessage = (errors: any, title?: any): string | null => {
+    for (const key in errors) {
+      const error = errors[key];
 
+      if (error?.message) {
+        if (title) return `${error.message} en ${Object.keys(errors)[0]}`;
+        return error.message;
+      }
+
+      // Si es un objeto o array, sigue buscando dentro
+      if (typeof error === "object") {
+        const nested = getFirstErrorMessage(error, Object.keys(errors)[0]);
+        if (nested) return nested;
+      }
+    }
+    return null;
+  };
+
+  const onError = (errors: any) => {
+    const firstErrorKey = Object.keys(errors)[0];
+    if (firstErrorKey) {
+      const message =
+        getFirstErrorMessage(errors) || "Hay errores en el formulario";
+      toast.error(message);
+    }
+    // Aquí puedes mostrar una alerta, scroll al primer error, etc.
+  };
+  const { EstadoArticulo } = useTiposStore();
   return (
     <>
       <div className="w-11/12 md:w-11/12 md:w-8/12  m-auto p- flex flex-col">
@@ -354,7 +381,7 @@ export default function SinOrden(props: props) {
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
         {tab == 1 && (
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit, onError)}>
               <Recepcion
                 empresa={props.empresa}
                 tipos={tipos}
@@ -373,6 +400,7 @@ export default function SinOrden(props: props) {
                             <PDFSinOrden
                               data={pdfData}
                               location={locationStringPDF}
+                              estados={EstadoArticulo}
                             />
                           }
                           fileName={`Recepcion_SOC_Numero_pdf`}
@@ -395,10 +423,10 @@ export default function SinOrden(props: props) {
                       <div className="col-span-2">
                         <Button
                           type="button"
-                          className="btn btn-outline btn-secondary w-1/2 mt-2"
+                          className="btn btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
                           onClick={() => router.reload()}
                         >
-                          salir
+                          Salir
                         </Button>
                       </div>
                     </div>
@@ -452,23 +480,27 @@ function Recepcion(props: recepcionProps) {
       getValues("almacen"),
     );
     const newData = fields.map((item) => {
-      const search = data.data.dataList.find((item2: {
+      const search = data.data.dataList.find(
+        (item2: {
           articuloId: string;
           cantidad: number;
           almacenId: string;
           estadoArticuloCodigo: number;
           anoNumero: number;
-        }) => item.id === item2.articuloId && item.anoNumero === item2.anoNumero && item2.almacenId === getValues("almacen"),
-      )
-        if (search) {
-          item.estadoArticulo = search.estadoArticuloCodigo;
-          item.cantidadAlmacen =  search.cantidad;
-        } else {
-          item.cantidadAlmacen =  0;
-          item.estadoArticulo = 0;
-        }
-        return item;
-    })
+        }) =>
+          item.id === item2.articuloId &&
+          item.anoNumero === item2.anoNumero &&
+          item2.almacenId === getValues("almacen"),
+      );
+      if (search) {
+        item.estadoArticulo = search.estadoArticuloCodigo;
+        item.cantidadAlmacen = search.cantidad;
+      } else {
+        item.cantidadAlmacen = 0;
+        item.estadoArticulo = 0;
+      }
+      return item;
+    });
     console.log(newData);
     remove();
     append(newData);
@@ -628,6 +660,9 @@ function Recepcion(props: recepcionProps) {
               )}
             />
           </div>
+          {errors.tipo && (
+            <span className="text-red-600">{errors.tipo.message}</span>
+          )}
         </fieldset>
       </div>
 
@@ -656,7 +691,9 @@ function Recepcion(props: recepcionProps) {
                   })
                   .map((articulo, index) => (
                     <Table.Row key={index} hover={true}>
-                      <span>{articulo.codigo}</span>
+                      <div className="w-full flex justify-center items-center">
+                        {articulo.codigo ?? "-"}
+                      </div>
                       <span>{articulo.nombre}</span>
                       <div className="flex justify-center">
                         <span className="font-bold">
@@ -667,7 +704,21 @@ function Recepcion(props: recepcionProps) {
                           )}
                         </span>
                       </div>
-                      <span className="font-semibold">{articulo.valor}</span>
+                      <span className="">
+                        <input
+                          key={articulo.id}
+                          onInput={handleInput}
+                          className={`block w-20 py-1 px-1 border ${
+                            errors.articulos && errors.articulos[index]?.valor
+                              ? "border-red-600"
+                              : "border-primary"
+                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                          {...register(`articulos.${index}.valor`, {
+                            setValueAs: (value) =>
+                              value === "" ? undefined : Number(value),
+                          })}
+                        />
+                      </span>
 
                       <input
                         key={articulo.id}

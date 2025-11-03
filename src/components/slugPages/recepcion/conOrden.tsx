@@ -42,7 +42,9 @@ const ArticulosSchema = z.object({
   descripcion: z.string().optional(),
   observaciones: z.string().optional(),
   AnoNumero: z.number(),
-  estadoArticulo: z.number({ required_error: "Campo requerido" }).min(1, { message: "Campo requerido" }),
+  estadoArticulo: z
+    .number({ required_error: "Campo requerido" })
+    .min(1, { message: "Campo requerido" }),
 });
 
 const RecepcionDataSchema = z.object({
@@ -124,7 +126,6 @@ export default function ConOrden(props: props) {
     setTipos(fetch.data.dataList);
   };
 
-
   useEffect(() => {
     getTipos();
     CCAvailable();
@@ -133,7 +134,6 @@ export default function ConOrden(props: props) {
   const methods = useForm<recepcionCOC>({
     resolver: zodResolver(RecepcionDataSchema),
     defaultValues: {
-      tipo: 1,
       fecha: new Date(),
       fechaDoc: new Date(),
       oc: props.numero,
@@ -141,7 +141,11 @@ export default function ConOrden(props: props) {
       cotizacion: props.dataConOrdenCompra[0].cotizacionId,
     },
   });
-  const [locationString, setLocationString] = useState<{ centrocosto?: string; bodega?: string; almacen?: string }>({});
+  const [locationString, setLocationString] = useState<{
+    centrocosto?: string;
+    bodega?: string;
+    almacen?: string;
+  }>({});
   const {
     register,
     handleSubmit,
@@ -155,12 +159,12 @@ export default function ConOrden(props: props) {
     {
       control, // control props comes from useForm (optional: if you are using FormProvider)
       name: "articulos", // unique name for your Field Array
-    }
+    },
   );
   const { EstadoArticulo } = useTiposStore();
   const [showPdf, setShowPdf] = useState(false);
   useEffect(() => {
-    console.log('errores');
+    console.log("errores");
     console.log(errors);
     console.log(getValues());
   }, [errors]);
@@ -187,7 +191,7 @@ export default function ConOrden(props: props) {
 
   const onSubmit = async (data: recepcionCOC) => {
     try {
-      console.log(data)
+      console.log(data);
 
       // Hacer la solicitud al servicio
       const response = await api_postRecepcionYDetalle(jwt, data);
@@ -195,7 +199,7 @@ export default function ConOrden(props: props) {
       // // Mostrar el mensaje de éxito
       if (response) {
         toast.success("Articulo recepcionado correctamente");
-        setPdfData(data)
+        setPdfData(data);
         setShowPdf(true);
       }
     } catch (error) {
@@ -270,7 +274,11 @@ export default function ConOrden(props: props) {
               </div>
             </div>
             {empresaId && ids.length !== 0 && (
-              <UbicacionRecepcion empresa={empresaId} filterCC={ids} dispatchStrings={setLocationString} />
+              <UbicacionRecepcion
+                empresa={empresaId}
+                filterCC={ids}
+                dispatchStrings={setLocationString}
+              />
             )}
             <div className="flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:grid lg:grid-cols-2 lg:gap-4 mb-6">
               <div>
@@ -344,7 +352,9 @@ export default function ConOrden(props: props) {
                               type="radio"
                               value={tipo.codigo}
                               className="radio radio-xs radio-primary ml-2 mr-2"
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
                             {tipo.nombre}
                           </label>
@@ -363,12 +373,12 @@ export default function ConOrden(props: props) {
                 <Table.Head className="bg-primary text-white">
                   <span>Código</span>
                   <span>Nombre</span>
-                  <span>Cantidad</span>
+                  <span>Cantidad en orden de compra</span>
                   <span>Precio</span>
                   <span>Observación</span>
                   {/* <span>Recepcionado</span> */}
                   <span>Estado</span>
-                  <span>Cantidad</span>
+                  <span>Cantidad recibida</span>
                   <span>Observaciones</span>
                 </Table.Head>
 
@@ -379,16 +389,21 @@ export default function ConOrden(props: props) {
                       <span>{articulo.nombre}</span>
                       <span>{articulo.cantidad}</span>
                       <span>{articulo.precio}</span>
-                      <span>{articulo.observacion ? articulo.observacion : 'Sin observaciónes'}</span>
+                      <span>
+                        {articulo.observacion
+                          ? articulo.observacion
+                          : "Sin observaciónes"}
+                      </span>
                       {/* <span className="font-bold">
                         {getValues(`articulos.${index}.recepcionado`)}
                       </span> */}
                       <select
-                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
+                        className={`block w-20 py-1 px-1 border ${
+                          errors.articulos &&
                           errors.articulos[index]?.estadoArticulo
-                          ? "border-red-600"
-                          : "border-primary"
-                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                            ? "border-red-600"
+                            : "border-primary"
+                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
                         defaultValue={articulo.estadoArticulo}
                         {...register(`articulos.${index}.estadoArticulo`, {
                           setValueAs: (value) =>
@@ -422,11 +437,11 @@ export default function ConOrden(props: props) {
                             e.preventDefault();
                           }
                         }}
-                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
-                          errors.articulos[index]?.recibida
-                          ? "border-red-600"
-                          : "border-primary"
-                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                        className={`block w-20 py-1 px-1 border ${
+                          errors.articulos && errors.articulos[index]?.recibida
+                            ? "border-red-600"
+                            : "border-primary"
+                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
                         {...register(`articulos.${index}.recibida`, {
                           setValueAs: (value) =>
                             value === "" ? undefined : Number(value),
@@ -438,11 +453,12 @@ export default function ConOrden(props: props) {
                       />
                       <input
                         key={articulo.id}
-                        className={`block w-20 py-1 px-1 border ${errors.articulos &&
+                        className={`block w-20 py-1 px-1 border ${
+                          errors.articulos &&
                           errors.articulos[index]?.observacion
-                          ? "border-red-600"
-                          : "border-primary"
-                          } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                            ? "border-red-600"
+                            : "border-primary"
+                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
                         {...register(`articulos.${index}.observacion`)}
                       />
                     </Table.Row>
@@ -485,7 +501,13 @@ export default function ConOrden(props: props) {
                     <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                       <div className="col-span-2">
                         <PDFDownloadLink
-                          document={<PDFConOrden data={pdfData} location={locationString} />}
+                          document={
+                            <PDFConOrden
+                              data={pdfData}
+                              location={locationString}
+                              estados={EstadoArticulo}
+                            />
+                          }
                           fileName={`Orden_De_Compra_Numero_${props.numero}_pdf`}
                         >
                           {({ loading, url, error, blob }) =>
@@ -506,16 +528,15 @@ export default function ConOrden(props: props) {
                       <div className="col-span-2">
                         <Button
                           type="button"
-                          className="btn btn-outline btn-secondary w-1/2 mt-2"
+                          className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
                           onClick={() => router.reload()}
                         >
-                          salir
+                          Salir
                         </Button>
                       </div>
                     </div>
                   </Modal.Body>
                 </Modal>
-
               )}
               <button
                 type="submit"
