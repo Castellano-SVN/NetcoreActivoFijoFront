@@ -748,102 +748,113 @@ function Locations({
             {locacion.direccion}
           </h3>
         </div>
-        <div className="grid grid-cols-1 gap-4">
-          <table className="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Nombre</th>
-                <th align="right">Año</th>
-                <th align="right">Stock Min </th>
-                <th align="right">Total en almacen</th>
-                <th align="right">Cantidad</th>
-                <th>Estado</th>
-                <th align="center">Acciones</th>
-                <th align="center">Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {articulosFilter.map((e, index) => (
-                <tr
-                  className={` ${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock)}`}
-                  key={index}
-                >
-                  <th className="text-bold">{index + 1}</th>
-                  <td>
-                    <span className="font-bold">{e.nombre}</span>
-                    <br />
-                    <span>
-                      {e.familia} - {e.subfamilia}
-                    </span>
-                  </td>
-                  <td align="right" className="font-bold">
-                    {e.anoNumero}
-                  </td>
-                  <td
-                    className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
-                    align={!avoidStatus.includes(e.estado) ? "right" : "center"}
-                  >
-                    {!avoidStatus.includes(e.estado)
-                      ? stock.find(
-                          (x) =>
-                            x.anoNumero === e.anoNumero &&
-                            x.articuloId === e.articuloId,
-                        )?.cantidadMinima
-                      : "-"}
-                  </td>
-                  <td
-                    className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
-                    align={!avoidStatus.includes(e.estado) ? "right" : "center"}
-                  >
-                    {!avoidStatus.includes(e.estado)
-                      ? stock.find(
-                          (x) =>
-                            x.anoNumero === e.anoNumero &&
-                            x.articuloId === e.articuloId,
-                        )?.stock
-                      : "-"}
-                  </td>
-                  <td className="font-bold" align="right">
-                    {e.cantidad}
-                  </td>
-                  <td className="font-semibold">
-                    {
-                      EstadoArticulo.find(
-                        (estado) => e.estado === estado.codigo,
-                      )?.nombre
-                    }
-                  </td>
-                  <td align="center">
-                    <button type="button" onClick={() => handleShowLocation(e)}>
-                      <FaArrowsLeftRight className="h-4 w-4 text-primary" />
-                    </button>
-                  </td>
-                  <td align="center">
-                    {!avoidStatus.includes(e.estado) ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleShowStock(
-                            stock.find(
+        <div className="w-full mt-2 overflow-x-auto rounded-lg shadow-sm">
+          <div className="min-w-full inline-block align-middle">
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <table className="table w-full text-sm text-left">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th align="right">Año</th>
+                    <th align="right">Stock Min </th>
+                    <th align="right">Total en almacen</th>
+                    <th align="right">Cantidad</th>
+                    <th>Estado</th>
+                    <th align="center">Acciones</th>
+                    <th align="center">Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {articulosFilter.map((e, index) => (
+                    <tr
+                      className={` ${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock)}`}
+                      key={index}
+                    >
+                      <th className="text-bold">{index + 1}</th>
+                      <td>
+                        <span className="font-bold">{e.nombre}</span>
+                        <br />
+                        <span>
+                          {e.familia} - {e.subfamilia}
+                        </span>
+                      </td>
+                      <td align="right" className="font-bold">
+                        {e.anoNumero}
+                      </td>
+                      <td
+                        className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
+                        align={
+                          !avoidStatus.includes(e.estado) ? "right" : "center"
+                        }
+                      >
+                        {!avoidStatus.includes(e.estado)
+                          ? stock.find(
                               (x) =>
                                 x.anoNumero === e.anoNumero &&
                                 x.articuloId === e.articuloId,
-                            )!,
-                            e,
-                          );
-                        }}
+                            )?.cantidadMinima
+                          : "-"}
+                      </td>
+                      <td
+                        className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
+                        align={
+                          !avoidStatus.includes(e.estado) ? "right" : "center"
+                        }
                       >
-                        <LuPackagePlus className="h-4 w-4 text-primary" />
-                      </button>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        {!avoidStatus.includes(e.estado)
+                          ? stock.find(
+                              (x) =>
+                                x.anoNumero === e.anoNumero &&
+                                x.articuloId === e.articuloId,
+                            )?.stock
+                          : "-"}
+                      </td>
+                      <td className="font-bold" align="right">
+                        {e.cantidad}
+                      </td>
+                      <td className="font-semibold">
+                        {
+                          EstadoArticulo.find(
+                            (estado) => e.estado === estado.codigo,
+                          )?.nombre
+                        }
+                      </td>
+                      <td align="center">
+                        <button
+                          type="button"
+                          onClick={() => handleShowLocation(e)}
+                        >
+                          <FaArrowsLeftRight className="h-4 w-4 text-primary" />
+                        </button>
+                      </td>
+                      <td align="center">
+                        {!avoidStatus.includes(e.estado) ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleShowStock(
+                                stock.find(
+                                  (x) =>
+                                    x.anoNumero === e.anoNumero &&
+                                    x.articuloId === e.articuloId,
+                                )!,
+                                e,
+                              );
+                            }}
+                          >
+                            <LuPackagePlus className="h-4 w-4 text-primary" />
+                          </button>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </>
@@ -1151,99 +1162,107 @@ function WithoutLocations({
             Artículos sin locación
           </h3>
         </div>
-        <div className="grid grid-cols-1 gap-4">
-          <table className="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Nombre</th>
-                <th>Año</th>
-                <th align="right">Stock Min </th>
-                <th align="right">Total en almacen</th>
-                <th>Cantidad</th>
-                <th>Estado</th>
-                <th align="center">Acciones</th>
-                <th align="center">Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {articulosFilter.map((e, index) => (
-                <tr
-                  className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock)}`}
-                  key={index}
-                >
-                  <th className="text-bold">{index + 1}</th>
-                  <td>
-                    <span className="font-bold">{e.nombre}</span>
-                    <br />
-                    <span>
-                      {e.familia} - {e.subfamilia}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="font-bold">{e.anoNumero}</span>
-                  </td>
-                  <td
-                    className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
-                    align={!avoidStatus.includes(e.estado) ? "right" : "center"}
-                  >
-                    {!avoidStatus.includes(e.estado)
-                      ? stock.find(
-                          (x) =>
-                            x.anoNumero === e.anoNumero &&
-                            x.articuloId === e.articuloId,
-                        )?.cantidadMinima
-                      : "-"}
-                  </td>
-                  <td
-                    className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
-                    align={!avoidStatus.includes(e.estado) ? "right" : "center"}
-                  >
-                    {!avoidStatus.includes(e.estado)
-                      ? stock.find(
-                          (x) =>
-                            x.anoNumero === e.anoNumero &&
-                            x.articuloId === e.articuloId,
-                        )?.stock
-                      : "-"}
-                  </td>
-                  <td align="right">{e.cantidad}</td>
-                  <td className="font-semibold">
-                    {
-                      EstadoArticulo.find(
-                        (estado) => e.estado === estado.codigo,
-                      )?.nombre
-                    }
-                  </td>
-                  <td>
-                    <button className="button hover:font-bold">
-                      <ArchiveBoxIcon
-                        className="h-4 w-4 text-primary hover:font-bold"
-                        onClick={() => handleShowLocation(e)}
-                      />
-                    </button>
-                  </td>
-                  <td align="center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleShowStock(
-                          stock.find(
-                            (x) =>
-                              x.anoNumero === e.anoNumero &&
-                              x.articuloId === e.articuloId,
-                          )!,
-                          e,
-                        );
-                      }}
+        <div className="w-full mt-2 overflow-x-auto rounded-lg shadow-sm">
+          <div className="min-w-full inline-block align-middle">
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <table className="table w-full text-sm text-left">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Año</th>
+                    <th align="right">Stock Min </th>
+                    <th align="right">Total en almacen</th>
+                    <th>Cantidad</th>
+                    <th>Estado</th>
+                    <th align="center">Acciones</th>
+                    <th align="center">Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {articulosFilter.map((e, index) => (
+                    <tr
+                      className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock)}`}
+                      key={index}
                     >
-                      <LuPackagePlus className="h-4 w-4 text-primary" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <th className="text-bold">{index + 1}</th>
+                      <td>
+                        <span className="font-bold">{e.nombre}</span>
+                        <br />
+                        <span>
+                          {e.familia} - {e.subfamilia}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="font-bold">{e.anoNumero}</span>
+                      </td>
+                      <td
+                        className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
+                        align={
+                          !avoidStatus.includes(e.estado) ? "right" : "center"
+                        }
+                      >
+                        {!avoidStatus.includes(e.estado)
+                          ? stock.find(
+                              (x) =>
+                                x.anoNumero === e.anoNumero &&
+                                x.articuloId === e.articuloId,
+                            )?.cantidadMinima
+                          : "-"}
+                      </td>
+                      <td
+                        className={`${CalculateStock(stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.cantidadMinima, stock.find((x) => x.anoNumero === e.anoNumero && x.articuloId === e.articuloId)?.stock, "font")}`}
+                        align={
+                          !avoidStatus.includes(e.estado) ? "right" : "center"
+                        }
+                      >
+                        {!avoidStatus.includes(e.estado)
+                          ? stock.find(
+                              (x) =>
+                                x.anoNumero === e.anoNumero &&
+                                x.articuloId === e.articuloId,
+                            )?.stock
+                          : "-"}
+                      </td>
+                      <td align="right">{e.cantidad}</td>
+                      <td className="font-semibold">
+                        {
+                          EstadoArticulo.find(
+                            (estado) => e.estado === estado.codigo,
+                          )?.nombre
+                        }
+                      </td>
+                      <td>
+                        <button className="button hover:font-bold">
+                          <ArchiveBoxIcon
+                            className="h-4 w-4 text-primary hover:font-bold"
+                            onClick={() => handleShowLocation(e)}
+                          />
+                        </button>
+                      </td>
+                      <td align="center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleShowStock(
+                              stock.find(
+                                (x) =>
+                                  x.anoNumero === e.anoNumero &&
+                                  x.articuloId === e.articuloId,
+                              )!,
+                              e,
+                            );
+                          }}
+                        >
+                          <LuPackagePlus className="h-4 w-4 text-primary" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </>

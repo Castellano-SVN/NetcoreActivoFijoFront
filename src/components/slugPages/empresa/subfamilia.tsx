@@ -50,14 +50,14 @@ export default function Page(props: props) {
         {
           searchTerm,
           searchType,
-        }
+        },
       );
       return response.data;
     } else {
       const response = await api_getSubFamilias(
         jwt,
         props.familyGuid,
-        pageParam
+        pageParam,
       );
       return response.data;
     }
@@ -108,7 +108,7 @@ export default function Page(props: props) {
           pages: lastPage.pages,
         });
       },
-    }
+    },
   );
 
   if (status === "error")
@@ -185,7 +185,7 @@ export default function Page(props: props) {
                 checked={searchType === "contains"}
                 onChange={() => setSearchType("contains")}
               />
-              <span className="ml-1 text-sm">Contiene</span>
+              <span className="ml-1 text-sm">Contieneasd</span>
             </label>
 
             <label className="flex items-center cursor-pointer ml-2">
@@ -260,8 +260,8 @@ export default function Page(props: props) {
                 {isFetchingNextPage
                   ? "Cargando más..."
                   : hasNextPage
-                  ? "Ver más"
-                  : "No hay más datos"}
+                    ? "Ver más"
+                    : "No hay más datos"}
               </button>
             </div>
             <div className="mt-4">
@@ -331,7 +331,9 @@ function Element({
           error.response?.data?.message ===
           "No se puede eliminar subfamilia, contiene artículos dentro."
         ) {
-          toast.error("No se puede eliminar subfamilia, contiene artículos dentro.");
+          toast.error(
+            "No se puede eliminar subfamilia, contiene artículos dentro.",
+          );
         } else {
           toast.error("Error en la solicitud");
         }
@@ -346,7 +348,7 @@ function Element({
   const editSubFamilia = () => {
     sessionStorage.setItem(
       "editSubFamilia",
-      JSON.stringify({ subFamilia: element })
+      JSON.stringify({ subFamilia: element }),
     );
     create();
   };

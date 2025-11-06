@@ -111,7 +111,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
     try {
       const data2 = await api_getAllCentroCostoByEmpresa(
         jwt,
-        empresa as string
+        empresa as string,
       );
       setDataCentroCosto(data2.data.dataList);
     } catch (error) {
@@ -130,7 +130,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
       const data = await api_getAllBodegaByEmpresaYCentroCosto(
         jwt,
         empresa as string,
-        CentroCosto
+        CentroCosto,
       );
       setDataBodega(data.data.dataList);
     } catch (error) {
@@ -145,7 +145,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         jwt,
         empresa as string,
         CentroCosto,
-        Bodega
+        Bodega,
       );
       setDataAlmacen(data.data.dataList);
     } catch (error) {
@@ -293,13 +293,20 @@ export default function BuscarArticuloMovTarjeta(props: props) {
       setArticulos([]);
       const formattedFechaDesde = data.FechaDesde.toISOString().split("T")[0];
       const formattedFechaHasta = data.FechaHasta.toISOString().split("T")[0];
+      let year = undefined;
+      if (data.Articulo) {
+        const split = data.Articulo.split("_");
+        data.Articulo = split[0];
+        year = parseInt(split[1]) || undefined;
+      }
       const response = await api_getinformeArticulo(
         jwt,
         empresa as string,
         data.Almacen,
         formattedFechaDesde,
         formattedFechaHasta,
-        data.Articulo
+        data.Articulo,
+        year,
       );
 
       const articles: {
@@ -350,7 +357,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
             fechaHasta: formattedFechaHasta,
           };
           articles.push(article);
-        }
+        },
       );
       setArticulos(articles);
     } catch (error) {
@@ -455,20 +462,25 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                   <Select
                     className="mt-2 px-0 md:px-8"
                     placeholder="Seleccione Artículo"
-                    getOptionValue={(option) => option.id}
-                    getOptionLabel={(option) => option.nombre}
-                    value={dataArticulo.find((e) => e.id === value)}
+                    getOptionValue={(option) => `${option.id}_${option.year}`}
+                    getOptionLabel={(option) =>
+                      `${option.nombre} - ${option.year}`
+                    }
+                    value={dataArticulo.find(
+                      (e) => `${e.id}_${e.year}` === value, // <-- comparar con el string combinado
+                    )}
                     options={dataArticulo}
-                    onChange={(val) => setValue("Articulo", val?.id as string)}
-                    menuPortalTarget={document.body}
+                    onChange={(val) =>
+                      setValue("Articulo", `${val?.id}_${val?.year}`)
+                    } // <-- guardar como "id-año"                    menuPortalTarget={document.body}
                     loadingMessage={() => "Cargando opciones..."}
                     isLoading={dataCentroCosto.length === 0}
                     noOptionsMessage={() =>
                       !Almacen
                         ? "Seleccione un almacén primero"
                         : dataArticulo.length === 0
-                        ? "Este almacén no tiene artículos"
-                        : "No hay opciones"
+                          ? "Este almacén no tiene artículos"
+                          : "No hay opciones"
                     }
                     isClearable
                   />
@@ -629,8 +641,8 @@ interface ITdr {
 
 function Article(props: articleProps) {
   const { jwt } = useUserStore();
-    const { EstadoArticulo } = useTiposStore();
-  
+  const { EstadoArticulo } = useTiposStore();
+
   const [movimientos, setMovimientos] = useState<movimientoI[]>([]);
   const historial = async () => {
     const respEntradas = await api_getinformeInput(
@@ -639,7 +651,7 @@ function Article(props: articleProps) {
       props.article.almacen,
       props.article.fechaDesde,
       props.article.fechaHasta,
-      props.article.id
+      props.article.id,
     );
 
     const respSalidas = await api_getinformeOutput(
@@ -648,7 +660,7 @@ function Article(props: articleProps) {
       props.article.almacen,
       props.article.fechaDesde,
       props.article.fechaHasta,
-      props.article.id
+      props.article.id,
     );
 
     const entradas: movimientoI[] = respEntradas.data.dataList.map(
@@ -670,7 +682,7 @@ function Article(props: articleProps) {
           precioCompra: item.precioCompra,
           timestamp: item.timestamp,
         };
-      }
+      },
     );
     const salidas: movimientoI[] = respSalidas.data.dataList.map(
       (item: movimientoI) => {
@@ -691,11 +703,11 @@ function Article(props: articleProps) {
           precioCompra: item.precioCompra,
           timestamp: item.timestamp,
         };
-      }
+      },
     );
 
     let combinedArray = [...entradas, ...salidas].sort(
-      (a, b) => b.timestamp - a.timestamp
+      (a, b) => b.timestamp - a.timestamp,
     );
     setMovimientos(combinedArray);
   };
@@ -709,10 +721,17 @@ function Article(props: articleProps) {
       <div className=" border shadow-md rounded-lg p-2 hover:border-primary mt-3">
         <div className="mouse-pointer select-none">
           <span className="font-bold">Movimientos de: </span>
-          {props.article.year} {props.article.nombre} - {props.article.codigo ? `Codigo : ${props.article.codigo}` : "Sin codigo"}<br />
-          
+          {props.article.year} {props.article.nombre} -{" "}
+          {props.article.codigo
+            ? `Codigo : ${props.article.codigo}`
+            : "Sin codigo"}
+          <br />
           <span className="font-bold">
-           Estado: {EstadoArticulo.find(e => e.codigo == props.article.estado)?.nombre} 
+            Estado:{" "}
+            {
+              EstadoArticulo.find((e) => e.codigo == props.article.estado)
+                ?.nombre
+            }
           </span>
           {movimientos.length > 0 ? (
             <>

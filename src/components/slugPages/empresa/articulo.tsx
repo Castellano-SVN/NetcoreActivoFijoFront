@@ -44,14 +44,14 @@ export default function Page(props: props) {
         jwt,
         props.subFamilyGuid,
         pageParam,
-        { searchTerm, searchType }
+        { searchTerm, searchType },
       );
       return response.data;
     } else {
       const response = await api_getArticulos(
         jwt,
         props.subFamilyGuid,
-        pageParam
+        pageParam,
       );
       return response.data;
     }
@@ -101,7 +101,7 @@ export default function Page(props: props) {
           pages: lastPage.pages,
         });
       },
-    }
+    },
   );
 
   if (status === "error")
@@ -166,10 +166,10 @@ export default function Page(props: props) {
                   {type === "startsWith"
                     ? "Comienza con"
                     : type === "contains"
-                    ? "Contiene"
-                    : type === "endsWith"
-                    ? "Termina con"
-                    : "Exacto"}
+                      ? "Contiene"
+                      : type === "endsWith"
+                        ? "Termina conasd"
+                        : "Exacto"}
                 </span>
               </label>
             ))}
@@ -226,8 +226,8 @@ export default function Page(props: props) {
                 {isFetchingNextPage
                   ? "Cargando más..."
                   : hasNextPage
-                  ? "Ver más"
-                  : "No hay más datos"}
+                    ? "Ver más"
+                    : "No hay más datos"}
               </button>
             </div>
             <div className="mt-4">
@@ -286,7 +286,10 @@ function Element({
   };
 
   const editArticulo = () => {
-    sessionStorage.setItem("editArticulo", JSON.stringify({ articulo: element }));
+    sessionStorage.setItem(
+      "editArticulo",
+      JSON.stringify({ articulo: element }),
+    );
     create();
   };
 
@@ -302,8 +305,8 @@ function Element({
             <span className="text-sm">{element.nombre}</span>
           </div>
           <div className="basis-1/3 flex flex-col text-right">
-            <span className="font-bold mb-2">Precio</span>
-            <span className="text-sm">${element.valor}</span>
+            <span className="font-bold mb-2">Año</span>
+            <span className="text-sm">{element.anoNumero}</span>
           </div>
           <div className="basis-1/3 flex flex-col text-right">
             <span className="font-bold mb-2">Código</span>

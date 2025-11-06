@@ -17,14 +17,14 @@ api.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       console.error("Timeout de la petición:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 2) Sin respuesta (p. ej. servidor caído o CORS bloqueado)
     else if (error.request && !error.response) {
       console.error("No hubo respuesta del servidor:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 3) Error 404: logout
@@ -38,12 +38,12 @@ api.interceptors.response.use(
     else if (error.response?.status! >= 500) {
       console.error(`Error ${error.response!.status} del servidor`);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export function api_getinformeArticulo(
@@ -52,13 +52,14 @@ export function api_getinformeArticulo(
   almacen: string,
   fechaDesde: string,
   fechaHasta: string,
-  articulo?: string
+  articulo?: string,
+  articleYear?: number,
 ) {
   let query = `empresa=${empresa}`;
   query = query + `&almacen=${almacen}`;
   query = query + `&fecha_desde=${fechaDesde}`;
   query = query + `&fecha_hasta=${fechaHasta}`;
-  if (articulo) query = query + `&articulo=${articulo}`;
+  if (articulo) query = query + `&articulo=${articulo}&year=${articleYear}`;
   return api.get(`informe/movimientos/busqueda?${query}`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
@@ -67,7 +68,7 @@ export function api_getinformeQuiebreStock(
   bearer: string,
   empresa: string,
   page: number,
-  perPage: number
+  perPage: number,
 ) {
   let query = `empresa=${empresa}&page=${page}&perPage=${perPage}`;
   return api.get(`informe/quiebrestock/busqueda?${query}`, {
@@ -77,7 +78,7 @@ export function api_getinformeQuiebreStock(
 export function api_getinformeQuiebreStockExcel(
   bearer: string,
   empresa: string,
-  perPage: number
+  perPage: number,
 ) {
   let query = `empresa=${empresa}&perPage=${perPage}`;
   return api.get(`informe/quiebrestock/busqueda/excel?${query}`, {
@@ -92,7 +93,7 @@ export function api_getinformeInput(
   almacen: string,
   fechaDesde: string,
   fechaHasta: string,
-  articulo: string
+  articulo: string,
 ) {
   let query = `empresa=${empresa}`;
   query = query + `&almacen=${almacen}`;
@@ -110,7 +111,7 @@ export function api_getinformeOutput(
   almacen: string,
   fechaDesde: string,
   fechaHasta: string,
-  articulo: string
+  articulo: string,
 ) {
   let query = `empresa=${empresa}`;
   query = query + `&almacen=${almacen}`;
@@ -128,7 +129,7 @@ export function api_getInputOutputExcel(
   fechaDesde: string,
   fechaHasta: string,
   articulo: string,
-  tarjeta: boolean
+  tarjeta: boolean,
 ) {
   let query = `empresa=${empresa}`;
   query = query + `&almacen=${almacen}`;
@@ -144,24 +145,24 @@ export function api_getInputOutputExcel(
 
 export function api_getIFRByDetalle(
   bearer: string,
-  inventarioFisicoDetalleId: string
+  inventarioFisicoDetalleId: string,
 ) {
   return api.get(
     `inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=false`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
 export function api_getIFRByDetalleToExcel(
   bearer: string,
-  inventarioFisicoDetalleId: string
+  inventarioFisicoDetalleId: string,
 ) {
   return api.get(
     `inventariofisicoregistro/${inventarioFisicoDetalleId}?excel=true`,
-    { headers: { Authorization: `Bearer ${bearer}` }, responseType: "blob" }
+    { headers: { Authorization: `Bearer ${bearer}` }, responseType: "blob" },
   );
 }
 export function api_getMyNotifys(bearer: string) {
   return api.get(`/empresa/myNotifys`, {
-    headers: { Authorization: `Bearer ${bearer}` }
+    headers: { Authorization: `Bearer ${bearer}` },
   });
 }
