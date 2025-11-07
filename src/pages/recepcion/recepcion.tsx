@@ -48,7 +48,7 @@ export default function recepcion() {
     } catch (error: any) {
       console.log(error);
       if (error.response && error.response.status === 400) {
-        toast.error("Número de orden de compra invalido");
+        toast.error(error.response.data.message);
       } else {
         toast.error("Error al buscar la orden de compra");
       }

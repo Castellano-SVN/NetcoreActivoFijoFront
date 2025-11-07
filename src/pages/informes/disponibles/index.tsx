@@ -131,6 +131,16 @@ export default function index() {
           >
             Tarjeta de Existencia
           </a>
+          <a
+            onClick={() => {
+              setTab(2);
+            }}
+            className={`${
+              tab == 2 && "border-b-2 border-primary font-bold"
+            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
+          >
+            Quiebre de stock
+          </a>
           {/* <a
             onClick={() => {
               setTab(2);
@@ -149,16 +159,14 @@ export default function index() {
         {/* {tab == 2 &&(
             <InventarioFisico/>
         )}  */}
-        {tab == 3 && (
-          <>
-            <QuiebreStock
-              dataQuiebre={allItems}
-              dataQuiebrePdf={dataQuiebreStockPDF}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-            />
-          </>
+        {tab == 2 && (
+          <QuiebreStock
+            dataQuiebre={allItems}
+            dataQuiebrePdf={dataQuiebreStockPDF}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         )}
       </div>
     </>

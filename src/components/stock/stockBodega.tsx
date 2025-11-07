@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Document,
   Text,
@@ -7,6 +7,7 @@ import {
   View,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
+import { Button } from "react-daisyui";
 
 interface DataI {
   id: string;
@@ -147,6 +148,26 @@ export const StockPDF = ({ data }: { data: DataI }) => {
 
 // === Componente principal ===
 export default function StockBodega({ data }: Iprops) {
+  const [isFiltering, setIsfiltering] = useState(true);
+  const [filteringData, setFilteringData] = useState<DataI | undefined>();
+
+  const filterFunction = (isFiltering: boolean) => {
+    if (isFiltering) {
+      const newFilteringCollection = data.collection.filter(
+        (e) => e.cantidad < e.stockMin,
+      );
+      setFilteringData({ ...data, collection: newFilteringCollection });
+    }
+
+    if (!isFiltering) {
+      setFilteringData({ ...data });
+    }
+  };
+
+  useEffect(() => {
+    filterFunction(isFiltering);
+  }, [data, isFiltering]);
+  if (!filteringData) return;
   return (
     <div className="rounded-2xl shadow-sm border border-gray-100 p-4 w-full h-full mt-4 bg-white mr-4 ml-2">
       {/* Encabezado con botón PDF */}
@@ -160,21 +181,30 @@ export default function StockBodega({ data }: Iprops) {
             </span>
           </p>
         </div>
-
-        {data.collection.length != 0 && (
-          <PDFDownloadLink
-            document={<StockPDF data={data} />}
-            fileName={`Stock_${data.nombre.replace(/\s+/g, "_")}.pdf`}
-            className="bg-primary hover:bg-primary/50 text-white text-sm px-4 py-2 rounded-lg shadow-sm transition-colors"
-          >
-            {({ loading }) => (loading ? "Generando..." : "Exportar PDF")}
-          </PDFDownloadLink>
+        {filteringData.collection.length != 0 && (
+          <div>
+            <Button
+              onClick={() => {
+                setIsfiltering((prev) => !prev);
+              }}
+              className="btn-primary mr-2"
+            >
+              {isFiltering ? "Mostrar Todo" : "Filtrar campos con bajo stock"}
+            </Button>
+            <PDFDownloadLink
+              document={<StockPDF data={data} />}
+              fileName={`Stock_${data.nombre.replace(/\s+/g, "_")}.pdf`}
+              className="bg-primary hover:bg-primary/50 text-white text-sm px-4 py-2 rounded-lg shadow-sm transition-colors btn join-item"
+            >
+              {({ loading }) => (loading ? "Generando..." : "Exportar PDF")}
+            </PDFDownloadLink>
+          </div>
         )}
       </div>
 
       {/* Tabla en pantalla */}
       <div className="flex-grow overflow-auto ">
-        {data.collection.length === 0 ? (
+        {filteringData.collection.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-500 text-sm italic">
             No hay registros de stock disponibles.
           </div>
@@ -194,7 +224,7 @@ export default function StockBodega({ data }: Iprops) {
               </tr>
             </thead>
             <tbody>
-              {data.collection.map((almacen) => {
+              {filteringData.collection.map((almacen) => {
                 const bajoStock = almacen.cantidad < almacen.stockMin;
                 return (
                   <tr
