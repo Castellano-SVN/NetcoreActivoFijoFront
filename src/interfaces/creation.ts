@@ -89,7 +89,6 @@ interface CentroFormValues {
   AdministracionCentral: boolean;
   CodigoDipres?: string | null;
   Contabilizacion: boolean;
-
 }
 interface AlmacenFormValues {
   EmpresaId: string;
@@ -97,8 +96,7 @@ interface AlmacenFormValues {
   Id?: string;
   TipoAlmacenId: string;
   Nombre: string;
-};
-
+}
 
 interface BodegaFormValues {
   EmpresaId: string;
@@ -143,8 +141,6 @@ interface SolicitudFormValues {
   Nombre: string;
   FechaIngreso: Date;
   Observaciones: string;
-
-
 }
 
 interface IYears {
@@ -215,9 +211,9 @@ interface IPersona {
   runDigito: string;
   nombres: string;
   apellidoPaterno: string;
-  apellidoMaterno: string
-  email: string
-  sexoCodigo: number
+  apellidoMaterno: string;
+  email: string;
+  sexoCodigo: number;
   fechaNacimiento?: Date | null;
   nacionalidadCodigo?: number | null;
   estadoCivilCodigo?: number | null;
@@ -280,7 +276,6 @@ interface ArticuloFormValues {
   Descripcion?: string | null;
   Eliminado: boolean;
   Valor: number;
-
 }
 interface ArticleCuantity extends IArticuloIngreso {
   CentroCostoId: string;
@@ -294,9 +289,8 @@ interface RequerimientosFormValues {
   Nombre: string;
   ProgramaId: string;
   Observaciones?: string;
-  Articulo: ArticleCuantity[]
+  Articulo: ArticleCuantity[];
 }
-
 
 interface IConsulta {
   centroCostoId: string;
@@ -308,7 +302,7 @@ interface IConsulta {
   estadoSolicitudCodigo: number;
   programa: {
     nombre: string;
-  }
+  };
   programaId: string;
   solicitudDetalles: {
     CentroCostoId: string;
@@ -317,7 +311,7 @@ interface IConsulta {
       codigo?: string;
       id: string;
       nombre: string;
-    }
+    };
     cantidad: number;
     CantidadAprobada?: number;
     Id: string;
@@ -325,7 +319,7 @@ interface IConsulta {
     Orden: number;
     SolicitudId: string;
     SubFamiliaId: string;
-  }[]
+  }[];
 }
 
 interface ConsultaFormValues {
@@ -344,7 +338,7 @@ interface ConsultaFormValues {
       codigo?: string;
       id: string;
       nombre: string;
-    }
+    };
     cantidad: number;
     CantidadAprobada?: number;
     Id: string;
@@ -352,14 +346,13 @@ interface ConsultaFormValues {
     Orden: number;
     SolicitudId: string;
     SubFamiliaId: string;
-  }[]
+  }[];
 }
 
 interface InventarioFormValues {
   NombreEncargado: string;
   FechaInventario: Date;
 }
-
 
 interface ICuenta {
   id: string;
@@ -406,7 +399,6 @@ interface ICuenta {
   tipoCuentaEstadoResultadoCodigo?: number;
   cuentaPatrimonio: boolean;
   cuentaContabilizaIva: boolean;
-
 }
 
 interface IArticuloValor {
@@ -429,8 +421,8 @@ interface IArticuloIngreso extends IArticulo {
     nombre: string;
     familium: {
       nombre: string;
-    }
-  }
+    };
+  };
 }
 
 interface IAno {
@@ -448,7 +440,6 @@ interface LocationFormValues {
   TipoLocacionId: string;
   Direccion: string;
   Descripcion?: string;
-
 }
 
 interface ITipoLocation {
@@ -486,7 +477,7 @@ interface IBodega {
 }
 
 interface ITipoDocumento {
-  codigo: number,
+  codigo: number;
   descripcion: string;
   sigla: string;
 }
@@ -513,7 +504,7 @@ interface IOrdenCompra {
         id: string;
         nombre?: string;
         anoNumero: number;
-      }
+      };
       cantidad: number;
       id: string;
       observaciones?: string;
@@ -528,16 +519,16 @@ interface IOrdenCompra {
               id: string;
               nombre: string;
               sigla: string;
-            }[]
+            }[];
             id: string;
             nombre: string;
             sigla: string;
-          }[]
-        }
-      }
+          }[];
+        };
+      };
       valorUnitario: number;
-    }
-  }[]
+    };
+  }[];
 }
 interface FormValueRecepcionData {
   Recepcion: {
@@ -643,8 +634,6 @@ interface InventarioFisicoFormValue {
   };
 }
 
-
-
 interface ICotizacion {
   empresaId: string;
   id: string;
@@ -670,7 +659,7 @@ interface ICotizacion {
   redondeaImpuesto: boolean;
   proveedor: {
     nombreComercial?: string;
-  }
+  };
   cotizacionDetalles: {
     articulo: {
       id: string;
@@ -682,9 +671,9 @@ interface ICotizacion {
         familium: {
           nombre: string;
           codigo: number;
-        }
-      }
-    }
+        };
+      };
+    };
     cantidad: number;
     id: string;
     observaciones?: string;
@@ -692,8 +681,8 @@ interface ICotizacion {
       solicitud: {
         funcionarioEmpresa: {
           funcionarioId: string;
-        }
-      }
+        };
+      };
       centroCosto: {
         id: string;
         nombre: string;
@@ -701,11 +690,11 @@ interface ICotizacion {
           id: string;
           nombre: string;
           sigla: string;
-        }[]
-      }
-    }
+        }[];
+      };
+    };
     valorUnitario: number;
-  }[]
+  }[];
 }
 
 interface OutPutFormValues {
@@ -715,8 +704,8 @@ interface OutPutFormValues {
   CentroCostoIdDestino: string;
   BodegaIdOrigen: string;
   BodegaIdDestino: string;
-  AlmacenIdOrigen: string
-  AlmacenIdDestino: string
+  AlmacenIdOrigen: string;
+  AlmacenIdDestino: string;
   BodegaOrigen: string;
   BodegaDestino: string;
   DireccionOrigen: string;
@@ -732,9 +721,9 @@ interface OutPutFormValues {
     CodigoSubFamilia: number;
     SubFamilia: string;
     DescripcionArticulo?: string;
-    estadoArticulo:number;
-  }[]
-};
+    estadoArticulo: number;
+  }[];
+}
 
 interface OutPutQuiebreStockFormValues {
   FechInforme: Date;
@@ -749,8 +738,8 @@ interface OutPutQuiebreStockFormValues {
     CantidadSistema: number;
     StockCritico: number;
     ProcesoCompra: string;
-  }[]
-};
+  }[];
+}
 
 interface IParteSalida {
   empresaId: string;
@@ -776,8 +765,8 @@ interface IParteSalida {
             tipoDocumentoRecepcionCodigoNavigation: {
               codigo: number;
               nombre: string;
-            }
-          }[]
+            };
+          }[];
           funcionarioEmpresas: {
             funcionario: {
               idNavigation: {
@@ -785,13 +774,13 @@ interface IParteSalida {
                 nombre: string;
                 nombres: string;
                 apellidoPaterno: string;
-              }
-            }
-          }[]
-        }
-      }
-    }
-  }
+              };
+            };
+          }[];
+        };
+      };
+    };
+  };
 }
 interface IParteEntrada {
   empresaId: string;
@@ -817,15 +806,15 @@ interface IParteEntrada {
           rut: string;
           razonSocial: string;
           nombreComercial: string;
-        }
+        };
         cotizacionDetalles: {
           valorUnitario: number;
-        }[]
-      },
+        }[];
+      };
       tipoDocumentoRecepcionCodigoNavigation: {
         codigo: number;
         nombre: string;
-      },
+      };
       funcionarioEmpresa: {
         funcionario: {
           idNavigation: {
@@ -833,18 +822,18 @@ interface IParteEntrada {
             nombre: string;
             nombres: string;
             apellidoPaterno: string;
-          }
-        }
-      }
-    }
-  }
+          };
+        };
+      };
+    };
+  };
   almacenArticulo: {
     cantidad: number;
     articulo: {
       codigo?: number;
       descripcion?: string;
-    }
-  }
+    };
+  };
 }
 interface IMarca {
   id: string;
@@ -860,11 +849,11 @@ interface IBodegaQuiebre {
     bodega: {
       id: string;
       nombre: string;
-    }
+    };
     codigo: string;
     id: string;
     nombre: string;
-  }
+  };
   articulo: {
     codigo: string;
     descripcion: string;
@@ -874,12 +863,12 @@ interface IBodegaQuiebre {
         codigo: string;
         id: string;
         nombre: string;
-      }
+      };
       codigo: string;
       id: string;
       nombre: string;
-    }
-  }
+    };
+  };
   cantidad: number;
   cantidadMinima: number;
 }
@@ -897,10 +886,11 @@ interface FormValueGuiaSalidaDetalle {
   MotivoSalida: string;
   Observacion: string;
   GuiaSalidaDetalle: {
-    CodigoArticulo: number;
+    CodigoArticulo: string | undefined;
     AlmacenId: string;
     SubFamiliaId: string;
     anoNumero: number;
+    nombre: string;
     ArticuloId: string;
     estadoArticuloOrigen: number;
     EstadoArticuloCodigo: number;
@@ -908,19 +898,55 @@ interface FormValueGuiaSalidaDetalle {
     Observacion?: string;
     CodigoSubFamilia: number;
     NombreSubFamilia: string;
-    estadoArticulo?: string;
+    estadoArticulo?: number;
     DescripcionArticulo?: string;
     CantidadSistema: number;
-    EstadoArticuloNombre:string;
-  }[]
+    EstadoArticuloNombre: string;
+  }[];
 }
-
-
-
 
 export type {
-  PersonaFormValues, EmpresaFormValues, CentroFormValues, AlmacenFormValues, BodegaFormValues, ICentroCosto, IPersona, ArticuloFormValues, IAno, ITipoUnidad, IEmpresa, LocationFormValues, ITipoLocation, IArticulo,
-  ISubFamilia, IBodega, SubFamiliaFormValues, ICuenta, FamiliaFormValues, IFamilia, IYears, ITipoDocumento, IArticuloValor, IArticuloIngreso, IPrograma,
-  RequerimientosFormValues, ArticleCuantity, IConsulta, ConsultaFormValues, IOrdenCompra, ICotizacion, FormValueRecepcionData, OutPutFormValues, IParteSalida, IParteEntrada, InventarioFormValues,
-  OutPutQuiebreStockFormValues, FormValueRecepcionSoData, IMarca, IInventarioFisicoEstado, InventarioFisicoFormValue, IBodegaQuiebre, FormValueGuiaSalidaDetalle
-}
+  PersonaFormValues,
+  EmpresaFormValues,
+  CentroFormValues,
+  AlmacenFormValues,
+  BodegaFormValues,
+  ICentroCosto,
+  IPersona,
+  ArticuloFormValues,
+  IAno,
+  ITipoUnidad,
+  IEmpresa,
+  LocationFormValues,
+  ITipoLocation,
+  IArticulo,
+  ISubFamilia,
+  IBodega,
+  SubFamiliaFormValues,
+  ICuenta,
+  FamiliaFormValues,
+  IFamilia,
+  IYears,
+  ITipoDocumento,
+  IArticuloValor,
+  IArticuloIngreso,
+  IPrograma,
+  RequerimientosFormValues,
+  ArticleCuantity,
+  IConsulta,
+  ConsultaFormValues,
+  IOrdenCompra,
+  ICotizacion,
+  FormValueRecepcionData,
+  OutPutFormValues,
+  IParteSalida,
+  IParteEntrada,
+  InventarioFormValues,
+  OutPutQuiebreStockFormValues,
+  FormValueRecepcionSoData,
+  IMarca,
+  IInventarioFisicoEstado,
+  InventarioFisicoFormValue,
+  IBodegaQuiebre,
+  FormValueGuiaSalidaDetalle,
+};

@@ -17,14 +17,14 @@ api.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       console.error("Timeout de la petición:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 2) Sin respuesta (p. ej. servidor caído o CORS bloqueado)
     else if (error.request && !error.response) {
       console.error("No hubo respuesta del servidor:", error.message);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
     // 3) Error 404: logout
@@ -38,12 +38,12 @@ api.interceptors.response.use(
     else if (error.response?.status! >= 500) {
       console.error(`Error ${error.response!.status} del servidor`);
       toast.error(
-        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde."
+        "Ocurrió un error en la conexión con el servidor. Por favor, inténtalo de nuevo más tarde.",
       );
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export function api_getPersonas(bearer: string, page: number) {
@@ -128,14 +128,14 @@ export function api_getEmpresas(
     // Parámetros de búsqueda opcionales
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `empresa?page=${page}&perPage=6`;
 
   // Agregar parámetros de búsqueda si existen
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
 
@@ -166,6 +166,18 @@ export function api_getBodegas(bearer: string, centroCosto: string) {
     headers: { Authorization: `Bearer ${bearer}` },
   });
 }
+
+export function api_getBodegas_almacenes(
+  bearer: string,
+  id: string,
+  isAlmacen = false,
+) {
+  let query = ``;
+  if (isAlmacen) query = query + "?isAlmacen=true";
+  return api.get(`almacen/stock/${id}${query}`, {
+    headers: { Authorization: `Bearer ${bearer}` },
+  });
+}
 export function api_getAllBodegasByEmpresa(bearer: string, empresaId: string) {
   return api.get(`bodegabyempresa/${empresaId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -187,13 +199,13 @@ export function api_getAlmacen(
   searchParams?: {
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `almacen?page=${page}&id=${id}&perPage=5`;
 
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
 
@@ -241,13 +253,13 @@ export function api_getSubFamilias(
   searchParams?: {
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `subFamilia/${id}?page=${page}`;
 
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
 
@@ -265,7 +277,7 @@ export function api_getAllSubFamilias(bearer: string) {
 export function api_getSubFamiliaByEmpresa(
   bearer: string,
   empresa: string,
-  familiaId: string
+  familiaId: string,
 ) {
   return api.get(`subfamilia?empresa=${empresa}&familia=${familiaId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -274,7 +286,7 @@ export function api_getSubFamiliaByEmpresa(
 export function api_getOneSubFamilias(
   bearer: string,
   id: string,
-  familia: string
+  familia: string,
 ) {
   return api.get(`subFamilia/${id}/${familia}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -306,12 +318,12 @@ export function api_getArticulos(
   searchParams?: {
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `articulo/${id}?page=${page}`;
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
   return api.get(url, { headers: { Authorization: `Bearer ${bearer}` } });
@@ -321,11 +333,11 @@ export function api_getArticulosBySubfamilia(
   bearer: string,
   empresaId: string,
   familiaId: string,
-  subFamiliaId: string
+  subFamiliaId: string,
 ) {
   return api.get(
     `articulo?empresa=${empresaId}&familia=${familiaId}&subFamilia=${subFamiliaId}`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
 
@@ -358,13 +370,13 @@ export function api_getFamilias(
   searchParams?: {
     searchTerm?: string;
     searchType?: "startsWith" | "contains" | "endsWith" | "exact";
-  }
+  },
 ) {
   let url = `familia/${id}?page=${page}`;
 
   if (searchParams?.searchTerm && searchParams?.searchType) {
     url += `&searchTerm=${encodeURIComponent(
-      searchParams.searchTerm
+      searchParams.searchTerm,
     )}&searchType=${searchParams.searchType}`;
   }
 
@@ -381,7 +393,7 @@ export function api_getAllFamilias(bearer: string, id: string) {
 export function api_getOneFamilias(
   bearer: string,
   id: string,
-  empresa: string
+  empresa: string,
 ) {
   return api.get(`familia/${id}/${empresa}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -428,7 +440,7 @@ export function api_postCotizaciones(bearer: string, data: any) {
 export function api_getOneConOrdenCompra(
   bearer: string,
   empresaId: string,
-  numero: number
+  numero: number,
 ) {
   return api.get(`ordencompra/${empresaId}/${numero}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -437,7 +449,7 @@ export function api_getOneConOrdenCompra(
 export function api_getOneSinOrdenCompra(
   bearer: string,
   empresaId: string,
-  numero: number
+  numero: number,
 ) {
   return api.get(`cotizacion/${empresaId}/${numero}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -458,7 +470,7 @@ export function api_getAllEmpresas(bearer: string) {
 
 export function api_getAllCentroCostoByEmpresa(
   bearer: string,
-  empresaId: string
+  empresaId: string,
 ) {
   return api.get(`centrocostos/${empresaId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -467,7 +479,7 @@ export function api_getAllCentroCostoByEmpresa(
 export function api_getAllBodegaByEmpresaYCentroCosto(
   bearer: string,
   empresaId: string,
-  centroCostoId: string
+  centroCostoId: string,
 ) {
   return api.get(`bodegas/${empresaId}/${centroCostoId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -478,7 +490,7 @@ export function api_getAllAlmacenByEmpByCenByBod(
   bearer: string,
   empresaId: string,
   centroCostoId: string,
-  bodegaId: string
+  bodegaId: string,
 ) {
   return api.get(`almacenes/${empresaId}/${centroCostoId}/${bodegaId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -490,11 +502,11 @@ export function api_getAllAlmacenByEmpByCenByBodPage(
   empresaId: string,
   centroCostoId: string,
   bodegaId: string,
-  page: number
+  page: number,
 ) {
   return api.get(
     `almacenesp/${empresaId}/${centroCostoId}/${bodegaId}?page=${page}&perPage=10`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
 
@@ -503,11 +515,11 @@ export function api_getAllAlmacenArticuloByEmpByCenByBodByAlm(
   empresaId: string,
   centroCostoId: string,
   bodegaId: string,
-  almacenId: string
+  almacenId: string,
 ) {
   return api.get(
     `almacenArticulos/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
 export function api_getAllAlmacenArticuloByEmpByCenByBodByAlmStock(
@@ -515,23 +527,22 @@ export function api_getAllAlmacenArticuloByEmpByCenByBodByAlmStock(
   empresaId: string,
   centroCostoId: string,
   bodegaId: string,
-  almacenId: string
+  almacenId: string,
 ) {
   return api.get(
     `almacenArticulos/stock/${empresaId}/${centroCostoId}/${bodegaId}/${almacenId}`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
-export function api_putAlmacenArticuloStock(data:any,bearer:string) {
+export function api_putAlmacenArticuloStock(data: any, bearer: string) {
   return api.put("almacenArticulos/stock", data, {
     headers: { Authorization: `Bearer ${bearer}` },
   });
-
 }
-api_putAlmacenArticuloStock
+api_putAlmacenArticuloStock;
 export function api_getAllArticulosByAlmacen(
   bearer: string,
-  almacenId: string
+  almacenId: string,
 ) {
   return api.get(`almacen/${almacenId}/articulos`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -540,7 +551,7 @@ export function api_getAllArticulosByAlmacen(
 
 export function api_getAllAlmacenArticuloBylocacion(
   bearer: string,
-  locacionId: string
+  locacionId: string,
 ) {
   return api.get(`almacenarticulosbylocacionid/${locacionId}`, {
     headers: { Authorization: `Bearer ${bearer}` },
@@ -552,18 +563,18 @@ export function api_getArticuloEntradaSalida(
   almacenId: string,
   fechaDesde: string,
   fechaHasta: string,
-  articuloId?: string
+  articuloId?: string,
 ) {
   return api.get(
     `articuloentradasalida/${almacenId}/${fechaDesde}/${fechaHasta}/${articuloId}`,
-    { headers: { Authorization: `Bearer ${bearer}` } }
+    { headers: { Authorization: `Bearer ${bearer}` } },
   );
 }
 
 export function api_getInventario(
   bearer: string,
   nombreEncargado: string,
-  fechaInventario: string
+  fechaInventario: string,
 ) {
   return api.get(`inventario/${nombreEncargado}/${fechaInventario}`, {
     headers: { Authorization: `Bearer ${bearer}` },

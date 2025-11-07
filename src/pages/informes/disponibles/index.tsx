@@ -22,7 +22,7 @@ export default function index() {
   useEffect(() => {
     setActive("Informes");
   }, []);
-  
+
   const [currentPage, setCurrentPage] = useState<string | null>(null);
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
@@ -46,7 +46,7 @@ export default function index() {
       jwt,
       empresa as string,
       pageParam,
-      perPage
+      perPage,
     );
     setDataQuiebreStockPDF(responsePdf.data.dataList);
   };
@@ -59,7 +59,7 @@ export default function index() {
       jwt,
       empresa as string,
       pageParam,
-      perPage
+      perPage,
     );
     return response.data;
   };
@@ -91,22 +91,22 @@ export default function index() {
   });
 
   const allItems = data?.pages?.flatMap((page) => page.dataList) || [];
-const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
 
-    const getEstadosArticulos = async () => {
-        if (EstadoArticulo.length !== 0) return;
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length !== 0) return;
 
-        try {
-            const _data = await api_getEstadoArticulos(jwt);
-            setEstadoArticulo(_data.data.dataList);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-    useEffect(() => {
-        if (!jwt) return;
-        getEstadosArticulos();
-    }, []);
+    try {
+      const _data = await api_getEstadoArticulos(jwt);
+      setEstadoArticulo(_data.data.dataList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []);
   return (
     <>
       <div className="w-11/12 md:w-8/12  m-auto p- flex flex-col">
@@ -141,16 +141,6 @@ const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
           >
             Inventario Fisico
           </a> */}
-          <a
-            onClick={() => {
-              setTab(3);
-            }}
-            className={`${
-              tab == 3 && "border-b-2 border-primary font-bold"
-            } w-full mr-1 hover:font-bold hover:cursor-pointer`}
-          >
-            Quiebre de stock
-          </a>
         </div>
       </div>
       <div className="m-auto flex flex-col">

@@ -39,6 +39,7 @@ import PDFGuiaEntregaSalida from "@/components/pdf/guiaEntregaSalida";
 import { api_postGuiaEntregaSalidas } from "@/services/salidas.service";
 import { format } from "date-fns";
 import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
+import { useTiposStore } from "@/store/tipos.store";
 
 interface IEstadoArticulo {
   codigo: number;
@@ -108,7 +109,7 @@ export default function Salidas() {
 
   useEffect(() => {
     if (!idEmpresa) return;
-    setValue('EmpresaId',idEmpresa)
+    setValue("EmpresaId", idEmpresa);
     getCentroCostos();
   }, [idEmpresa]);
 
@@ -125,6 +126,7 @@ export default function Salidas() {
       required_error: "Campo requerido",
       invalid_type_error: "tipo invalido",
     }),
+    nombre: z.string().optional().nullable(),
     Observacion: z.string({ invalid_type_error: "tipo invalido" }).optional(),
     CodigoSubFamilia: z.number({
       required_error: "Campo requerido",
@@ -134,13 +136,15 @@ export default function Salidas() {
       .number({
         required_error: "Campo invalido",
         invalid_type_error: "Tipo invalido",
-      }).min(1),
-    estadoArticuloOrigen: z
-      .number({
-        required_error: "Campo invalido",
-        invalid_type_error: "Tipo invalido",
-      }),
+      })
+      .min(1),
+    estadoArticuloOrigen: z.number({
+      required_error: "Campo invalido",
+      invalid_type_error: "Tipo invalido",
+    }),
     anoNumero: z.number(),
+    CodigoArticulo: z.string().optional().nullable(),
+    DescripcionArticulo: z.string().optional().nullable(),
   });
 
   const GuiaSalida = z.object({
@@ -204,6 +208,7 @@ export default function Salidas() {
     watch,
     reset,
     control,
+    getValues,
   } = methods;
 
   useEffect(() => {
@@ -349,8 +354,21 @@ export default function Salidas() {
   useEffect(() => {
     getEstadoArticulo();
   }, []);
+  const { EstadoArticulo, setEstadoArticulo } = useTiposStore();
+  const getEstadosArticulos = async () => {
+    if (EstadoArticulo.length !== 0) return;
 
-  // Observar los cambios en GuiaSalidaDetalle
+    try {
+      const _data = await api_getEstadoArticulos(jwt);
+      setEstadoArticulo(_data.data.dataList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    if (!jwt) return;
+    getEstadosArticulos();
+  }, []); // Observar los cambios en GuiaSalidaDetalle
   const guiaSalidaDetalle = watch("GuiaSalidaDetalle");
 
   const fechaActualConMinutos = format(new Date(), "yyyy-MM-dd HH:mm");
@@ -625,12 +643,12 @@ export default function Salidas() {
                   <Table.Head className="bg-primary text-white">
                     <span>Selección</span>
                     <span>Articulo</span>
-                    <span>Sub-familia</span>
                     <span>Código artículo</span>
+                    <span>Estado</span>
                     <span>Descripción artículo</span>
-                    <span>Cantidad sistema</span>
-                    <span>Cantidad salida*</span>
-                    <span>Estado de salida*</span>
+                    <span>Cantidad Bodega</span>
+                    <span>Cantidad despacho*</span>
+                    <span>Estado de despacho*</span>
                     <span>Observaciones</span>
                   </Table.Head>
                   <Table.Body>
@@ -639,7 +657,8 @@ export default function Salidas() {
                         (field) =>
                           field.ArticuloId === almacenArticulo.articuloId &&
                           field.anoNumero === almacenArticulo.anoNumero &&
-                          field.estadoArticuloOrigen === almacenArticulo.estadoArticuloCodigo,
+                          field.estadoArticuloOrigen ===
+                            almacenArticulo.estadoArticuloCodigo,
                       );
                       return (
                         <Table.Row key={index} hover={true}>
@@ -651,12 +670,14 @@ export default function Salidas() {
                               onChange={(e) => {
                                 if (e.target.checked) {
                                   append({
+                                    nombre: almacenArticulo.articulo.nombre,
                                     AlmacenId: almacenArticulo.almacenId,
                                     SubFamiliaId:
                                       almacenArticulo.articulo.subFamilium.id,
                                     ArticuloId: almacenArticulo.articuloId,
                                     EstadoArticuloCodigo: 0,
-                                    estadoArticuloOrigen: almacenArticulo.estadoArticuloCodigo,
+                                    estadoArticuloOrigen:
+                                      almacenArticulo.estadoArticuloCodigo,
                                     Cantidad: 0,
                                     anoNumero:
                                       almacenArticulo.articulo.anoNumero,
@@ -667,13 +688,13 @@ export default function Salidas() {
                                     NombreSubFamilia:
                                       almacenArticulo.articulo.nombre,
                                     estadoArticulo:
-                                      almacenArticulo.articulo.codigo,
+                                      almacenArticulo.articulo.estadoArticulo,
                                     DescripcionArticulo:
                                       almacenArticulo.articulo.descripcion,
                                     CantidadSistema: almacenArticulo.cantidad,
                                     EstadoArticuloNombre: "",
-
-                                    CodigoArticulo: almacenArticulo.CodigoArticulo
+                                    CodigoArticulo:
+                                      almacenArticulo.articulo.codigo,
                                   });
                                 } else {
                                   if (fieldIndex !== -1) {
@@ -683,16 +704,20 @@ export default function Salidas() {
                               }}
                             />
                           </span>
-                          <span>
-                            {almacenArticulo.articulo.nombre}
-                          </span>
-                          <span>
-                            {almacenArticulo.articulo.subFamilium.nombre}
-                          </span>
+                          <span>{almacenArticulo.articulo.nombre}</span>
                           <span>
                             {almacenArticulo.articulo.codigo
                               ? almacenArticulo.articulo.codigo
                               : "articulo sin codigo"}
+                          </span>
+                          <span>
+                            {
+                              EstadoArticulo.find(
+                                (e) =>
+                                  e.codigo ==
+                                  almacenArticulo.estadoArticuloCodigo,
+                              )?.nombre
+                            }
                           </span>
                           <span>
                             {almacenArticulo.articulo.descripcion
@@ -843,7 +868,12 @@ export default function Salidas() {
               <div className="flex flex-col md:grid md:grid-cols-4 md:gap-4 lg:grid lg:grid-cols-4 lg:gap-4 mb-4">
                 <div className="col-span-2">
                   <PDFDownloadLink
-                    document={<PDFGuiaEntregaSalida data={dataPost} />}
+                    document={
+                      <PDFGuiaEntregaSalida
+                        data={dataPost}
+                        estados={EstadoArticulo}
+                      />
+                    }
                     fileName={`Pdf_salida_&${fechaActualConMinutos}`}
                   >
                     {({ loading, url, error, blob }) =>
@@ -864,10 +894,11 @@ export default function Salidas() {
                 <div className="col-span-2">
                   <Button
                     type="button"
-                    className="btn btn-outline btn-secondary w-1/2 mt-2"
-                    onClick={() => router.back()}
+                    className="btn btn-outline btn-primary md:my-0 lg:my-0 md:mx-2 lg:mx-2"
+                    onClick={() => setShowPdf(false)}
+                    //onClick={() => router.back()}
                   >
-                    salir
+                    Salir
                   </Button>
                 </div>
               </div>

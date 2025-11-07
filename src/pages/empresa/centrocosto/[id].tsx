@@ -45,14 +45,17 @@ import {
 import {
   FaArchive,
   FaArrowLeft,
+  FaBox,
+  FaDropbox,
   FaEye,
   FaPencilAlt,
   FaPlus,
   FaSearch,
+  FaXbox,
 } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { SlEye } from "react-icons/sl";
-import { FaCircleXmark, FaPencil } from "react-icons/fa6";
+import { FaCircleXmark, FaPencil, FaToolbox } from "react-icons/fa6";
 import { useSearchParams } from "next/navigation";
 import WarningAlert from "@/components/alerts/warningAlert";
 
@@ -66,12 +69,8 @@ export default function Page() {
   >("contains");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [filteredBodegas, setFilteredBodegas] = useState<IcentroCosto_Bodega[]>(
-    []
+    [],
   );
-
-  useEffect(() => {
-    console.log(idString);
-  }, [idString]);
 
   const { jwt } = useUserStore();
   const [tipoAlmacen, setTipoAlmacen] = useState<ItipoAlmacen[]>([]);
@@ -91,7 +90,7 @@ export default function Page() {
         if ((err.response?.data as any)?.message === "ID no encontrado")
           return router.back();
       },
-    }
+    },
   );
 
   useEffect(() => {
@@ -333,7 +332,7 @@ export default function Page() {
                     edit={editBodega}
                   />
                 </div>
-              )
+              ),
             )
           )}
         </div>
@@ -496,7 +495,7 @@ function BodegaList({
           pages: lastPage.pages,
         });
       },
-    }
+    },
   );
 
   const AlmacenSubmit = async (data: AlmacenFormValues) => {
@@ -668,7 +667,10 @@ function BodegaList({
                   {data?.pages?.map((page, pageIndex) => (
                     <React.Fragment key={pageIndex}>
                       {page.dataList
-                        .sort((a:any, b:any) => parseInt(a.codigo) - parseInt(b.codigo)) // Ordenar por código
+                        .sort(
+                          (a: any, b: any) =>
+                            parseInt(a.codigo) - parseInt(b.codigo),
+                        ) // Ordenar por código
                         .map((almacen: IAlmacen, index: number) => (
                           <div
                             key={almacen.id}
@@ -686,7 +688,7 @@ function BodegaList({
                                 <span className="text-sm align-left">
                                   {
                                     tipoalmacen.find(
-                                      (e) => e.id === almacen.tipoAlmacenId
+                                      (e) => e.id === almacen.tipoAlmacenId,
                                     )?.nombre
                                   }
                                 </span>
@@ -709,7 +711,7 @@ function BodegaList({
                                 <a
                                   onClick={() =>
                                     router.push(
-                                      `/empresa/centrocosto/almacen/${almacen.id}`
+                                      `/empresa/centrocosto/almacen/${almacen.id}`,
                                     )
                                   }
                                   className="flex items-center"
@@ -759,7 +761,7 @@ function BodegaList({
                                 <td className="text-gray-700">
                                   {
                                     tipoalmacen.find(
-                                      (e) => e.id === almacen.tipoAlmacenId
+                                      (e) => e.id === almacen.tipoAlmacenId,
                                     )?.nombre
                                   }
                                 </td>
@@ -781,7 +783,7 @@ function BodegaList({
                                   <button
                                     onClick={() =>
                                       router.push(
-                                        `/empresa/centrocosto/almacen/${almacen.id}`
+                                        `/empresa/centrocosto/almacen/${almacen.id}`,
                                       )
                                     }
                                     className="flex items-center justify-center w-8 h-8 rounded-full"
@@ -790,7 +792,7 @@ function BodegaList({
                                   </button>
                                 </td>
                               </tr>
-                            )
+                            ),
                           )}
                         </React.Fragment>
                       ))}
@@ -806,8 +808,8 @@ function BodegaList({
                     {isFetchingNextPage
                       ? "Cargando más..."
                       : hasNextPage
-                      ? "Ver más"
-                      : "No hay más datos"}
+                        ? "Ver más"
+                        : "No hay más datos"}
                   </button>
                 </>
               ) : (
@@ -850,6 +852,17 @@ function BodegaList({
                   >
                     <FaPencilAlt className="mr-2" />
                     Editar Bodega
+                  </button>
+                </div>
+                <div>
+                  <button
+                    onClick={() => {
+                      router.push(`/empresa/centrocosto/stock/${bodega.id}`);
+                    }}
+                    className="btn btn-link w-full md:w-auto mt-2 md:mt-0 md:ml-2"
+                  >
+                    <FaBox className="mr-2" />
+                    Ver quiebre de stock
                   </button>
                 </div>
               </div>

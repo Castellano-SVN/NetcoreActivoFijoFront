@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   table: {
-    display: "none",
+    display: "flex",
     width: "100%",
     border: "1px solid #000",
     borderRight: 0,

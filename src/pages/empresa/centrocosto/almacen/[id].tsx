@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { ItipoAlmacen } from "../../../../schemas/tipo_almacen.schema";
 import { FiPlus } from "react-icons/fi";
-import { FaArchive, FaArrowLeft, FaEye, FaSave } from "react-icons/fa";
+import { FaArchive, FaArrowLeft, FaBox, FaEye, FaSave } from "react-icons/fa";
 import {
   Button,
   Divider,
@@ -270,6 +270,7 @@ export default function Page() {
     defaultValues();
     getArticles();
   }, [almacen]);
+  const params = useParams();
 
   return (
     <>
@@ -405,6 +406,18 @@ export default function Page() {
                 className="btn btn-primary join-item"
               >
                 <FiPlus /> Tipo Locación
+              </button>
+              <button
+                onClick={() => {
+                  router.push(
+                    `/empresa/centrocosto/almacen/${almacen?.id}/stock`,
+                  );
+                  console.log(params.id);
+                }}
+                className="btn btn-primary join-item"
+              >
+                <FaBox className="mr-2" />
+                Ver quiebre de stock
               </button>
             </div>
           )}
