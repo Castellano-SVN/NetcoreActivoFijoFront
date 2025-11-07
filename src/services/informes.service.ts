@@ -53,13 +53,12 @@ export function api_getinformeArticulo(
   fechaDesde: string,
   fechaHasta: string,
   articulo?: string,
-  articleYear?: number,
 ) {
   let query = `empresa=${empresa}`;
   query = query + `&almacen=${almacen}`;
   query = query + `&fecha_desde=${fechaDesde}`;
   query = query + `&fecha_hasta=${fechaHasta}`;
-  if (articulo) query = query + `&articulo=${articulo}&year=${articleYear}`;
+  if (articulo) query = query + `&articulo=${articulo}`;
   return api.get(`informe/movimientos/busqueda?${query}`, {
     headers: { Authorization: `Bearer ${bearer}` },
   });

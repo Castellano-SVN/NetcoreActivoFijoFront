@@ -293,12 +293,8 @@ export default function BuscarArticuloMovTarjeta(props: props) {
       setArticulos([]);
       const formattedFechaDesde = data.FechaDesde.toISOString().split("T")[0];
       const formattedFechaHasta = data.FechaHasta.toISOString().split("T")[0];
-      let year = undefined;
-      if (data.Articulo) {
-        const split = data.Articulo.split("_");
-        data.Articulo = split[0];
-        year = parseInt(split[1]) || undefined;
-      }
+      console.log(data.Articulo, typeof data.Articulo);
+      if (data.Articulo == "undefined") data.Articulo = undefined;
       const response = await api_getinformeArticulo(
         jwt,
         empresa as string,
@@ -306,7 +302,6 @@ export default function BuscarArticuloMovTarjeta(props: props) {
         formattedFechaDesde,
         formattedFechaHasta,
         data.Articulo,
-        year,
       );
 
       const articles: {
@@ -462,17 +457,13 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                   <Select
                     className="mt-2 px-0 md:px-8"
                     placeholder="Seleccione Artículo"
-                    getOptionValue={(option) => `${option.id}_${option.year}`}
-                    getOptionLabel={(option) =>
-                      `${option.nombre} - ${option.year}`
-                    }
+                    getOptionValue={(option) => `${option.id}`}
+                    getOptionLabel={(option) => `${option.nombre}`}
                     value={dataArticulo.find(
-                      (e) => `${e.id}_${e.year}` === value, // <-- comparar con el string combinado
+                      (e) => `${e.id}` === value, // <-- comparar con el string combinado
                     )}
                     options={dataArticulo}
-                    onChange={(val) =>
-                      setValue("Articulo", `${val?.id}_${val?.year}`)
-                    } // <-- guardar como "id-año"                    menuPortalTarget={document.body}
+                    onChange={(val) => setValue("Articulo", `${val?.id}`)} // <-- guardar como "id-año"                    menuPortalTarget={document.body}
                     loadingMessage={() => "Cargando opciones..."}
                     isLoading={dataCentroCosto.length === 0}
                     noOptionsMessage={() =>
@@ -720,19 +711,11 @@ function Article(props: articleProps) {
     <>
       <div className=" border shadow-md rounded-lg p-2 hover:border-primary mt-3">
         <div className="mouse-pointer select-none">
-          <span className="font-bold">Movimientos de: </span>
-          {props.article.year} {props.article.nombre} -{" "}
+          {props.article.nombre} -{" "}
           {props.article.codigo
             ? `Codigo : ${props.article.codigo}`
             : "Sin codigo"}
           <br />
-          <span className="font-bold">
-            Estado:{" "}
-            {
-              EstadoArticulo.find((e) => e.codigo == props.article.estado)
-                ?.nombre
-            }
-          </span>
           {movimientos.length > 0 ? (
             <>
               <TableMovArtAndTarjetaExi

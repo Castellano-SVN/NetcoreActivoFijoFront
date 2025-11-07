@@ -686,6 +686,12 @@ function ViewLocation(props: {
         invalid_type_error: "Tipo Invalido",
       })
       .optional(),
+    estado: z
+      .number({
+        required_error: "Campo requerido",
+        invalid_type_error: "Tipo Invalido",
+      })
+      .optional(),
     ProgramaId: z
       .string({
         required_error: "Campo requerido",
@@ -741,10 +747,10 @@ function ViewLocation(props: {
       Presentacion: "",
       Observaciones: "",
       Codigo: "",
+      estado: articulo.estado,
       NumeroUnidades: 0,
     })),
   };
-
   const methods = useForm<InventarioFisicoRegistroFormValues>({
     defaultValues,
     resolver: zodResolver(InvFisRegistroSchema),
@@ -761,6 +767,9 @@ function ViewLocation(props: {
     formState: { errors },
   } = methods;
 
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "InvFisRegistro",

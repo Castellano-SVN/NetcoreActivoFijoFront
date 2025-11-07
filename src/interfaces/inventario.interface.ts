@@ -29,8 +29,8 @@ export interface IInventarioFisicoDetalle {
   encargado?: string;
   encargadoRut?: string;
   fechaRegistro?: string;
-  id:string;
-  status: boolean
+  id: string;
+  status: boolean;
 }
 export interface InventarioFisicoDetalleFormValues {
   EmpresaId: string;
@@ -77,10 +77,11 @@ export interface InventarioFisicoRegistroFormValues {
   InvFisRegistro: {
     EmpresaId: string;
     FuncionarioId: string;
+    estado: number;
     PersonaConteoId: string;
     SubFamiliaId: string;
     ArticuloId: string;
-    AnoNumero:number;
+    AnoNumero: number;
     MarcaId: string;
     EstadoCodigo: number;
     LugarFisicoConteo: string;

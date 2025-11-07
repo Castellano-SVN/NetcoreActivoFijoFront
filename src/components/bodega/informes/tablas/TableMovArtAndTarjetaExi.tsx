@@ -8,8 +8,8 @@ import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import PDFTarjetaExistencia from "../../../pdf/informes/pdftarjetaexistencia";
 import { api_getInputOutputExcel } from "@/services/informes.service";
 import { useUserStore } from "@/store/user.store";
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface movimientoI {
   cantidad: number;
@@ -100,7 +100,6 @@ export default function TableMovArtAndTarjetaExi(props: props) {
 
   const { jwt } = useUserStore();
 
-
   const downloadExcel = async () => {
     try {
       const response = await api_getInputOutputExcel(
@@ -110,14 +109,21 @@ export default function TableMovArtAndTarjetaExi(props: props) {
         props.articulos.article.fechaDesde,
         props.articulos.article.fechaHasta,
         props.articulos.article.id,
-        false
+        false,
       );
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
 
       // Crear un enlace temporal y simular un clic para descargar el archivo
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `movimiento_de_articulo_${props.articulos.article.nombre}.xlsx`); // Nombre del archivo
+      link.setAttribute(
+        "download",
+        `movimiento_de_articulo_${props.articulos.article.nombre}.xlsx`,
+      ); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 
@@ -139,14 +145,21 @@ export default function TableMovArtAndTarjetaExi(props: props) {
         props.articulos.article.fechaDesde,
         props.articulos.article.fechaHasta,
         props.articulos.article.id,
-        true
+        true,
       );
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
 
       // Crear un enlace temporal y simular un clic para descargar el archivo
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `tarjeta_de_existencia_${props.articulos.article.nombre}.xlsx`); // Nombre del archivo
+      link.setAttribute(
+        "download",
+        `tarjeta_de_existencia_${props.articulos.article.nombre}.xlsx`,
+      ); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 
@@ -186,7 +199,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                     <span>{mov.funcionarioNombre ?? "No disponible"}</span>
                     <span>
                       {format(new Date(mov.fecha), "yyyy-MM-dd HH:mm:ss", {
-                        locale: es
+                        locale: es,
                       }) ?? "No disponible"}
                     </span>
                     <span>{mov.proveedorRut ?? "No disponible"}</span>
@@ -197,12 +210,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                         ? "No disponible"
                         : mov.numeroDocumento}
                     </span>
-                    <span>
-                      {(mov.precioCompra === 0 || !mov.precioCompra
-                        ? props.articulos.article?.valor || "No disponible"
-                        : mov.precioCompra
-                      ).toLocaleString()}
-                    </span>
+                    <span>{mov.precioCompra}</span>
                     <span className="text-green-500">
                       +{mov.cantidad ?? "No disponible"}
                     </span>
@@ -241,7 +249,7 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                     <span>{mov.funcionarioNombre ?? "No disponible"}</span>
                     <span>
                       {format(new Date(mov.fecha), "yyyy-MM-dd HH:mm:ss", {
-                        locale: es
+                        locale: es,
                       }) ?? "No disponible"}
                     </span>
                     <span>{mov.proveedorRut ?? "No disponible"}</span>
@@ -290,72 +298,77 @@ export default function TableMovArtAndTarjetaExi(props: props) {
                     )}
                   </Table.Row>
                 )
-              )
+              ),
             )}
           </Table.Body>
         </Table>
-        {dataToSend.Movimientos.length > 0 && props.label == "MovimientoArticulo" && (<>
-          <PDFDownloadLink
-            document={<PDFMovimientoArticulo data={dataToSend} />}
-            fileName={`Movimiento_de_Articulo_${props.articulos.article.nombre}`}
-          >
-            {({ loading, url, error, blob }) =>
-              loading ? (
-                "Cargando.."
-              ) : (
+        {dataToSend.Movimientos.length > 0 &&
+          props.label == "MovimientoArticulo" && (
+            <>
+              <PDFDownloadLink
+                document={<PDFMovimientoArticulo data={dataToSend} />}
+                fileName={`Movimiento_de_Articulo_${props.articulos.article.nombre}`}
+              >
+                {({ loading, url, error, blob }) =>
+                  loading ? (
+                    "Cargando.."
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-accent my-2"
+                    >
+                      <FaFilePdf />
+                      Exportar
+                    </button>
+                  )
+                }
+              </PDFDownloadLink>
+              <div className="col-span-2 mt-3 my-2">
                 <button
                   type="button"
-                  className="btn btn-outline btn-accent my-2"
+                  className="btn btn-outline btn-primary"
+                  onClick={downloadExcel}
                 >
-                  <FaFilePdf />
-                  Exportar
+                  <FaFileExcel />
+                  Exportar excel
                 </button>
-              )
-            }
-          </PDFDownloadLink>
-          <div className="col-span-2 mt-3 my-2">
-            <button
-              type="button"
-              className="btn btn-outline btn-primary"
-              onClick={downloadExcel}
-            >
-              <FaFileExcel />
-              Exportar excel
-            </button>
-          </div>
-        </>)}
+              </div>
+            </>
+          )}
 
-        {dataToSend.Movimientos.length > 0 && props.label == "TarjetaExistencia" && (<>
-          <PDFDownloadLink
-            document={<PDFTarjetaExistencia data={dataToSend} />}
-            fileName={`Tarjeta_de_existencia_Articulo_${props.articulos.article.nombre}`}
-          >
-            {({ loading, url, error, blob }) =>
-              loading ? (
-                "Cargando.."
-              ) : (
+        {dataToSend.Movimientos.length > 0 &&
+          props.label == "TarjetaExistencia" && (
+            <>
+              <PDFDownloadLink
+                document={<PDFTarjetaExistencia data={dataToSend} />}
+                fileName={`Tarjeta_de_existencia_Articulo_${props.articulos.article.nombre}`}
+              >
+                {({ loading, url, error, blob }) =>
+                  loading ? (
+                    "Cargando.."
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-accent my-2"
+                    >
+                      <FaFilePdf />
+                      Exportar
+                    </button>
+                  )
+                }
+              </PDFDownloadLink>
+              <div className="col-span-2 my-2">
                 <button
                   type="button"
-                  className="btn btn-outline btn-accent my-2"
+                  className="btn btn-outline btn-primary"
+                  onClick={downloadExcelTarjeta}
                 >
-                  <FaFilePdf />
-                  Exportar
+                  <FaFileExcel />
+                  Exportar excel
                 </button>
-              )
-            }
-          </PDFDownloadLink>
-          <div className="col-span-2 my-2">
-            <button
-              type="button"
-              className="btn btn-outline btn-primary"
-              onClick={downloadExcelTarjeta}
-            >
-              <FaFileExcel />
-              Exportar excel
-            </button>
-          </div>
-
-        </>)}
+              </div>
+            </>
+          )}
       </div>
     </>
   );
