@@ -181,16 +181,16 @@ export default function StockBodega({ data }: Iprops) {
             </span>
           </p>
         </div>
-        {filteringData.collection.length != 0 && (
-          <div>
-            <Button
-              onClick={() => {
-                setIsfiltering((prev) => !prev);
-              }}
-              className="btn-primary mr-2"
-            >
-              {isFiltering ? "Mostrar Todo" : "Filtrar campos con bajo stock"}
-            </Button>
+        <div>
+          <Button
+            onClick={() => {
+              setIsfiltering((prev) => !prev);
+            }}
+            className="btn-primary mr-2"
+          >
+            {isFiltering ? "Mostrar Todo" : "Filtrar campos con bajo stock"}
+          </Button>
+          {filteringData.collection.length != 0 && (
             <PDFDownloadLink
               document={<StockPDF data={data} />}
               fileName={`Stock_${data.nombre.replace(/\s+/g, "_")}.pdf`}
@@ -198,8 +198,8 @@ export default function StockBodega({ data }: Iprops) {
             >
               {({ loading }) => (loading ? "Generando..." : "Exportar PDF")}
             </PDFDownloadLink>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Tabla en pantalla */}
