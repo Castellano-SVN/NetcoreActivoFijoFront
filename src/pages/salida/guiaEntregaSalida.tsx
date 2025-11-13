@@ -578,23 +578,6 @@ export default function Salidas() {
                 )}
               </div>
             </div>
-            <div className="col-span-1 md:col-span-4">
-              <div className="flex flex-col items-center">
-                <label
-                  htmlFor="nuevo usuario"
-                  className="label font-semibold tex-left"
-                >
-                  ¿No has encontrado al destinatario?
-                </label>
-                <button
-                  type="button"
-                  onClick={handleShowModal}
-                  className="btn btn-primary btn-outline w-1/2 my-0"
-                >
-                  Añadir Destinario
-                </button>{" "}
-              </div>
-            </div>
 
             <div className="col-span-1 md:col-span-4">
               <div className="flex flex-col">

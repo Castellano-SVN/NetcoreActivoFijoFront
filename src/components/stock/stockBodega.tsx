@@ -192,7 +192,7 @@ export default function StockBodega({ data }: Iprops) {
           </Button>
           {filteringData.collection.length != 0 && (
             <PDFDownloadLink
-              document={<StockPDF data={data} />}
+              document={<StockPDF data={filteringData} />}
               fileName={`Stock_${data.nombre.replace(/\s+/g, "_")}.pdf`}
               className="bg-primary hover:bg-primary/50 text-white text-sm px-4 py-2 rounded-lg shadow-sm transition-colors btn join-item"
             >

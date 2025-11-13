@@ -182,7 +182,7 @@ export default function ConOrden(props: props) {
         recibida: undefined,
         AnoNumero: element.cotizacionDetalle.articulo.anoNumero,
         observaciones: undefined,
-        estadoArticulo: 0,
+        estadoArticulo: 2,
       };
       append(articulo);
     });
@@ -377,7 +377,6 @@ export default function ConOrden(props: props) {
                   <span>Precio</span>
                   <span>Observación</span>
                   {/* <span>Recepcionado</span> */}
-                  <span>Estado</span>
                   <span>Cantidad recibida</span>
                   <span>Observaciones</span>
                 </Table.Head>
@@ -394,31 +393,6 @@ export default function ConOrden(props: props) {
                           ? articulo.observacion
                           : "Sin observaciónes"}
                       </span>
-                      {/* <span className="font-bold">
-                        {getValues(`articulos.${index}.recepcionado`)}
-                      </span> */}
-                      <select
-                        className={`block w-20 py-1 px-1 border ${
-                          errors.articulos &&
-                          errors.articulos[index]?.estadoArticulo
-                            ? "border-red-600"
-                            : "border-primary"
-                        } bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
-                        defaultValue={articulo.estadoArticulo}
-                        {...register(`articulos.${index}.estadoArticulo`, {
-                          setValueAs: (value) =>
-                            value === "" ? undefined : Number(value),
-                        })}
-                      >
-                        <option value={0} disabled>
-                          Seleccione el tipo de almacén
-                        </option>
-                        {EstadoArticulo.map((estado, index) => (
-                          <option key={index} value={estado.codigo}>
-                            {estado.nombre}
-                          </option>
-                        ))}
-                      </select>
                       <input
                         key={articulo.id}
                         type="number"

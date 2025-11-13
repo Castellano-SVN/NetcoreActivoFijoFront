@@ -211,7 +211,6 @@ export default function PDFConOrden({ data, location, estados }: props) {
               "Cantidad OC",
               "Precio Unitario",
               "Cantidad Recepcionada",
-              "Estado Recepción",
               "Observaciones",
             ].map((header, idx) => (
               <Text style={styles.tableColHeader} key={idx}>
@@ -234,9 +233,6 @@ export default function PDFConOrden({ data, location, estados }: props) {
               <Text style={styles.tableCol}>{a.cantidad}</Text>
               <Text style={styles.tableCol}>{a.precio}</Text>
               <Text style={styles.tableCol}>{a.recibida}</Text>
-              <Text style={styles.tableCol}>
-                {estados.find((e) => e.codigo == a.estadoArticulo)?.nombre}
-              </Text>
               <Text style={styles.tableCol}>{a.observaciones || "-"}</Text>
             </View>
           ))}

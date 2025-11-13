@@ -465,6 +465,7 @@ export default function BuscarArticuloMovTarjeta(props: props) {
                     options={dataArticulo}
                     onChange={(val) => setValue("Articulo", `${val?.id}`)} // <-- guardar como "id-año"                    menuPortalTarget={document.body}
                     loadingMessage={() => "Cargando opciones..."}
+                    menuPortalTarget={document.body}
                     isLoading={dataCentroCosto.length === 0}
                     noOptionsMessage={() =>
                       !Almacen
