@@ -26,7 +26,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import Select from "react-select";
 import { IFuncionarioEmpresa } from "@/interfaces/inventario.interface";
-import { Button, Input, Modal, Table } from "react-daisyui";
+import { Button, Input, Modal, Table, Select as SelectDU } from "react-daisyui";
 import { useMixStore } from "@/store/mix.store";
 import { useQuery } from "react-query";
 import { api_getSexos } from "@/services/tipos.service";
@@ -40,6 +40,7 @@ import { api_postGuiaEntregaSalidas } from "@/services/salidas.service";
 import { format } from "date-fns";
 import { api_getAllPersonasByEmpresa } from "@/services/inventario.service";
 import { useTiposStore } from "@/store/tipos.store";
+import { FaFilter, FaX } from "react-icons/fa6";
 
 interface IEstadoArticulo {
   codigo: number;
@@ -334,6 +335,7 @@ export default function Salidas() {
         almacenId,
       );
       setDataAlmacenArticulo(data.data.dataList);
+      setFilterData(data.data.dataList);
     } catch (error) {
       console.error(error);
     }
@@ -373,6 +375,22 @@ export default function Salidas() {
 
   const fechaActualConMinutos = format(new Date(), "yyyy-MM-dd HH:mm");
 
+  //FILTER CHANGES
+
+  const [articuloFilter, setArticuloFilter] = useState({
+    isFiltring: false,
+    filtering: "",
+  });
+  const [codigoFilter, setCodigoFilter] = useState({
+    isFiltring: false,
+    filtering: "",
+  });
+  const [estadoFilter, setEstadoFilter] = useState({
+    isFiltring: false,
+    filtering: 0,
+  });
+  const [filterData, setFilterData] = useState<IAlmacenArticulo[]>([]);
+  // FILTER CHANGES
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -625,9 +643,200 @@ export default function Salidas() {
                 <Table className="border shadow-lg">
                   <Table.Head className="bg-primary text-white">
                     <span>Selección</span>
-                    <span>Articulo</span>
-                    <span>Código artículo</span>
-                    <span>Estado</span>
+                    <span>
+                      {!articuloFilter.isFiltring ? (
+                        <>
+                          Articulo
+                          <Button
+                            variant="outline"
+                            className="text-white ml-2"
+                            size="xs"
+                            onClick={() => {
+                              setArticuloFilter((prev) => ({
+                                ...prev,
+                                isFiltring: true,
+                              }));
+                            }}
+                          >
+                            <FaFilter />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="join">
+                          <Input
+                            defaultValue={""}
+                            className="text-primary join-item"
+                            size="sm"
+                            placeholder="Articulo"
+                            value={articuloFilter.filtering}
+                            onChange={(e) => {
+                              const value = e.target.value.toLowerCase(); // lo pasamos a minúsculas para comparar
+                              setArticuloFilter((prev) => ({
+                                ...prev,
+                                filtering: value,
+                              }));
+
+                              const filters = dataAlmacenArticulo.filter(
+                                (item) =>
+                                  item.articulo.nombre &&
+                                  item.articulo.nombre
+                                    .toLowerCase()
+                                    .includes(value),
+                              );
+
+                              setFilterData(filters);
+                            }}
+                          ></Input>
+                          <Button
+                            variant="outline"
+                            className="text-white join-item"
+                            size="sm"
+                            onClick={() => {
+                              setFilterData(dataAlmacenArticulo);
+
+                              setArticuloFilter((prev) => ({
+                                ...prev,
+                                filtering: "",
+                                isFiltring: false,
+                              }));
+                            }}
+                          >
+                            <FaX />
+                          </Button>
+                        </div>
+                      )}
+                    </span>
+                    <span>
+                      {!codigoFilter.isFiltring ? (
+                        <>
+                          Código artículo
+                          <Button
+                            variant="outline"
+                            className="text-white ml-2"
+                            size="xs"
+                            onClick={() => {
+                              setCodigoFilter((prev) => ({
+                                ...prev,
+                                isFiltring: true,
+                              }));
+                            }}
+                          >
+                            <FaFilter />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="join">
+                          <Input
+                            defaultValue={""}
+                            className="text-primary join-item"
+                            size="sm"
+                            placeholder="Articulo"
+                            value={codigoFilter.filtering}
+                            onChange={(e) => {
+                              const value = e.target.value.toLowerCase(); // lo pasamos a minúsculas para comparar
+                              setCodigoFilter((prev) => ({
+                                ...prev,
+                                filtering: value,
+                              }));
+
+                              const filters = dataAlmacenArticulo.filter(
+                                (item) =>
+                                  item.articulo.codigo &&
+                                  item.articulo.codigo
+                                    .toLowerCase()
+                                    .includes(value),
+                              );
+
+                              setFilterData(filters);
+                            }}
+                          ></Input>
+                          <Button
+                            variant="outline"
+                            className="text-white join-item"
+                            size="sm"
+                            onClick={() => {
+                              setFilterData(dataAlmacenArticulo);
+
+                              setCodigoFilter((prev) => ({
+                                ...prev,
+                                filtering: "",
+                                isFiltring: false,
+                              }));
+                            }}
+                          >
+                            <FaX />
+                          </Button>
+                        </div>
+                      )}
+                    </span>
+                    <span>
+                      {!estadoFilter.isFiltring ? (
+                        <>
+                          Estado
+                          <Button
+                            variant="outline"
+                            className="text-white ml-2"
+                            size="xs"
+                            onClick={() => {
+                              setEstadoFilter((prev) => ({
+                                ...prev,
+                                isFiltring: true,
+                              }));
+                            }}
+                          >
+                            <FaFilter />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="join">
+                          <SelectDU
+                            defaultValue={""}
+                            className="text-primary join-item"
+                            size="sm"
+                            value={estadoFilter.filtering}
+                            onChange={(e) => {
+                              const value = Number(e.target.value);
+                              setEstadoFilter((prev) => ({
+                                ...prev,
+                                filtering: value,
+                              }));
+                              const filters = dataAlmacenArticulo.filter(
+                                (item) => item.estadoArticuloCodigo == value,
+                              );
+                              setFilterData(filters);
+                            }}
+                          >
+                            <SelectDU.Option value={0} disabled>
+                              Seleccione el establecimiento
+                            </SelectDU.Option>
+                            {EstadoArticulo.map((estados, index) => (
+                              <SelectDU.Option
+                                key={index}
+                                value={estados.codigo}
+                              >
+                                {estados.nombre}
+                              </SelectDU.Option>
+                            ))}
+                          </SelectDU>
+                          <Button
+                            variant="outline"
+                            className="text-white join-item"
+                            size="sm"
+                            onClick={() => {
+                              setFilterData(dataAlmacenArticulo);
+
+                              setEstadoFilter((prev) => ({
+                                ...prev,
+                                filtering: 0,
+                                isFiltring: false,
+                              }));
+                            }}
+                          >
+                            <FaX />
+                          </Button>
+                        </div>
+                      )}
+                    </span>
                     <span>Descripción artículo</span>
                     <span>Cantidad Bodega</span>
                     <span>Cantidad despacho*</span>
@@ -635,7 +844,7 @@ export default function Salidas() {
                     <span>Observaciones</span>
                   </Table.Head>
                   <Table.Body>
-                    {dataAlmacenArticulo.map((almacenArticulo, index) => {
+                    {filterData.map((almacenArticulo, index) => {
                       const fieldIndex = fields.findIndex(
                         (field) =>
                           field.ArticuloId === almacenArticulo.articuloId &&
