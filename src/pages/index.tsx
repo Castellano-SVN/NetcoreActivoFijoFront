@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { jwt } = useUserStore();
-  // return <AnoMes jwt={jwt} />;
+  return <AnoMes jwt={jwt} />;
 }
 
 interface anoMesProp {
