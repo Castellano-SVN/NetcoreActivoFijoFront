@@ -1,0 +1,15 @@
+.card.success{
+    border: 1px solid #C5F4CC;
+    border-radius: 2px;
+    background: #E1FFE6;
+}
+.card.danger{
+    border: 1px solid #FBBBD3;
+    border-radius: 2px;
+    background: #FADAE6;
+}
+.card.warning{
+    border: 1px solid #FFE476;
+    border-radius: 2px;
+    background: #FFF9E1;
+}

@@ -162,7 +162,7 @@ export default function Index() {
   return (
     <div className="flex items-center justify-center">
 
-      <div className="container shadow">
+      <div className="container py-2">
         <MenuEmpresa total={meta.total} isLoading={isLoading} />
 
         {/* Componente de búsqueda (nuevo) */}

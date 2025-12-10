@@ -1,0 +1,53 @@
+.modulos {
+    background: none;
+    min-height: 100vh;
+    padding-top: 128px;
+    color: var(--color-black);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding-bottom: 40px;
+}
+
+.modulos .dropdown-toggle::after {
+    display: none;
+}
+
+.modulos .dropdown-menu {
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+.modulos .card-shadow {
+    background: hsl(0, 0%, 100%);
+    border-radius: 20px;
+    box-shadow: 0px 0px 16px 4px rgba(28, 0, 47, 0.1);
+    padding: 10px 76px;
+}
+
+.card-shadow-footer-mobile {
+    background: #FFF0E2;
+    padding: .5rem !important
+}
+
+.card-shadow-footer-mobile a {
+    color: var(--color-black);
+}
+
+/* desktop */
+
+@media (min-width: 769px) {
+
+    .modulos {
+        background-image: url(../../img/fondo-seccion-interior.svg);
+        background-position: center 135px;
+        background-repeat: no-repeat;
+        background-size: 90%;
+        background-attachment: fixed;
+    }
+
+    .modulos .nav-tabs .nav-item {
+        width: auto;
+    }
+}

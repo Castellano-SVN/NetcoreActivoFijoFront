@@ -1,31 +1,28 @@
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useMutation } from "react-query";
-import { useUserStore } from "../store/user.store";
-import { generateToken } from "../services/jwt.service";
-import { useCallback, useEffect, useState } from "react";
 import TopBar from "./topBar";
 import Body from "./body";
-import { Drawer, Loading, Menu } from "react-daisyui";
-import Menus from "./menus";
 import InfoBar from "./infoBar";
-import { useParams, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useUserStore } from "../store/user.store";
+import { useContextStore } from "../store/context.store";
+import { generateToken } from "../services/jwt.service";
+import { api_getModeloMenusPermisos } from "@/services/membresia.service";
+import { Loading } from "react-daisyui";
+
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export default function Layout(props: LayoutProps) {
-  const searchParams = useSearchParams()
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const toggleVisible = useCallback(() => {
-    setVisible((visible) => !visible);
-  }, []);
-  const rut = searchParams.get('remotetoken')
+  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const { setJwt, jwt } = useUserStore();
+  const [loading, setLoading] = useState(false);
+  const { setJwt, jwt, setUserProfile } = useUserStore();
+  const { setApps, setCurrentApp, setMenus, menus } = useContextStore();
   const mutation = useMutation(generateToken);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const userToken = searchParams.get("user");
@@ -37,7 +34,7 @@ export default function Layout(props: LayoutProps) {
       router.replace(
         { pathname: router.pathname, query: Object.fromEntries(params.entries()) },
         undefined,
-        { shallow: true }
+        { shallow: true },
       );
       setLoading(false);
       return;
@@ -47,57 +44,70 @@ export default function Layout(props: LayoutProps) {
       setLoading(false);
       return;
     }
-
   }, [searchParams, router, jwt, setJwt]);
 
   // useEffect(() => {
-  //   const token = async (rut:string) => {
-  //     setLoading(true)
+  //   const loadMenus = async () => {
+  //     if (!jwt) return;
   //     try {
-  //       const result = await mutation.mutateAsync(rut);
-  //       if (result.data) {
-  //         const params = new URLSearchParams(window.location.search);
-  //         setJwt(result.data);
-  //         params.delete('remotetoken');
-  //         router.replace({
-  //           pathname: router.pathname,
-  //           query: Object.fromEntries(params.entries()), // Convertir los parámetros restantes a un objeto
-  //         }, undefined, { shallow: true });
-  //       }
+  //       const data = await api_getModeloMenusPermisos(jwt);
+  //       const apps = data?.data?.aplicacionPerfiles || data?.aplicacionPerfiles || [];
+  //       setApps(apps);
+  //       // Dejamos seleccionada la primera app para tener currentAppId disponible
+  //       setCurrentApp(apps[0]?.aplicacionId || null);
+  //       // Menús se cargarán al hacer clic (o en TopBar si queremos auto-cargar)
+  //       setMenus([]);
+  //       const usuario = data?.data?.usuario || data?.usuario || "";
+  //       const empresa = data?.data?.empresa || data?.empresa || "";
+  //       setUserProfile(usuario, empresa, "");
   //     } catch (error) {
-  //       console.error("Error al generar el token:", error);
-  //       setLoading(false);
-  //     } finally {
-  //       setLoading(false);
+  //       console.error("No se pudieron obtener los menús desde Membresía", error);
   //     }
   //   };
-  //   if (!rut || rut === null) return;
-  //   token(rut);
-  // }, [rut]);
 
-  if (!jwt || loading) return (<div className="flex items-center justify-center min-h-screen">
-    <Loading size="lg" color="primary" />
-  </div>);
+  //   loadMenus();
+  // }, [jwt, setApps, setCurrentApp, setMenus, setUserProfile]);
+
+  useEffect(() => {
+    const loadMenus = async () => {
+      if (!jwt) return;
+      try {
+        const data = await api_getModeloMenusPermisos(jwt);
+        const apps = data?.data?.aplicacionPerfiles || data?.aplicacionPerfiles || [];
+        setApps(apps);
+        setMenus([]);
+
+        const usuario = data?.data?.usuario || data?.usuario || "";
+        const empresa = data?.data?.empresa || data?.empresa || "";
+        setUserProfile(usuario, empresa, "");
+      } catch (error) {
+        console.error("No se pudieron obtener los menús desde Membresía", error);
+      }
+    };
+
+    loadMenus();
+  }, [jwt, setApps, setMenus, setUserProfile]);
+
+
+  if (!jwt || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading size="lg" color="primary" />
+      </div>
+    );
+  }
+
+
 
   return (
     <>
-      <Drawer
-        open={visible}
-        className="z-999"
-        onClickOverlay={toggleVisible}
-        side={
-          <Menus open={toggleVisible} />
-        }
-      >
-        {jwt !== "" && !loading && <><InfoBar /><TopBar open={toggleVisible} /></>}
-        {jwt !== "" && !loading ? (
-          <Body>{props.children}</Body>
-        ) : (
-          <div className="flex items-center justify-center h-screen">
-            <span className="loading loading-dots loading-lg"></span>
-          </div>
-        )}
-      </Drawer>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-base-100 flex flex-col">
+        <InfoBar />
+        <TopBar open={() => setSidebarOpen((prev) => !prev)} />
+      </header>
+      <div className="h-[90px]" />
+      {/* <Body menus={menus}>{props.children}</Body> */}
+      <Body menus={menus} sidebarOpen={sidebarOpen} onCloseSidebar={() => setSidebarOpen(false)} >{props.children}</Body>
     </>
   );
 }

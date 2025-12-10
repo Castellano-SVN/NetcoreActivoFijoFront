@@ -1,0 +1,353 @@
+/*botones*/
+.btn{
+    line-height: normal !important;
+    border-radius: 30px !important;
+}
+
+.btn-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    border-radius: 30px !important;
+}
+
+.btn-primary.outline {
+    background-color: transparent !important;
+    border-color: var(--color-primary) !important;
+    border-radius: 30px !important;
+}
+
+.btn-secondary.outline {
+    background-color: transparent !important;
+    border-color: var(--color-secondary) !important;
+    border-radius: 30px !important;
+}
+
+.btn-auxiliar.outline {
+    background-color: transparent !important;
+    border-color: var(--color-auxiliar) !important;
+    border-radius: 30px !important;
+}
+
+.btn-auxiliar-comp.outline {
+    background-color: transparent !important;
+    border-color: var(--color-auxiliar-comp) !important;
+    border-radius: 30px !important;
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary) !important;
+    border-color: var(--color-secondary) !important;
+    border-radius: 30px !important;
+}
+
+.btn-auxiliar {
+    background-color: var(--color-auxiliar) !important;
+    border-color: var(--color-auxiliar) !important;
+    border-radius: 30px !important;
+}
+
+.btn-auxiliar-comp {
+    background-color: var(--color-auxiliar-comp) !important;
+    border-color: var(--color-auxiliar-comp) !important;
+    border-radius: 30px !important;
+}
+
+
+.btn.disabled {
+    background-color: var(--color-disabled-default) !important;
+    border-color: var(--color-disabled-default) !important;
+    border-radius: 30px !important;
+}
+
+.btn-black {
+    background-color: transparent !important;
+    border-color: var(--color-black) !important;
+    border-radius: 30px !important;
+    padding: 3px 16px !important;
+}
+
+.btn-white.outline {
+    background-color: transparent !important;
+    border-color: var(--color-white) !important;
+    border-radius: 30px !important;
+    padding: 3px 16px !important;
+}
+
+.btn-error {
+    background-color: var(--color-error) !important;
+    border-color: var(--color-error) !important;
+    border-radius: 30px !important;
+
+}
+
+.btn-error.outline {
+    background-color: transparent !important;
+    border-color: var(--color-error) !important;
+    border-radius: 30px !important;
+
+}
+
+
+
+/*botones  link user*/
+
+
+.link-user:hover {
+    color: black !important;
+
+
+}
+
+.link-user:focus {
+    color: black !important;
+
+
+}
+
+.link-user img {
+    margin-left: 2px !important;
+
+}
+
+.link-user {
+    text-decoration: none !important;
+    color: black !important;
+}
+
+.list-user .dropdown-menu.show {
+    top: 20px !important;
+    inset: auto auto 0px !important;
+    right: 0px !important;
+}
+
+
+
+
+/*botones  link user*/
+
+
+.botones {
+    padding: 30px 0 100px !important;
+}
+
+.botones section h2.sub {
+    font-size: var(--fs-32) !important;
+    color: var(--color-primary) !important;
+    margin: 50px 0 !important;
+}
+
+.grilla-botones button {
+    width: 100%;
+    height: 40px;
+    margin: 15px auto;
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    text-align: center;
+}
+
+.grilla-botones .destaca-punteado img {
+    margin: 15px auto;
+    display: block;
+}
+
+.destaca-punteado {
+    border: 2px dashed #9747FF !important;
+    padding: 30px !important;
+    margin-top: 50px !important; 
+}
+
+.grilla-botones button.disabled {
+    background: var(--color-disabled-default) !important;
+}
+
+a.text-link {
+    text-decoration: underline !important;
+    font-size: var(--fs-14) !important;
+    font-weight: 500 !important;
+    margin-bottom: 15px !important;
+    display: block !important;
+    text-align: center !important;
+}
+
+a.text-link.cyan {
+    color: var(--color-secondary) !important;
+}
+
+a.text-link.purple {
+    color: var(--color-primary) !important;
+}
+
+a.text-link.disabled {
+    color: var(--color-input-disabled) !important;
+}
+
+/* Buttons - Global Actions*/
+
+.global-actions {
+    display: flex !important;
+    justify-content: end !important;
+    align-items: center !important;
+    margin-top: 16px !important;
+    margin-bottom: 32px !important;
+}
+
+.global-actions a {
+    display: flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    color: #6500E4 !important;
+    margin: 0 8px !important;
+} 
+
+/* button modulo */
+
+.button-modulo-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, 314px) !important;
+    justify-content: space-between !important;
+}
+
+.button-modulo {
+    display: flex;
+    width: 314px;
+    padding: 8px 16px;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 50px;
+    border-color: var(--color-auxiliar);
+    border-style: solid;
+    background-color: hsl(0, 0%, 100%);
+    color: var(--color-black);
+    font-weight: 700;
+    transition: all .1s ease-in-out
+}
+
+.button-modulo.curso {
+    color: var(--color-auxiliar) !important;
+    justify-content: center !important;
+}
+
+.button-modulo .material-icons {
+    margin-right: 16px !important;
+    color: var(--color-auxiliar) !important;
+    transition: all .1s ease-in-out !important;
+}
+
+.nav.nav-pills .nav-item .nav-link {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    padding: 8px 8px 8px 16px !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+    border: none !important;
+    border-radius: 50px !important;
+    background-color: hsl(0, 0%, 100%) !important;
+    color: var(--color-black) !important;
+    font-weight: 700 !important;
+    transition: all .1s ease-in-out !important;
+}
+
+.modal-content .nav.nav-pills .nav-item .nav-link {
+    margin-bottom: 4px !important;
+}
+
+.nav.nav-pills .nav-item .nav-link .material-icons {
+    margin-right: 8px !important;
+}
+
+.nav.nav-pills .nav-item .nav-link:after {
+    content: '';
+    background: url('../../img/icon-arrow.svg') no-repeat center;
+    background-size: 100%;
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+}
+
+.nav.nav-pills .nav-item .nav-link .material-icons {
+    margin-right: 4px;
+}
+
+.button-modulo.active,
+.button-modulo:hover,
+.nav.nav-pills .nav-item .nav-link.active,
+.nav.nav-pills .nav-item .nav-link:hover {
+    background: var(--color-auxiliar);
+    color: hsl(0, 0%, 100%);
+}
+
+.button-modulo.active .material-icons,
+.button-modulo:hover .material-icons,
+.nav.nav-pills .nav-item .nav-link.active .material-icons,
+.nav.nav-pills .nav-item .nav-link:hover .material-icons,
+.nav.nav-pills .nav-item .nav-link.active:after,
+.nav.nav-pills .nav-item .nav-link:hover:after {
+    filter: brightness(0) invert(1) hue-rotate(0deg);
+}
+
+
+.nav.nav-pills .nav-item .nav-link {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 8px 16px;
+    align-items: center;
+    margin-bottom: 8px;
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+    background-color: hsl(0, 0%, 100%);
+    color: var(--color-black);
+    font-weight: 700;
+    transition: all .1s ease-in-out;
+}
+
+.modal-content .nav.nav-pills .nav-item .nav-link  {
+    margin-bottom: 4px;
+}
+
+.nav.nav-pills .nav-item .nav-link .material-icons {
+    margin-right: 8px;
+}
+
+.nav.nav-pills .nav-item .nav-link:after {
+    content: '';
+    background: url('../../img/icon-arrow.svg') no-repeat center;
+    background-size: 100%;
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+}
+
+.nav.nav-pills .nav-item .nav-link .material-icons {
+    margin-right: 4px !important;
+}
+
+.button-modulo.active,
+.button-modulo:hover,
+.nav.nav-pills .nav-item .nav-link.active,
+.nav.nav-pills .nav-item .nav-link:hover {
+    background: var(--color-auxiliar) !important;
+    color: hsl(0, 0%, 100%) !important;
+}
+
+.button-modulo.active .material-icons,
+.button-modulo:hover .material-icons,
+.nav.nav-pills .nav-item .nav-link.active .material-icons,
+.nav.nav-pills .nav-item .nav-link:hover .material-icons,
+.nav.nav-pills .nav-item .nav-link.active:after,
+.nav.nav-pills .nav-item .nav-link:hover:after {
+    filter: brightness(0) invert(1) hue-rotate(0deg) !important;
+}
+
+/* btn close*/
+
+.btn-close {
+    background-size: 2em;
+    top: 0;
+    right: 0;
+    position: absolute;
+}

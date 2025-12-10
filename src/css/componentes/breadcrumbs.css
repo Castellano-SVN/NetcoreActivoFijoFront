@@ -1,0 +1,24 @@
+.breadcrumb-item+.breadcrumb-item{
+    padding-left: 0.2rem;
+}
+.breadcrumb-item+.breadcrumb-item::before{
+    padding-right: 0.2rem;
+}
+.breadcrumb .breadcrumb-item {
+    font-size:14px;
+}
+.breadcrumb .breadcrumb-item a{
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--color-text-strong);
+}
+.breadcrumb .breadcrumb-item.active {
+    font-weight: 800;
+    color: var(--color-text-strong);
+}
+
+@media(max-width: 576px){
+    .breadcrumb{
+        display: none;
+    }
+}

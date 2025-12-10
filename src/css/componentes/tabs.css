@@ -1,0 +1,58 @@
+.tabs-classic.nav-tabs .nav-link.active {
+     font-family: 'Nunito Sans';
+     font-style: normal;
+     font-weight: 800 !important;
+     font-size: 14px !important;
+     line-height: 21px !important;
+     color: #6500E4 !important;
+     background: none;
+     border: 1px solid #EDEBEE;
+     border-radius: 8px 8px 0px 0px;
+     margin-left: 10px;
+}
+
+.tabs-classic.nav-tabs .nav-link {
+     font-family: 'Nunito Sans';
+     font-style: normal;
+     font-weight: 400;
+     font-size: 14px;
+     line-height: 21px;
+     text-align: center;
+     color: #1C002F;
+     background: #EDEBEE;
+     border: 1px solid #EDEBEE;
+     border-radius: 8px 8px 0px 0px;
+     margin-left: 10px;
+}
+
+/* Nav Tabs */
+
+.modulos .dropdown .nav-link,
+.modulos .nav-tabs.nav-underline .nav-link {
+     color: var(--color-black);
+     border: none;
+     background: none;
+     width: 100%;
+}
+
+.modulos .nav-tabs.nav-underline,
+.modulos .nav-tabs.nav-underline .nav-link.active,
+.modulos .nav-tabs.nav-underline .nav-link:hover,
+.modulos .nav-tabs.nav-underline .nav-link:focus,
+.modulos .nav-tabs.nav-underline .nav-link:focus-visible {
+     border: none;
+     outline: 0;
+     box-shadow: none;
+     color: var(--color-primary);
+     background: none;
+     font-weight: bold;
+}
+
+.modulos .nav-tabs.nav-underline .nav-link.active::after {
+     content: '';
+     display: block;
+     width: 100%;
+     height: 4px;
+     background: var(--color-primary);
+     border-radius: 4px;
+}

@@ -1,0 +1,9 @@
+
+.tooltip-inner {
+    background: #343A40
+}
+
+.bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before,
+.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #343A40
+}

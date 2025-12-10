@@ -72,7 +72,7 @@ export default function recepcion() {
   return (
     <React.Fragment>
       <div className="flex items-center justify-center">
-        <div className="container">
+        <div className="container py-2">
           <div className="p-1">
             <div>
               <>

@@ -1,0 +1,20 @@
+.titulo-modulo {
+    color: var(--color-black);
+    font-size: 2rem !important;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+}
+/* Defintion Lists */
+
+dl {
+    margin: 0;
+}
+
+dl .modulo-dl {
+    display: flex;
+}
+
+dl .modulo-dl dt {
+    margin-right: 8px;
+}

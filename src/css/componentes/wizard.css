@@ -1,0 +1,76 @@
+.wizard .wizard-content{
+    position: relative;
+    height: 100%;
+}
+.wizard-step-container{
+    position: relative;
+    width: 100%;
+    /* height: calc(100vh - 230px); */
+}
+.wizard .wizard-step{
+    /* position: absolute; */
+    display: none;
+    opacity: 0;  
+    z-index: 0;
+    width: 100%;
+    transition: all .3s ease-in-out;
+}
+
+.wizard .wizard-step.active{
+    display: block;
+    opacity: 1;  
+    z-index: 1;
+}
+
+.wizard .wizard-list{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+.wizard .wizard-list .wizard-item{
+    color: var(--color-primary);
+    font-weight: 600;
+    transition: color .3s ease-in-out;
+}
+
+.wizard .wizard-list .wizard-item:before{
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+    margin: 0 auto 12px;
+    background: var(--color-primary);
+    transition: background-color .3s ease-in-out;
+}
+
+.wizard .wizard-list .wizard-item.disabled{
+    color: #989898;
+}
+
+.wizard .wizard-list .wizard-item.disabled:before{
+    background-color: #989898;
+}
+
+.wizard .wizard-list .line{
+    display: inline-block;
+    width: 170px;
+    height: 4px;
+    margin: 0 24px;
+    background-color: var(--color-primary);
+    transition: background-color .3s ease-in-out;
+}
+
+.wizard .wizard-list .line.disabled{
+    background-color: #989898;
+} 
+
+.overflow-scroll{
+    height: calc(100vh - 400px);
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+}
+ 

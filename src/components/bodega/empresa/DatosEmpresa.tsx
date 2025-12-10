@@ -31,7 +31,6 @@ export default function DatostEmpresa({ errors }: props) {
     const rutempresaEditLS = sessionStorage.getItem("rutEmpresaEdit");
     if (!rutempresaEditLS) return;
     const rutEmpresaEdit: { rutCuerpo:number, rutDigito:string } = JSON.parse(rutempresaEditLS);
-    console.log(rutEmpresaEdit);
     setValue("RutCuerpo", rutEmpresaEdit.rutCuerpo);
     setValue("RutDigito", rutEmpresaEdit.rutDigito);
     setrutvalue(`${rutEmpresaEdit.rutCuerpo}-${rutEmpresaEdit.rutDigito}`);

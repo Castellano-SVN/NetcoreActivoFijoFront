@@ -1,0 +1,29 @@
+.navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .show>.nav-link {
+    color: rgba(0,0,0,.9);
+    border-bottom: 2px solid black;
+}
+.link-user{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-decoration: none;
+}
+.link-user img {
+    margin-right: 8px;
+}
+.link-user span {
+    margin-left: 8px;
+    text-decoration: none;
+    transform: rotate(0deg);
+    transition: transform .3s ease-in-out;
+}
+.link-user:focus span{
+    transform: rotate(180deg)
+}
+.navbar-light .navbar-toggler  { 
+    border: 1px solid white;
+    padding: 8px
+}
+.navbar-light .navbar-toggler .navbar-toggler-icon {
+    filter: brightness(0) invert(1); 
+}

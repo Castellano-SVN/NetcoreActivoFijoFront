@@ -49,7 +49,6 @@ export function Location({errors}: props) {
     if (regionCodigo == '0') return;
     if (useTiposStore.getState().regiones.length === 0) return ;
     if (useTiposStore.getState().ciudades.filter(e => e.regionCodigo === Number(regionCodigo)).length !== 0) return;
-    console.log(regionCodigo)
     CiudadesQuery.refetch();
   },[regionCodigo])
 

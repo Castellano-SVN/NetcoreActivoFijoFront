@@ -1,0 +1,205 @@
+.fs-6 {
+  font-size: var(--fs-6);
+}
+
+.fs-7 {
+  font-size: var(--fs-7);
+}
+
+.fs-8 {
+  font-size: var(--fs-8);
+}
+
+.fs-9 {
+  font-size: var(--fs-9);
+}
+
+.fs-10 {
+  font-size: var(--fs-10);
+}
+
+.fs-11 {
+  font-size: var(--fs-11);
+}
+
+.fs-12 {
+  font-size: var(--fs-12);
+}
+
+.fs-14 {
+
+  font-size: var(--fs-14);
+}
+
+.fs-16 {
+
+  font-size: var(--fs-16);
+}
+
+.fs-18 {
+
+  font-size: var(--fs-18);
+}
+
+.fs-20 {
+
+  font-size: var(--fs-20);
+}
+
+.fs-24 {
+
+  font-size: var(--fs-24);
+}
+
+.fs-28 {
+
+  font-size: var(--fs-28);
+}
+
+.fs-36 {
+
+  font-size: var(--fs-36);
+}
+
+.fs-48 {
+
+  font-size: var(--fs-48);
+}
+
+.fs-56 {
+
+  font-size: var(--fs-56);
+}
+
+.fs-84 {
+
+  font-size: var(--fs-84);
+} 
+
+/*textos*/
+
+.typo {
+  padding: 30px 0 100px;
+}
+
+.typo section h2.sub {
+  font-size: var(--fs-32) !important;
+  color: var(--color-primary);
+  margin: 50px 0;
+}
+
+.table.titles,
+.table.titles.large {
+  color: var(--color-titles);
+}
+
+.table.titles>:not(caption)>*>* {
+  border-bottom-width: 0;
+}
+
+.table.titles tr.h1 {
+  font-size: var(--fs-40) !important;
+  font-weight: 900;
+}
+
+.table.titles tr.h2 {
+  font-size: var(--fs-32) !important;
+  font-weight: 400;
+}
+
+.table.titles tr.h3 {
+  font-size: var(--fs-28) !important;
+  font-weight: 400;
+}
+
+.table.titles tr.h4 {
+  font-size: var(--fs-24) !important;
+  font-weight: 400;
+}
+
+.table.titles tr.h5 {
+  font-size: var(--fs-20) !important;
+  font-weight: 400;
+}
+
+.table.titles tr.h6 {
+  font-size: var(--fs-16) !important;
+  font-weight: 400;
+}
+
+.table.titles.large tr.h1 {
+  font-size: var(--fs-72) !important;
+  font-weight: 900;
+}
+
+.table.titles.large tr.h2 {
+  font-size: var(--fs-64) !important;
+  font-weight: 900;
+}
+
+.table.titles.large tr.h3 {
+  font-size: var(--fs-58) !important;
+  font-weight: 400;
+}
+
+.table.titles.large tr.h4 {
+  font-size: var(--fs-48) !important;
+  font-weight: 400;
+}
+
+.body-text p {
+  color: var(--color-parrafos) !important;
+  font-size: var(--fs-21) !important;
+  font-weight: 300;
+  line-height: 28px;
+} 
+
+.body-text p>del {
+  font-size: var(--fs-17) !important;
+}
+
+.body-text p>s {
+  font-size: var(--fs-17) !important;
+}
+
+.body-text p>ins {
+  font-size: var(--fs-17) !important;
+}
+
+.body-text p>u {
+  font-size: var(--fs-17) !important;
+}
+
+.body-text p>small {
+  font-size: var(--fs-12) !important;
+}
+
+.body-text .blockquote p {
+  font-size: var(--fs-20) !important;
+  color: var(--color-blockquotes) !important;
+  font-weight: 600;
+}
+
+.body-text figure .blockquote p {
+  font-weight: 400;
+}
+
+.body-text figure .blockquote-footer {
+  font-size: var(--fs-14) !important;
+  font-weight: 600;
+}
+
+.dody-text dt {
+  font-size: var(--fs-28) !important;
+  font-weight: 600;
+}
+
+.dody-text dd {
+  font-size: var(--fs-28) !important;
+  font-weight: 400;
+}
+
+
+.text-danger{
+    color: var(--text-danger)!important;
+}

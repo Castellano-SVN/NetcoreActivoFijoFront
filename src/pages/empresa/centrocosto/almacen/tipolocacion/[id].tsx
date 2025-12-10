@@ -92,7 +92,7 @@ export default function Page() {
 
   return (<>
     <div className="flex items-center justify-center">
-      <div className="container shadow">
+      <div className="container py-2">
         <div className="overflow-x-auto">
           <div className="flex flex-row justify-between m-4">
             <button type="button" className="btn btn-primary" onClick={()=> router.back()}><FaArrowLeft/>Volver</button>

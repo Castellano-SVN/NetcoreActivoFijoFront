@@ -1,0 +1,41 @@
+.productos-cont-interior {
+    padding-top: 14px;
+    background-image: url(../img/fondo-seccion-interior.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 80vh;
+}
+
+
+.card-shadow {
+    background: #FFFFFF;
+    box-shadow: 0px 0px 16px 4px rgba(28, 0, 47, 0.1);
+    border-radius: 20px;
+}
+
+
+.cont-section-admin h3.titulo-seccion {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 32px;
+    line-height: 44px;
+}
+
+.cont-section-admin h4.titulo-check {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    color: #1C002F;
+}
+
+.cont-section-admin h4.titulo-tabla {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 38px;
+
+}

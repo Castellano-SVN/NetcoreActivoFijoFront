@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --color-primary: #6500E4;
+    --color-secondary: #00CAF0;
+    --color-auxiliar: #FF7E00;
+    --color-auxiliar-comp: #FFCC00;
+    --color-neutral: #f5f5f5;
+    --color-input-disabled: #CED4DA;
+    --color-text: #414042;
+    --color-text-strong: #231520;
+    --color-text-loading: #8E8E8E;
+    --color-disabled-default: #D3C9DF;
+    --color-success: #28A745;
+    --color-error: #DC3545;
+    --color-warning: #F0C632;
+    --color-info: #2D77CE;
+    --color-white: #fff;
+    --color-black: #1C002F;
+    --color-titles: #152536;
+    --color-parrafos: #68717A;
+    --color-blockquotes: #343A40;
+    --bg-gradient-orange: background: linear-gradient(90deg, #FFCC00 0%, #FF7E00 100%);
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+    --bg-gradient-blue: background: linear-gradient(90deg, #00CAF0 0%, #6500E4 100%);
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+    --ff-nunito: Nunito Sans, sans-serif;
+    --fs-10: 10px;
+    --fs-12: 12px;
+    --fs-14: 14px;
+    --fs-16: 16px;
+    --fs-16: 17px;
+    --fs-18: 18px;
+    --fs-20: 20px;
+    --fs-21: 21px;
+    --fs-22: 22px;
+    --fs-24: 24px;
+    --fs-28: 28px;
+    --fs-32: 32px;
+    --fs-36: 36px;
+    --fs-40: 40px;
+    --fs-48: 48px;
+    --fs-56: 56px;
+    --fs-58: 58px;
+    --fs-64: 64px;
+    --fs-72: 72px;
+    --fs-84: 84px;
+    --text-danger: #CB014A;
+}
+
+body {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+/* 
+.text-link:hover{
+    color: var(--color-primary-comp);
+}
+
+   h1{
+        font-family: var(--ff-nunito);
+        font-size: var(--fs-84) !important;
+        color: black;
+       }
+
+   h2{
+        font-family: var(--ff-nunito);
+        font-size: var(--fs-84) !important;
+        color: black;
+       }
+
+
+@media (max-width: 600px) {
+  h1{
+        font-family: var(--ff-nunito);
+        font-size: var(--fs-48) !important;
+        color: black;
+       }
+
+   h2{
+        font-family: var(--ff-nunito);
+        font-size: var(--fs-48) !important;
+        color: black;
+       }
+
+} */
+ .net-color-red-bg{
+    background-color: #ec5f5f;
+}
+.net-color-yellow-bg{
+    background-color: #f8fa85;
+}
+.net-color-green-bg{
+    background-color: #79d481;
+}
+.net-color-black-text{
+    color: #000000;
+}
+.net-color-white-text{
+    color: #FFFFFF;
+}
+.net-color-orange-bg{
+    background-color: #F59827;
+}
+
+/* Fondo oscuro */
+.simple-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+}
+
+/* Contenedor del modal */
+.simple-modal-window {
+    background: white;
+    width: 80%;
+    max-width: 1100px;
+    max-height: 85vh;
+    border-radius: 14px;
+    overflow: auto;
+    padding: 20px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+    z-index: 9999;
+}
+
+/* Botón cerrar arriba a la derecha */
+.simple-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+.net-color-red-bg{
+    background-color: #ec5f5f;
+}
+.net-color-yellow-bg{
+    background-color: #f8fa85;
+}
+.net-color-green-bg{
+    background-color: #79d481;
+}
+.net-color-black-text{
+    color: #000000;
+}
+.net-color-white-text{
+    color: #FFFFFF;
+}
+.net-color-orange-bg{
+    background-color: #F59827;
+}
+
+/* Fondo oscuro */
+.simple-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+}
+
+/* Contenedor del modal */
+.simple-modal-window {
+    background: white;
+    width: 80%;
+    max-width: 1100px;
+    max-height: 85vh;
+    border-radius: 14px;
+    overflow: auto;
+    padding: 20px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+    z-index: 9999;
+}
+.simple-modal-window2 {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 95vh;
+  overflow-y: auto;
+  position: relative;   /* 👈 importante */
+}
+
+
+/* Botón cerrar arriba a la derecha */
+.simple-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+.form-floating > label {
+  top: -0.45rem !important;   /* súbela */
+  font-size: 0.80rem;         /* más parecida a tu diseño */
+  padding: 0 .75rem;          /* padding opcional */
+}
+.filtro-estado-card {
+  max-width: 480px;   /* ancho máximo del recuadro blanco */
+  margin: 0 auto;
+}
+
+.filtro-estado-select {
+  border-radius: 999px !important;  /* por si acaso pisa a Bootstrap */
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  height: 40px;                     /* un poco más bajita/prolija */
+  font-size: 0.9rem;
+}
+

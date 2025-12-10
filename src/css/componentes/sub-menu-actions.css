@@ -1,0 +1,39 @@
+.sub-menu-actions{
+    display: flex;
+    justify-content: end;
+}
+
+.sub-menu-actions .sub-menu{
+    position: absolute;
+    padding: 0 !important;
+    z-index: 1;
+    margin-top: 40px;
+    border-radius: 8px !important;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity .3s ease-in-out;
+}
+
+.sub-menu-actions .sub-menu.active{
+    opacity: 1;
+    pointer-events: initial;
+}
+
+.sub-menu-actions .sub-menu.active .list-group .list-group-item{
+    cursor: pointer;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+}
+.sub-menu-actions .sub-menu.active .list-group .list-group-item img{
+    margin-right: 8px;
+}
+.sub-menu-actions .sub-menu.active .list-group .list-group-item:hover{
+    color: var(--color-primary)
+}
+
+.sub-menu-actions .sub-menu.active .list-group .list-group-item.disabled{
+    cursor: none;
+    opacity: .8;
+}

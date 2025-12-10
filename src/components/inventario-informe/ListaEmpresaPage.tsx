@@ -96,7 +96,7 @@ export default function EmpresasPage({ label }: { label: string }) {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="container shadow">
+      <div className="container py-2">
         <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
           <div className="flex flex-col">
             <span className="font-bold text-2xl">Empresas</span>

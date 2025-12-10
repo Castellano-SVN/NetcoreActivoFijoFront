@@ -1,0 +1,244 @@
+/* icono estado certificado */
+.full-status-icon {
+    font-size: .5rem;
+}
+
+/* icono estado facturas */
+.status-icon {
+    font-size: .7rem;
+}
+
+/* bordes */
+.border-color-primary {
+    border-color: var(--color-primary) !important;
+}
+
+.border-color-secondary {
+    border-color: var(--color-secodary) !important;
+}
+
+.border-color-auxiliar {
+    border-color: var(--color-auxiliar) !important;
+}
+
+.border-color-auxiliar-comp {
+    border-color: var(--color-auxiliar-comp) !important;
+}
+
+.border-color-neutral {
+    border: 1px solid var(--color-neutral) !important;
+
+}
+
+.border-neutral-separador {
+    border: 1px solid var(--color-neutral) !important;
+    border-radius: 20px;
+}
+
+.border-black-separador {
+    border: 1px solid #EDEBEE;
+    border-radius: 8px;
+}
+
+
+/* colores estado */
+.color-primary {
+    color: var(--color-primary) !important;
+}
+
+.color-secondary {
+    color: var(--color-secondary) !important;
+}
+
+.color-auxiliar {
+    color: var(--color-auxiliar) !important;
+}
+
+.color-auxiliar-comp {
+    color: var(--color-auxiliar-comp) !important;
+}
+
+.color-success {
+    color: var(--color-success);
+}
+
+.color-info {
+    color: var(--color-info);
+}
+
+.color-warning {
+    color: var(--color-warning);
+}
+
+.color-error {
+    color: var(--color-error);
+}
+
+.color-text {
+    color: var(--color-text) !important;
+}
+
+.color-stand-by {
+    color: #707070;
+}
+
+.color-white {
+    color: white !important;
+}
+
+
+/* Bg Colors */
+
+.bg-grisf7,
+.bg-home {
+    background-color: #f7f7f7;
+}
+
+.bg-neutral {
+    background-color: var(--color-neutral) !important;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.bg-secondary {
+    background-color: var(--color-secondary) !important;
+}
+
+.bg-auxiliar {
+    background-color: var(--color-auxiliar) !important;
+}
+
+.bg-auxiliar-comp {
+    background-color: var(--color-auxiliar-comp) !important;
+}
+
+.bg-success {
+    background-color: var(--color-success) !important;
+}
+
+.bg-success-low {
+    background-color: var(--color-success-low) !important;
+}
+
+.bg-info {
+    background-color: var(--color-info) !important;
+}
+
+.bg-info-low {
+    background-color: var(--color-info-low) !important;
+}
+
+.bg-warning {
+    background-color: var(--color-warning) !important;
+}
+
+.bg-warning-low {
+    background-color: var(--color-warning-low) !important;
+}
+
+.bg-error {
+    background-color: var(--color-error) !important;
+}
+
+.bg-error-low {
+    background-color: var(--color-error-low);
+}
+
+.bg-stand-by {
+    background-color: #D3C9DF !important;
+
+}
+
+.bg-grey {
+    background-color: #F6F6F6 !important;
+
+}
+
+.bg-white {
+    background: white;
+}
+
+.bg-black {
+    background: var(--color-black);
+}
+
+.bg-none {
+    background: none !important;
+}
+
+
+/*paletas*/
+
+.palettes {
+    padding: 30px 0 100px;
+}
+
+.palette {
+    width: 96%;
+    margin: 0 2% 50px 0;
+    font-size: var(--fs-22) !important;
+    height: 320px;
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+    border-radius: 40px;
+    padding: 30px;
+}
+
+.palette.black {
+    background: var(--color-black);
+    color: var(--color-white);
+}
+
+.palette.white {
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+.palette.neutral {
+    background: var(--color-neutral);
+    color: var(--color-black);
+}
+
+.palette.purple {
+    background: var(--color-primary);
+    color: var(--color-black);
+}
+
+.palette.cyan {
+    background: var(--color-secondary);
+    color: var(--color-black);
+}
+
+.palette.orange {
+    background: var(--color-auxiliar);
+    color: var(--color-white);
+}
+
+.palette.yellow {
+    background: var(--color-auxiliar-comp);
+    color: var(--color-black);
+}
+
+.palette.grad-1 {
+    width: 100%;
+    margin: 0 0 50px 0;
+    background: var(--bg-gradient-orange);
+    background: linear-gradient(90deg, #FFCC00 0%, #FF7E00 100%);
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+    color: var(--color-black);
+}
+
+.palette.grad-2 {
+    width: 100%;
+    margin: 0;
+    background: var(--bg-gradient-blue);
+    background: linear-gradient(90deg, #00CAF0 0%, #6500E4 100%);
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+    color: var(--color-black);
+}
+
+/*Color*/
+.ButtonDelete {
+    background: #fd0017;
+}

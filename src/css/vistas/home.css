@@ -1,0 +1,153 @@
+/*vista home */
+    main {
+            padding-top: 80px;
+        }
+
+
+        strong {
+            font-weight: 900;
+        }
+
+        .navbar.navbar-expand-lg.navbar-light.fixed-top {
+            background: rgba(255, 255, 255, 0.789);
+            box-shadow: 0px 4px 4px rgba(182, 182, 183, 0.25);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .banner-home .img-banner {
+            width: 95%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .banner-home .logo-banner {
+            width: 300px;
+        }
+
+        .banner-home {
+            position: relative;
+        }
+
+        .fondo-quienes-somos-1 {
+            width: 65%;
+            position: absolute;
+            z-index: 0;
+            bottom: 366px;
+            left: calc(50% - 32.5%);
+        }
+
+        .fondo-quienes-somos-2 {
+            width: 65%;
+            position: absolute;
+            z-index: 2;
+            bottom: -133px;
+            left: calc(50% - 32.5%);
+        }
+
+        .quienes-somos {
+            padding-top: 200px;
+        }
+
+        .fecha-ancla {
+            display: block;
+            margin: 0 auto;
+            width: 30px;
+            padding-top: 30px;
+        }
+.link-nav-primary {
+    background: var(--color-primary);
+    border-radius: 19px;
+    padding: 5px 26px;
+    color: var(--color-white) !important;
+    text-align: center;
+    font-weight: 600;
+}
+        .cont-text-productos {
+            position: relative;
+            border-radius: 30px;
+            padding: 20px;
+            z-index: 3;
+            height: 536px;
+
+        }
+
+        .cont-text-productos h4 {
+            position: relative;
+            border-radius: 30px;
+            font-size: 24px;
+
+
+        }
+
+        .cont-text-productos h3 {
+            position: relative;
+            border-radius: 30px;
+            font-size: 78px;
+            color: black;
+
+
+        }
+
+        .productos {
+            padding-top: 160px;
+        }
+
+        .imagen-portada-productos {
+            width: 103%;
+            position: relative;
+            left: -37px;
+            height: 100%;
+            max-height: 536px;
+            border-bottom-right-radius: 30px;
+            border-top-right-radius: 30px;
+            border-top: 30px;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .banner-home {
+            position: relative;
+            padding-bottom: 117px;
+        }
+
+        .productos {
+            position: relative;
+
+        }
+
+        .trama-productos {
+            position: absolute;
+            width: 80%;
+            z-index: 0;
+            max-height: 100%;
+            top: -80px;
+            left: calc(50% - 40%);
+        }
+        
+
+            .hablemos {
+                padding-top: 80px;
+                padding-bottom: 80px;
+            }
+
+        
+        @media (max-width: 600px) {
+ 
+            .cont-text-productos h3 {
+    font-size: 45px;
+  
+}
+            .cont-text-productos {
+
+    height: auto;
+}
+            .quienes-somos {
+    padding-top: 126px;
+}
+            .hablemos {
+    padding-top: 80px;
+    padding-bottom: 65px;
+}
+            
+}

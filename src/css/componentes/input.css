@@ -1,0 +1,660 @@
+.inactive {
+    font-style: italic;
+    color: gray;
+}
+
+.form-floating>label {
+    padding: .7rem 1rem;
+    align-items: center;
+}
+
+.form-floating-buscar>.form-control {
+    padding: 8px 0 2px 22px !important;
+    height: 46px;
+}
+
+.form-floating-buscar>.form-control~label {
+    color: #989898;
+    padding: 8px 20px;
+}
+
+.form-floating-buscar>.form-control:focus~label {
+    padding: 2px 7px;
+}
+
+.form-floating-buscar>.form-control:focus~label,
+.form-floating-buscar>.form-control:not(:placeholder-shown)~label,
+.form-floating-buscar>.form-select~label,
+.form-floating-buscar>.active-label {
+    top: -4px !important;
+}
+
+.form-floating-buscar .form-control-icon {
+    top: 8px !important;
+    right: 14px !important;
+}
+
+.form-floating>.form-control,
+.form-floating>.form-select {
+    /* padding: 0rem 0.75rem !important; */
+    border-radius: 31px !important;
+    height: unset !important;
+    min-height: 2.5rem !important;
+}
+
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+/* .form-floating > .form-select ~ label,  */
+.form-floating>.active-label {
+    opacity: 1;
+    top: -4px !important;
+    left: 16px !important;
+    border-radius: 20px;
+    height: auto;
+    padding: 0px 7px !important;
+    color: black;
+    background: white;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.form-check-label {
+    display: inline-block;
+    text-align: left;
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 28px;
+}
+
+.form-floating>.form-control~span {
+    display: none;
+    transition: 1.5 all linear;
+    font-size: 12px;
+    color: #6500E4;
+    position: absolute;
+    left: 10px;
+}
+
+.form-floating>.form-control:focus~span {
+    display: block;
+}
+
+.form-control-icon {
+    width: 20px !important;
+    height: 20px !important;
+    position: absolute;
+    right: 12px;
+    top: 11px;
+}
+
+input:-internal-autofill-selected {
+    background-color: none !important;
+}
+
+.form-control:focus {
+    /* color: white;   */
+    background-color: transparent;
+    border-color: transparent;
+    outline: 0;
+    box-shadow: 0 0 0 0.05rem #6501e4 !important;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: transparent;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+/* Para navegadores Webkit (Chrome, Safari, Edge) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Para navegadores basados en Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.textarea {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 24px !important;
+    resize: vertical !important;
+}
+
+
+.form-floating>.form-control:focus,
+.form-floating>.form-control:not(:placeholder-shown) {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.form-floating>.form-control,
+.form-floating.negro>.form-select {
+    height: 38px;
+    line-height: 1.25;
+}
+
+.form-floating>.form-control:focus {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-color: #6501e4;
+    color: black;
+}
+
+.form-floating>.form-control:focus,
+.form-floating>.form-control:not(:placeholder-shown) {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-color: #CED4DA;
+}
+
+.form-floating.negro>.form-control:not(:placeholder-shown)~label,
+.form-floating.negro>.form-select~label {
+    opacity: 1;
+    top: -9px;
+    left: 12px;
+    height: auto;
+    padding: 0px;
+    color: black;
+    background: white;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.form-floating>.form-select {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+}
+
+.form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+}
+
+.form-select:focus {
+    border-color: #6501e4;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 0%);
+}
+
+.form-floating>.form-select:focus~span {
+    display: block;
+}
+
+.form-floating>.form-select~span {
+    display: none;
+    transition: 1.5 all linear;
+    font-size: 12px;
+    color: #6500E4;
+    position: absolute;
+    left: 10px;
+}
+
+.form-floating>.form-select~label {
+    /* top: 15px; */
+    left: 22px;
+    height: auto;
+    padding: 0px;
+    font-size: 1.2rem;
+    opacity: 1;
+    transform: scale(.85) translateY(.65rem) translateX(0.15rem);
+}
+
+.form-floating>.form-select:valid~label,
+.form-floating>.form-select:focus~label {
+    opacity: 1;
+    top: -4px;
+    left: 16px;
+    border-radius: 20px;
+    height: auto;
+    padding: 0px 7px;
+    color: black;
+    background: white;
+    transform: scale(.6) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/*input-negros*/
+
+.form-floating.negro>.form-control {
+    padding: 0rem 0.75rem;
+    border-radius: 31px;
+}
+
+.form-floating.negro>.form-control:focus~label,
+.form-floating.negro>.form-control:not(:placeholder-shown)~label,
+.form-floating.negro>.form-select~label {
+    opacity: 1;
+    top: -9px;
+    left: 12px;
+    height: auto;
+    padding: 0px;
+    color: #ffcc00;
+    background: #1d002f;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.form-floating.negro>.form-control~span {
+    display: none;
+    transition: 1.5 all linear;
+    font-size: 12px;
+    color: #ffcc00;
+    position: absolute;
+    left: 10px;
+}
+
+.form-floating.negro>.form-control:focus~span {
+    display: block;
+}
+
+input:-internal-autofill-selected {
+    background-color: none !important;
+}
+
+.form-floating.negro .form-control:focus {
+    color: white;
+    background-color: transparent;
+    border-color: transparent;
+    outline: 0;
+    box-shadow: 0 0 0 0.05rem #ffcc00 !important;
+
+}
+
+.navbar-light .navbar-toggler {
+    color: transparent;
+    border-color: transparent;
+    /* background: rebeccapurple; */
+}
+
+.form-floating.negro>label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    color: white;
+    padding: 0.4rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity .1s ease-in-out, transform .1s ease-in-out;
+}
+
+.form-floating.negro>.form-control:focus,
+.form-floating.negro>.form-control:not(:placeholder-shown) {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.form-floating.negro>.form-control,
+.form-floating.negro>.form-select {
+    height: 38px;
+    line-height: 1.25;
+}
+
+.form-floating.negro>.form-control:focus,
+.form-floating.negro>.form-control:not(:placeholder-shown) {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-color: #fecb04;
+}
+
+.form-floating.negro>.form-control:not(:placeholder-shown) {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-color: #ced4da;
+    color: white;
+}
+
+.form-floating.negro>.form-control:not(:placeholder-shown)~label,
+.form-floating.negro>.form-select~label {
+    opacity: 1;
+    top: -9px;
+    left: 12px;
+    height: auto;
+    padding: 0px;
+    color: #ced4da;
+    background: #1d002f;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+
+#togglePassword {
+    position: absolute;
+    right: 12px;
+    top: 11px;
+}
+
+.text-field {
+    padding: 30px 0 100px;
+}
+
+.text-field h2.sub {
+    font-size: var(--fs-32) !important;
+    color: var(--color-primary) !important;
+    margin: 50px 0;
+}
+
+.form-floating>.form-control.red:focus {
+    border-color: var(--color-error) !important;
+    box-shadow: 0 0 0 0 !important;
+}
+
+.form-floating>.form-control.red~span {
+    color: var(--color-error) !important;
+}
+
+.form-floating.disabled {
+    border: 1px solid var(--color-input-disabled) !important;
+    color: var(--color-input-disabled) !important;
+}
+
+.form-floating.disabled>label {
+    color: var(--color-input-disabled) !important;
+}
+
+.disabled::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: red !important;
+    opacity: 1 !important;
+    /* Firefox */
+}
+
+.disabled:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: red !important;
+}
+
+.disabled::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: red !important;
+}
+
+.pass-purple .fa-eye:before,
+.pass-purple .fa-eye-slash:before {
+    color: var(--color-primary) !important;
+}
+
+.pass-purple .form-control,
+.form-floating.pass-purple>.form-control:focus {
+    border-color: var(--color-primary) !important;
+}
+
+.form-floating.pass-purple>.form-control:focus {
+    box-shadow: 0 0 0 0 !important;
+}
+
+.pass-error .fa-eye:before,
+.pass-error .fa-eye:before {
+    color: var(--color-error) !important;;
+}
+
+.pass-error .form-floating>.form-control~span {
+    color: var(--color-error) !important;;
+}
+
+.pass-error .form-control,
+.form-floating.pass-error>.form-control:focus {
+    border-color: var(--color-error) !important;;
+}
+
+.form-floating.pass-error>.form-control:focus {
+    box-shadow: 0 0 0 0 !important;
+}
+
+.pass-black .form-control,
+.form-floating.pass-black>.form-control:focus {
+    border-color: var(--color-black);
+}
+
+.form-floating.pass-black>.form-control:focus {
+    box-shadow: 0 0 0 0 !important;
+}
+
+.form-floating.pass-disabled>.form-control:focus {
+    box-shadow: 0 0 0 0 !important;
+}
+
+.pass-black .fa-eye:before,
+.pass-black .fa-eye:before {
+    color: var(--color-black);
+}
+
+.pass-disabled .fa-eye:before,
+.pass-disabled .fa-eye:before {
+    color: var(--color-disabled-default) !important;
+}
+
+.form-floating.pass-error>.form-control~span {
+    color: var(--color-error) !important;
+}
+
+.form-floating.pass-black>.form-control~span {
+    color: var(--color-black) !important;;
+}
+
+.form-floating.pass-purple>.form-control~span {
+    color: var(--color-primary) !important;;
+}
+
+.form-floating.pass-disabled>.form-control~span,
+.form-floating.pass-disabled>.form-control:focus~label {
+    color: var(--color-disabled-default) !important;;
+}
+
+/* .inputfile-item + label {
+        color: #c39f77;
+    } */
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile-item+label {
+    font-size: 1rem;
+    background-color: transparent;
+    padding: 0;
+}
+
+.inputfile-item:focus+label,
+.inputfile-item.has-focus+label,
+.inputfile-item+label:hover {
+    border-color: #ced4da;
+    ;
+}
+
+.inputfile-item+label span,
+.inputfile-item+label strong {
+    padding: 0.625rem 1.25rem;
+    border-radius: 31px;
+}
+
+.inputfile-item+label span {
+    border: 1px solid #ced4da;
+    width: 390px;
+    min-height: 42px;
+    font-size: 1rem;
+    font-weight: 400;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: top;
+    position: relative;
+}
+
+.inputfile-item+label span::after {
+    content: url('/img/icon-input-file.svg');
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+.inputfile-item+label strong {
+    width: 145px;
+    height: 42px;
+    color: #fff;
+    background-color: var(--color-disabled-default);
+    display: inline-block;
+    text-align: center;
+}
+
+.inputfile-item:focus+label strong,
+.inputfile-item.has-focus+label strong,
+.inputfile-item+label:hover strong {
+    background-color: var(--color-primary);
+
+}
+
+.max-mb {
+    margin-left: 25px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-primary);
+    ;
+}
+
+@media screen and (max-width: 50em) {
+    .inputfile-item+label strong {
+        display: block;
+    }
+}
+
+.firma-input {
+    width: 40px;
+    height: 40px;
+    padding: 0 !important;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid black;
+    color: black;
+    z-index: 1000 !important;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.firma-input:focus {
+    color: black
+}
+
+/**********End File Inputs**********
+/* input file */
+
+.input-file {
+    position: relative;
+    margin-bottom: .25rem;
+}
+
+.input-file input[type=file] {
+    border-radius: 50px;
+    padding: 0.375rem 1.2rem;
+}
+
+.input-file input[type=file]::-webkit-file-upload-button {
+    display: none;
+}
+
+.input-file input[type=file]::file-selector-button {
+    display: none;
+}
+
+.input-file input[type='file']:invalid {
+    font-size: 0;
+}
+
+::file-selector-button {
+    display: none;
+}
+
+.input-file input[type='file']:invalid:before {
+    content: "Subir archivo";
+    padding: 0;
+    border-radius: 50px;
+    color: black;
+    font-size: 16px;
+    line-height: 1.6rem !important;
+}
+
+.input-file .form-control:focus {
+    color: black;
+}
+
+.input-file .input-file-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 18px;
+    top: 10px;
+}
+
+/* input sm */
+
+.form-floating.form-control-sm .form-control {
+    height: 30px;
+    font-size: 12px;
+}
+
+.form-floating.form-control-sm label {
+    padding: .5rem 1rem;
+}
+
+.form-floating.form-control-sm:focus-within label {
+    padding: .7rem .5rem;
+    background: transparent
+}
+
+.form-floating.form-control-sm>.form-control-icon {
+    height: 10px;
+    top: 8px;
+    right: 16px;
+}
+
+
+
+/* AGREGUE ESTE ESTILO PARA QUE LOS SELECT DISABLED SUBAL EL LABEL Y NO SE INTERPONGAN EN EL TEXTO*/
+.form-floating>.form-select:disabled~label {
+  top:-4px; left:16px; padding:0 7px; border-radius:20px;
+  background:white; transform:scale(.6) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/*AGREGUE ESTE ESTILO PARA COLOR ROJO DE LOS LABEL DE REQUERIDO EL CAMPO */
+/* .form-floating>label.text-danger,
+.form-floating>.form-control:focus~label.text-danger,
+.form-floating>.form-control:not(:placeholder-shown)~label.text-danger,
+.form-floating>.form-select:focus~label.text-danger,
+.form-floating>.form-select:valid~label.text-danger {
+  color: var(--text-danger) !important;
+}
+
+.form-floating.pass-error > label {
+  color: var(--text-danger) !important;
+} */
+
+/* NFieldText con pass-error */
+.form-floating.pass-error > label.form-label {
+  color: var(--text-danger) !important;
+}
+
+/* FieldComponent2 con text-danger */
+.form-floating > label.text-danger {
+  color: var(--text-danger) !important;
+}

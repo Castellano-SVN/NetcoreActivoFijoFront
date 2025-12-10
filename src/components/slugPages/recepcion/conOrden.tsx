@@ -219,7 +219,7 @@ export default function ConOrden(props: props) {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="p-2 bg-white rounded w-full max-w-3xl">
+      <div className="border-neutral-separador p-3">
         <h1 className="text-2xl font-bold mb-4">
           Recepción de Artículos con orden de compra
         </h1>

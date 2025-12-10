@@ -1,0 +1,53 @@
+﻿@import "./main.css";
+@import "./componentes/nav.css";
+@import "./componentes/header.css";
+
+@import "./componentes/accordion.css";
+@import "./componentes/alertas.css";
+@import "./componentes/badge.css";
+@import "./componentes/breadcrumbs.css";
+@import "./componentes/button.css";
+@import "./componentes/card.css";
+@import "./componentes/check.css";
+@import "./componentes/datepicker.css";
+@import "./componentes/fonts.css";
+@import "./componentes/helpers.css";
+@import "./componentes/input.css";
+@import "./componentes/Loading.css";
+@import "./componentes/modal.css";
+@import "./componentes/nav-menu-movil-interior.css";
+@import "./componentes/scrollbar.css";
+@import "./componentes/select.css";
+
+@import "./componentes/status-icons-and-colors.css";
+@import "./componentes/table.css";
+@import "./componentes/tabs.css";
+@import "./componentes/tooltip.css";
+@import "./componentes/typography.css";
+@import "./componentes/wizard.css";
+@import "./componentes/Popup.css";
+
+@import "./componentes/captcha.css"; 
+
+
+@import "./vistas/home.css";
+@import "./vistas/login.css";
+@import "./vistas/portal-privado.css";
+@import "./vistas/producto-page.css";
+@import "./vistas/modulos.css";
+
+.form-floating.pass-error > label.form-label {
+  color: var(--text-danger) !important;
+}
+
+/* FieldComponent2 con text-danger */
+.form-floating > label.text-danger {
+  color: var(--text-danger) !important;
+}
+/* .btnaccordion {
+    text-decoration: none;
+    box-shadow: none;
+} */
+
+
+  

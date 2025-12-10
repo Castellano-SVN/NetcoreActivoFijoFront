@@ -1,4 +1,7 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
+import "@/css/style.css";
+import "material-icons/iconfont/material-icons.css";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
 import Layout from "../layout/layout";

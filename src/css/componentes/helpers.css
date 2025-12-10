@@ -1,0 +1,61 @@
+/* helpers */
+
+.icon-size-xs {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.icon-size-sm {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.active-label+.form-control::placeholder {
+    color: #6c757d !important;
+}
+
+.dropdown-item.disabled img {
+    filter: saturate(0) !important;
+    opacity: 0.25 !important;
+}
+
+.shadow-sm {
+    box-shadow: 0px 0px 16px 4px rgba(28, 0, 47, 0.10);
+}
+.text-primary{
+    color: var(--color-primary)!important;
+}
+.text-success{
+    color: var(--color-success-light)!important;
+}
+.text-secondary{
+    color: var(--color-secondary)!important;
+}
+
+.border-primary{
+    border-color: rgba(101, 0, 228, 1)!important;
+}
+
+.rounded-4{
+    border-radius: .6rem !important;
+}
+
+.rounded-5{
+    border-radius: .9rem !important;
+}
+
+.fw-semibold{
+    font-weight: 600 !important;
+}
+
+.overflow-x{
+    overflow-x: scroll !important;
+}
+.overflow-x-hidden{
+    overflow-x: hidden !important;
+}
+
+.offcanvas .btn-close{
+    position: relative !important;
+    background-size: 1em !important;
+}
