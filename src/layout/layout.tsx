@@ -10,6 +10,7 @@ import { useContextStore } from "../store/context.store";
 import { generateToken } from "../services/jwt.service";
 import { api_getModeloMenusPermisos } from "@/services/membresia.service";
 import { Loading } from "react-daisyui";
+import Footer from "./Footer";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -108,6 +109,7 @@ export default function Layout(props: LayoutProps) {
       <div className="h-[90px]" />
       {/* <Body menus={menus}>{props.children}</Body> */}
       <Body menus={menus} sidebarOpen={sidebarOpen} onCloseSidebar={() => setSidebarOpen(false)} >{props.children}</Body>
+      <Footer />
     </>
   );
 }

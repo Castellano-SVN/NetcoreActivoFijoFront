@@ -119,7 +119,7 @@ export default function TopBar(props: Props) {
               return (
                 <button
                   key={app.aplicacionId || index}
-                  className={`btn btn-link px-0 !normal-case ${
+                  className={`btn btn-link px-0 !normal-case text-lg ${
                     active ? "font-bold !text-base-100" : "!text-base-100"
                   }`}
                   onClick={() => handleAppClick(app)}

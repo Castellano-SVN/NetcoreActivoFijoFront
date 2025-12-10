@@ -498,7 +498,7 @@ function EmpresaPagination({
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
-          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base text-white disabled:!text-white disabled:opacity-60"
         >
           Página anterior
         </button>
@@ -508,7 +508,7 @@ function EmpresaPagination({
         <button
           disabled={page === totalPages}
           onClick={() => setPage(page + 1)}
-          className="btn btn-primary btn-outline rounded-lg px-6 py-2 text-lg md:text-base"
+          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base text-white disabled:!text-white disabled:opacity-60"
         >
           Próxima página
         </button>

@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { Inter } from "next/font/google";
 import { useUserStore } from "@/store/user.store";
 import { api_getAnoMes } from "@/services/bodega.service";
 import { Loading } from "react-daisyui";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { jwt } = useUserStore();
   return <AnoMes jwt={jwt} />;
 }
 
-interface anoMesProp {
+interface AnoMesProps {
   jwt: string;
 }
 
-function AnoMes({ jwt }: anoMesProp) {
+const monthName = (m: number) =>
+  ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][Math.max(0, Math.min(11, m - 1))] || m;
+
+function AnoMes({ jwt }: AnoMesProps) {
   const [dataAnoMes, setDataAnoMes] = useState<{ anoNumero: number; mes: number } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -42,45 +42,37 @@ function AnoMes({ jwt }: anoMesProp) {
     getAnoMes();
   }, []);
 
-
-  if (loading)
+  if (loading) {
     return (
-      <>
-        <div className="text-primary text-center mt-4 md:col-span-2">
-          <Loading size="lg" />
-        </div>
-      </>
+      <div className="text-primary text-center mt-4">
+        <Loading size="lg" />
+      </div>
     );
+  }
+
+  if (!dataAnoMes) return null;
 
   return (
-    <>
-      {!loading && dataAnoMes ? (
-        <>
-          <div className="w-full grid place-items-center mt-2">
-            <div className="md:w-2/5 p-4 border border-primary rounded-md shadow-md">
-              <div className="grid md:grid-cols-2 gap-2">
-                <div className="md:col-span-2">
-                  <h1 className="text-xl text-black text-start">
-                    Periodo del proceso actual:
-                  </h1>
-                </div>
-                <div className="text-3xl text-center place-items-center">
-                  <div className="border rounded-lg grid grid-rows-2 gap-2 w-full p-2">
-                    <span>Año</span>
-                    {dataAnoMes.anoNumero}
-                  </div>
-                </div>
-                  <div className="text-3xl text-center place-items-center">
-                    <div className="border rounded-lg grid grid-rows-2 gap-2 w-full p-2">
-                      <span>Mes</span>
-                        {dataAnoMes.mes}
-                    </div>
-                  </div>
-              </div>
+    <div className="w-full flex justify-center m-4 px-4">
+      <div className="w-full max-w-xl p-4 border-2 border-primary rounded-lg shadow-md bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="md:col-span-2">
+            <h1 className="text-xl text-black">Periodo del proceso actual:</h1>
+          </div>
+          <div className="text-3xl flex items-center justify-center">
+            <div className="border rounded-lg flex flex-col items-center justify-center gap-1 w-full p-3">
+              <span className="text-base text-neutral-600">Año</span>
+              <span className="font-semibold text-primary">{dataAnoMes.anoNumero}</span>
             </div>
           </div>
-        </>
-      ) : null}
-    </>
+          <div className="text-3xl flex items-center justify-center">
+            <div className="border rounded-lg flex flex-col items-center justify-center gap-1 w-full p-3">
+              <span className="text-base text-neutral-600">Mes</span>
+              <span className="font-semibold text-primary">{monthName(dataAnoMes.mes)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
