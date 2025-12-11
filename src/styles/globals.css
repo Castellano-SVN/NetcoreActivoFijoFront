@@ -1,13 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* 
 @font-face {
   font-family: "Nunito";
   src: url('/src/fonts/nunitoItalic.ttf') format('ttf');
-}
+} */
 
-.react-datepicker__year-select {
+/* .react-datepicker__year-select {
 
     font-size: 13px !important;
     padding-top: 0 !important;
@@ -49,4 +49,4 @@
   }
   .animate-fadeout {
     animation: fadeout 1s;
-  }
+  } */

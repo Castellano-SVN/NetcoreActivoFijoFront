@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useContextStore } from "../store/context.store";
 
 type MenuItem = {
   id?: string;
@@ -17,15 +18,23 @@ type Props = {
 export default function MenusAccordion({ menus, idnav, onSelectMenu }: Props) {
   const [abiertos, setAbiertos] = useState<string[]>([]);
   const router = useRouter();
+  const { setCurrentMenu } = useContextStore();
+
+  const normalizeHref = (url?: string) => {
+    if (!url) return "/";
+    const lower = url.toString().toLowerCase();
+    return lower.replace(/^\/inventario/, "");
+  };
 
   const handleClickMenu = (menuitem: MenuItem, event: React.MouseEvent, olds: string[]) => {
     if (menuitem.menuItems?.length) {
       event.preventDefault();
     } else if (menuitem.url) {
-      const path = menuitem.url.replace(".aspx", "");
+      const path = normalizeHref(menuitem.url.replace(".aspx", ""));
       if (path) router.push(path);
       setAbiertos(olds);
     }
+    setCurrentMenu(menuitem);
   };
 
   const isMenuOpen = (id?: string) => (id ? abiertos.includes(id) : false);
@@ -36,12 +45,13 @@ export default function MenusAccordion({ menus, idnav, onSelectMenu }: Props) {
     }
   };
 
+
   const MenuItemList = ({ menuItems, parentId, olds = [] }: { menuItems: MenuItem[]; parentId: string; olds?: string[] }) => (
     <div className="accordion-body">
       <ul className="menu-interno-drop">
         {menuItems.map((item, index) => {
           const idCollapse = `${parentId}-submenu-${index}`;
-          const haveSubmenus = item.menuItems?.length > 0;
+          const haveSubmenus =  (item.menuItems || []).length > 0;
           const old = [...olds, item.id || ""];
           const isOpen = item.id && isMenuOpen(item.id) ? "show" : "";
 
@@ -84,7 +94,7 @@ export default function MenusAccordion({ menus, idnav, onSelectMenu }: Props) {
         const idHeading = `heading-${index}`;
         const old = [item.id || ""];
         const isOpen = item.id && isMenuOpen(item.id) ? "show" : "";
-        const haveSubmenus = item.menuItems?.length > 0;
+        const haveSubmenus = (item.menuItems || []).length > 0;
         return (
           <div key={`${idnav}-menus-${index}`} className="accordion-item">
             <div id={idHeading} className="accordion-header">

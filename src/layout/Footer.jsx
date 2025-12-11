@@ -13,34 +13,6 @@ export default function Footer() {
             height={90}
           />
         </div>
-        {/* <div className="flex-grow-1 aling-center">
-          <p className="color-white text-start mb-0" style={{ fontSize: "16px" }}>
-            Empresas Castellano Ltda. <br />
-            <a
-              href="http://www.netcore.cl"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="color-white"
-              style={{ textDecoration: "none" }}
-            >
-              http://www.netcore.cl
-            </a>
-            , 2000 - 2025. Nueva de Lyon 72 of. 1601, Providencia, Chile. <br />
-            Recursos Humanos y Contabilidad:{" "}
-            <a
-              href="mailto:soporte_rrhh@netcore.cl"
-              className="color-white"
-              style={{ textDecoration: "none" }}
-            >
-              soporte_rrhh@netcore.cl
-            </a>{" "}
-            <br />
-            Educación:{" "}
-            <a href="mailto:soporte@netcore.cl" className="color-white" style={{ textDecoration: "none" }}>
-              soporte@netcore.cl
-            </a>
-          </p>
-        </div> */}
          <div className="col-12 col-md-10 aling-center">
             <p className="color-white text-center">
               Empresas Castellano Ltda. <br />

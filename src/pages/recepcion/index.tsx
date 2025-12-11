@@ -24,10 +24,16 @@ import { api_getEstadoArticulos } from "@/services/inventario.service";
 import { useTiposStore } from "@/store/tipos.store";
 
 export default function index() {
-  const { setActive } = useContextStore();
+  const { setActive, currentMenu } = useContextStore();
   useEffect(() => {
     setActive("Recepcion");
   }, []);
+
+  const sectionTitle =
+    currentMenu?.titulo ||
+    // @ts-ignore: algunos menús usan nombre
+    currentMenu?.nombre ||
+    "Recepción";
 
   // Dentro del componente index
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -120,10 +126,8 @@ export default function index() {
     <React.Fragment>
       <div className="flex items-center justify-center">
         <div className="container py-2">
-          <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
-            <div className="flex flex-col">
-              <span className="font-bold text-2xl">Empresas</span>
-            </div>
+          <div className="d-flex justify-content-between align-items-center my-4 border-bottom pb-2">
+            <h3 className="titulo-seccion">{sectionTitle}</h3>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
             <div className="w-full md:w-1/2">

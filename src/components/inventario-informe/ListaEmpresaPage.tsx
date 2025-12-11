@@ -5,17 +5,43 @@ import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useMenuActions } from "@/context/menuActions.context";
 import { FaEye, FaSearch } from "react-icons/fa";
 import { useInfiniteQuery } from "react-query";
 import Element from "@/components/inventario-informe/Element";
 import { toast } from "react-toastify";
 import { FaCircleXmark } from "react-icons/fa6";
 
-export default function EmpresasPage({ label }: { label: string }) {
-  const { setActive } = useContextStore();
+type Props = {
+  label: string;
+  activeMenuName?: string;
+  accions?: number[];
+};
+
+export default function EmpresasPage({ label, activeMenuName, accions }: Props) {
+  const actionsFromContext = useMenuActions();
+  const { setActive, currentMenu } = useContextStore();
   useEffect(() => {
-    setActive("Toma inventario");
-  }, []);
+    if (activeMenuName) setActive(activeMenuName);
+  }, [activeMenuName, setActive]);
+
+  const menuActions =
+    accions ||
+    actionsFromContext ||
+    currentMenu?.acciones ||
+    currentMenu?.accions ||
+    currentMenu?.accionesPermitidas ||
+    (currentMenu as any)?.listAccions ||
+    [];
+
+  useEffect(() => {
+    console.log("ListaEmpresasPage accions", menuActions);
+  }, [menuActions]);
+
+  const sectionTitle =
+    currentMenu?.titulo ||
+    currentMenu?.nombre ||
+    label;
 
   const [meta, setMeta] = useState<{ total: number; pages: number }>({
     total: 0,
@@ -97,10 +123,8 @@ export default function EmpresasPage({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center">
       <div className="container py-2">
-        <div className="flex flex-row justify-center md:justify-start lg:justify-start  mt-0 md:mt-4 md:ml-4">
-          <div className="flex flex-col">
-            <span className="font-bold text-2xl">Empresas</span>
-          </div>
+        <div className="d-flex justify-content-between align-items-center my-4 border-bottom pb-2">
+          <h3 className="titulo-seccion">{sectionTitle}</h3>
         </div>
         {/* componente de busqueda */}
         <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
@@ -195,7 +219,12 @@ export default function EmpresasPage({ label }: { label: string }) {
                 key={pageIndex}
               >
                 {page.dataList.map((empresa: IEmpresa, index: number) => (
-                  <Element element={empresa} key={index} label={label} />
+                  <Element
+                    element={empresa}
+                    key={index}
+                    label={label}
+                    accions={accions}
+                  />
                 ))}
               </div>
             ))}

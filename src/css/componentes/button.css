@@ -149,8 +149,8 @@
 }
 
 .grilla-botones .destaca-punteado img {
-    margin: 15px auto;
-    display: block;
+    margin: 15px auto !important;
+    display: block !important;;
 }
 
 .destaca-punteado {
@@ -211,18 +211,18 @@ a.text-link.disabled {
 }
 
 .button-modulo {
-    display: flex;
-    width: 314px;
-    padding: 8px 16px;
-    align-items: center;
-    margin-bottom: 20px;
-    border-radius: 50px;
+    display: flex !important;
+    width: 314px !important;
+    padding: 8px 16px !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    border-radius: 50px !important;
     border-color: var(--color-auxiliar);
-    border-style: solid;
-    background-color: hsl(0, 0%, 100%);
-    color: var(--color-black);
-    font-weight: 700;
-    transition: all .1s ease-in-out
+    border-style: solid !important;
+    background-color: hsl(0, 0%, 100%)!important;
+    color: var(--color-black)!important;
+    font-weight: 700!important;
+    transition: all .1s ease-in-out!important
 }
 
 .button-modulo.curso {
@@ -262,14 +262,14 @@ a.text-link.disabled {
 .nav.nav-pills .nav-item .nav-link:after {
     content: '';
     background: url('../../img/icon-arrow.svg') no-repeat center;
-    background-size: 100%;
-    margin-left: auto;
-    width: 30px;
-    height: 30px;
+    background-size: 100%!important;
+    margin-left: auto!important;
+    width: 30px!important;
+    height: 30px!important;
 }
 
 .nav.nav-pills .nav-item .nav-link .material-icons {
-    margin-right: 4px;
+    margin-right: 4px!important;
 }
 
 .button-modulo.active,

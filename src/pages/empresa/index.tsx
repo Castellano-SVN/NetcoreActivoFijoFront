@@ -112,10 +112,16 @@ export default function Index() {
     total: 0,
     pages: 0,
   });
-  const { setActive } = useContextStore()
+  const { setActive, currentMenu } = useContextStore();
   useEffect(() => {
     setActive("Prestadores");
   }, [])
+
+  const sectionTitle =
+    currentMenu?.titulo ||
+    // @ts-ignore: algunos menús vienen sin título y se usa nombre
+    currentMenu?.nombre ||
+    "Empresas";
 
   // Estados para el buscador 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -163,6 +169,10 @@ export default function Index() {
     <div className="flex items-center justify-center">
 
       <div className="container py-2">
+        <div className="d-flex justify-content-between align-items-center my-4 border-bottom pb-2">
+          <h3 className="titulo-seccion">{sectionTitle}</h3>
+        </div>
+
         <MenuEmpresa total={meta.total} isLoading={isLoading} />
 
         {/* Componente de búsqueda (nuevo) */}
@@ -498,7 +508,7 @@ function EmpresaPagination({
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
-          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base text-white disabled:!text-white disabled:opacity-60"
+          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base !text-white disabled:!text-white disabled:opacity-60"
         >
           Página anterior
         </button>
@@ -508,7 +518,7 @@ function EmpresaPagination({
         <button
           disabled={page === totalPages}
           onClick={() => setPage(page + 1)}
-          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base text-white disabled:!text-white disabled:opacity-60"
+          className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base !text-white disabled:!text-white disabled:opacity-60"
         >
           Próxima página
         </button>

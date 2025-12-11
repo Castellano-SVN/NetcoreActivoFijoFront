@@ -5,9 +5,10 @@ import { FaEye, FaFile } from "react-icons/fa";
 interface ElementProps {
   element: IEmpresa;
   label: string;
+  accions?: number[];
 }
 
-export default function Element({ element, label }: ElementProps) {
+export default function Element({ element, label, accions}: ElementProps) {
   const router = useRouter();
 
   const handleClick = () => {

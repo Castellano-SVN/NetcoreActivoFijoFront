@@ -21,10 +21,12 @@ type MenuEntry = {
   nombre: string;
   url: string;
   menuItems: MenuEntry[];
+  titulo?: string;
+  acciones?: number[];
 };
 
 export default function TopBar(props: Props) {
-  const { apps, currentAppId, setCurrentApp, setMenus } = useContextStore();
+  const { apps, currentAppId, setCurrentApp, setMenus, setCurrentMenu } = useContextStore();
   const router = useRouter();
   const { jwt } = useUserStore();
 
@@ -40,7 +42,14 @@ export default function TopBar(props: Props) {
       menuId: item.menuId,
       id: item.id || item.menuId || item.nombre,
       nombre: item.nombre || item.name || item.title || "Menú",
+      titulo: item.titulo || item.nombre || item.title,
       url: normalizeHref(item.url || item.path || "/"),
+      acciones:
+        item.acciones ||
+        item.accions ||
+        item.accionesPermitidas ||
+        item.listAccions ||
+        [],
       menuItems: mapMenuItems(item.menuItems || []),
     }));
 
@@ -89,6 +98,7 @@ export default function TopBar(props: Props) {
   const handleAppClick = (app: any) => {
     setCurrentApp(app.aplicacionId);
     setMenus(mapMenuItems(app.listMenuPhone || []) as any);
+    setCurrentMenu(null);
   };
 
   useEffect(() => {
@@ -99,7 +109,7 @@ export default function TopBar(props: Props) {
 
   return (
   <>
-    <nav className="shadow-md bg-primary text-base-100 w-full">
+    <nav className="shadow-md bg-[#00CAF0] text-neutral-900 w-full">
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center gap-4">
           <div className="lg:hidden">
@@ -120,7 +130,7 @@ export default function TopBar(props: Props) {
                 <button
                   key={app.aplicacionId || index}
                   className={`btn btn-link px-0 !normal-case text-lg ${
-                    active ? "font-bold !text-base-100" : "!text-base-100"
+                    active ? "font-bold !text-neutral-900" : "!text-neutral-900"
                   }`}
                   onClick={() => handleAppClick(app)}
                 >
@@ -134,7 +144,7 @@ export default function TopBar(props: Props) {
         {/* DERECHA: periodo + campana */}
         <div className="flex items-center gap-4 flex-none">
           {periodo && (
-            <span className="nav-link color-black bg-base-100 text-primary rounded-full px-3 py-1">
+            <span className="text-black px-3 py-1">
               {periodo}
             </span>
           )}
@@ -176,89 +186,11 @@ export default function TopBar(props: Props) {
         <Button color="primary" onClick={handleClickIrInventario}>
           Ir a inventario
         </Button>
-        <Button color="secondary" onClick={() => setIsModalOpen(false)}>
+        <Button className="btn-primary outline sistema color-primary" onClick={() => setIsModalOpen(false)}>
           Cerrar
         </Button>
       </Modal.Actions>
     </Modal>
   </>
 );
-
-  // return (
-  //   <>
-  //     <nav className="shadow-md bg-primary text-base-100">
-  //       <div className="flex flex-1 flex-wrap items-center gap-4">
-  //         <div className="flex flex-wrap items-center gap-4">
-            
-  //           {apps.map((app, index) => {
-  //             const active = app.aplicacionId === currentAppId;
-  //             return (
-  //               <button
-  //                 key={app.aplicacionId || index}
-  //                 className={`btn btn-link text-base-100 px-0 ${active ? "fw-bold" : ""}`}
-  //                 onClick={() => handleAppClick(app)}
-  //               >
-  //                 {app.nombreAplicacion || "Aplicación"}
-  //               </button>
-  //             );
-  //           })}
-  //         </div>
-  //       </div>
-  //       <div className="lg:hidden flex flex-1 justify-end">
-  //         <Button
-  //           tag="a"
-  //           color="ghost"
-  //           tabIndex={0}
-  //           className="lg:hidden"
-  //           onClick={() => props.open()}
-  //         >
-  //           <FaAlignJustify className="w-6 h-6" />
-  //         </Button>
-  //       </div>
-  //       <div className="flex-none">
-  //         {periodo && (
-  //           <span className="nav-link color-black">
-  //             {periodo}
-  //           </span>
-  //         )}
-  //         <div className="relative">
-  //           <Button
-  //             shape="circle"
-  //             color="ghost"
-  //             onClick={() => setIsModalOpen(true)}
-  //             disabled={loading}
-  //           >
-  //             {loading ? (
-  //               <ArrowPathRoundedSquareIcon className="w-5 h-5 animate-spin" />
-  //             ) : (
-  //               <FiBell className="w-6 h-6" />
-  //             )}
-  //           </Button>
-  //           {loading ? null : notificationCount > 0 ? (
-  //             <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-pulse">
-  //               {notificationCount}
-  //             </span>
-  //           ) : null}
-  //         </div>
-  //       </div>
-  //     </nav>
-
-  //     <Modal open={isModalOpen}>
-  //       <Modal.Header className="font-bold">Notificaciones</Modal.Header>
-  //       <Modal.Body>
-  //         <p>
-  //           Tienes <span className="font-bold">{notificationCount}</span> inventario(s) por registrar
-  //         </p>
-  //       </Modal.Body>
-  //       <Modal.Actions>
-  //         <Button color="primary" onClick={handleClickIrInventario}>
-  //           Ir a inventario
-  //         </Button>
-  //         <Button color="secondary" onClick={() => setIsModalOpen(false)}>
-  //           Cerrar
-  //         </Button>
-  //       </Modal.Actions>
-  //     </Modal>
-  //   </>
-  // );
 }

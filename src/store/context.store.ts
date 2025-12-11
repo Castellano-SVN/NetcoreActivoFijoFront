@@ -18,6 +18,19 @@ interface IAplicacionPerfil {
   listMenuPhone?: any[];
 }
 
+// Menús dinámicos con permisos que llegan desde Membresía.
+interface IMenuPermiso {
+  id?: string;
+  nombre?: string;
+  titulo?: string;
+  url?: string;
+  acciones?: number[];
+  accions?: number[];
+  accionesPermitidas?: number[];
+  listAccions?: number[];
+  menuItems?: IMenuPermiso[];
+}
+
 const Menus: IMenuChildren[] = [
   { name: "Prestadores", active: false, href: "/empresa", children: [] },
   {
@@ -36,6 +49,7 @@ interface State {
   menus: IMenuChildren[];
   apps: IAplicacionPerfil[];
   currentAppId: string | null;
+  currentMenu: IMenuPermiso | null;
 }
 
 type Actions = {
@@ -52,6 +66,7 @@ type Actions = {
   setMenus(menus: IMenuChildren[]): void;
   setApps(apps: IAplicacionPerfil[]): void;
   setCurrentApp(appId: string | null): void;
+  setCurrentMenu(menu: IMenuPermiso | null): void;
 };
 
 export const useContextStore = create<State & Actions>()(
@@ -61,6 +76,7 @@ export const useContextStore = create<State & Actions>()(
       menus: Menus,
       apps: [],
       currentAppId: null,
+      currentMenu: null,
       setActive: (
         item:
           | "Prestadores"
@@ -83,6 +99,7 @@ export const useContextStore = create<State & Actions>()(
         })),
       setApps: (apps: IAplicacionPerfil[]) => set(() => ({ apps })),
       setCurrentApp: (appId: string | null) => set(() => ({ currentAppId: appId })),
+      setCurrentMenu: (menu: IMenuPermiso | null) => set(() => ({ currentMenu: menu })),
       setBread: (newBread: breadI[]) => set({ bread: newBread }),
     }),
     {
