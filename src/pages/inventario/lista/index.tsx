@@ -406,7 +406,7 @@ console.log("accions", accions)
         </div>
         <div className="flex justify-end">
           <div className="flex justify-end flex-wrap items-center gap-3 w-full">
-            <NButtonAcceso type="button" accions={menuActions}></NButtonAcceso>
+            {/* <NButtonAcceso type="button" accions={menuActions}></NButtonAcceso> */}
             <NButtonVolver type="button" size="1" accions={menuActions.length ? menuActions : [4, 5, 6]} className="w-auto inline-flex" onClick={() => router.back()}>
               Volver
             </NButtonVolver>
