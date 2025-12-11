@@ -1,27 +1,35 @@
-# Usa la imagen base de Node.js
-FROM node:18.17
+# 1. Etapa de dependencias y build
+FROM node:18-alpine AS builder
 
-# Establece el directorio de trabajo en /app
 WORKDIR /app
 
-# Copia el archivo package.json y package-lock.json (si existe)
+# Copiar package.json y lock
 COPY package*.json ./
 
-# Instala las dependencias
+# Instalar dependencias
 RUN npm install
 
-# Copia el resto de la aplicación
+# Copiar el resto de la app
 COPY . .
 
-# Construye la aplicación para producción
+# Construir Next.js
 RUN npm run build
 
-# Establece una variable de entorno
-ENV NEXT_PUBLIC_BACKEND_URL=my_value
 
 
-# Expone el puerto 3000
+# 2. Etapa de ejecución (Runtime)
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copiar node_modules y build desde builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+
+# Puerto de Next.js
 EXPOSE 3000
 
-# Ejecuta la aplicación cuando se inicie el contenedor
+# Ejecutar la app
 CMD ["npm", "start"]
