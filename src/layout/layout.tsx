@@ -11,21 +11,23 @@ import { Loading } from "react-daisyui";
 import Footer from "./Footer";
 import { useMemo } from "react";
 import { MenuActionsProvider } from "@/context/menuActions.context";
+import { IMenuChildren } from "@/store/context.store";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
-interface MenuItem {
+type MenuNode = IMenuChildren & {
   aplicacionId?: any;
   menuId?: any;
   id?: any;
   nombre?: string;
+  name?: string;
   titulo?: string;
   url?: string;
   acciones?: any[];
-  menuItems?: MenuItem[];
-}
+  menuItems?: MenuNode[];
+};
 
 export default function Layout(props: LayoutProps) {
   const searchParams = useSearchParams();
@@ -35,17 +37,24 @@ export default function Layout(props: LayoutProps) {
   const { setApps, setMenus, menus, setCurrentMenu, setCurrentApp, currentAppId } = useContextStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const mapMenuItems = useMemo<(items?: any[]) => MenuItem[]>(
+  // Normaliza la estructura del menú para el store, manteniendo compatibilidad con los campos usados en el layout.
+  const mapMenuItems = useMemo<(items?: any[]) => MenuNode[]>(
     () =>
-      (items: any[] = []): MenuItem[] =>
+      (items: any[] = []): MenuNode[] =>
         items.map((item: any) => ({
           aplicacionId: item.aplicacionId,
           menuId: item.menuId,
           id: item.id || item.menuId || item.nombre,
           nombre: item.nombre || item.name || item.title || "Menú",
+          name: item.nombre || item.name || item.title || "Menú",
           titulo: item.titulo || item.nombre || item.title,
           url: item.url,
           acciones: item.acciones || item.accions || item.accionesPermitidas || item.listAccions || [],
+          // Para el store: campos requeridos
+          href: item.url || "/",
+          active: false,
+          children: mapMenuItems(item.menuItems || []),
+          // Conservamos la estructura original para búsquedas internas
           menuItems: mapMenuItems(item.menuItems || []),
         })),
     [],

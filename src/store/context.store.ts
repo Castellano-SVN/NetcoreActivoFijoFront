@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import breadI from "../interfaces/bread.interface";
 
-interface IMenu {
+export interface IMenu {
   name: string;
   active: boolean;
   href: string;
 }
 
-interface IMenuChildren extends IMenu {
+export interface IMenuChildren extends IMenu {
   children: IMenu[];
 }
 
