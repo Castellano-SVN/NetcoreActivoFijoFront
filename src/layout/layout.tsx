@@ -35,9 +35,9 @@ export default function Layout(props: LayoutProps) {
   const { setApps, setMenus, menus, setCurrentMenu, setCurrentApp, currentAppId } = useContextStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const mapMenuItems = useMemo(
+  const mapMenuItems = useMemo<(items?: any[]) => MenuItem[]>(
     () =>
-      (items: any[] = []) =>
+      (items: any[] = []): MenuItem[] =>
         items.map((item: any) => ({
           aplicacionId: item.aplicacionId,
           menuId: item.menuId,

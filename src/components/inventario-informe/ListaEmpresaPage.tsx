@@ -14,15 +14,35 @@ import { FaCircleXmark } from "react-icons/fa6";
 
 type Props = {
   label: string;
-  activeMenuName?: string;
+  activeMenuName?: MenuName;
   accions?: number[];
 };
+
+type MenuName =
+  | "Prestadores"
+  | "Recepcion"
+  | "Despacho"
+  | "Salidas"
+  | "Toma inventario"
+  | "Informes";
+
+const isMenuName = (value: string): value is MenuName =>
+  (
+    [
+      "Prestadores",
+      "Recepcion",
+      "Despacho",
+      "Salidas",
+      "Toma inventario",
+      "Informes",
+    ] as const
+  ).includes(value as MenuName);
 
 export default function EmpresasPage({ label, activeMenuName, accions }: Props) {
   const actionsFromContext = useMenuActions();
   const { setActive, currentMenu } = useContextStore();
   useEffect(() => {
-    if (activeMenuName) setActive(activeMenuName);
+    if (activeMenuName && isMenuName(activeMenuName)) setActive(activeMenuName);
   }, [activeMenuName, setActive]);
 
   const menuActions =
