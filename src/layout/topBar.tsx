@@ -108,89 +108,91 @@ export default function TopBar(props: Props) {
   }, [apps, currentAppId]);
 
   return (
-  <>
-    <nav className="shadow-md bg-[#00CAF0] text-neutral-900 w-full">
-      <div className="flex items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-4">
-          <div className="lg:hidden">
-            <Button
-              tag="a"
-              color="ghost"
-              tabIndex={0}
-              onClick={() => props.open()}
-            >
-              <FaAlignJustify className="w-6 h-6" />
-            </Button>
+    <>
+      <nav className="shadow-md bg-[#169eee] text-white w-full">
+        <div className="flex items-center justify-between px-4 py-2">
+          <div className="flex items-center gap-4">
+            <div className="lg:hidden">
+              <Button
+                tag="a"
+                color="ghost"
+                tabIndex={0}
+                onClick={() => props.open()}
+              >
+                <FaAlignJustify className="w-6 h-6" />
+              </Button>
+            </div>
+     {/* despues vere si dejo el boton ahi o no, pd: cami */}
+            <div className="hidden">
+              {apps.map((app, index) => {
+                const active = app.aplicacionId === currentAppId;
+                return (
+                  <button
+                    key={app.aplicacionId || index}
+                    className={`px-3 py-1 rounded-md text-sm transition-colors ${active
+                        ? "bg-white/25 text-white font-semibold"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                      }`}
+
+                    onClick={() => handleAppClick(app)}
+                  >
+                    {app.nombreAplicacion || "Aplicación"}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {apps.map((app, index) => {
-              const active = app.aplicacionId === currentAppId;
-              return (
-                <button
-                  key={app.aplicacionId || index}
-                  className={`btn btn-link px-0 !normal-case text-lg ${
-                    active ? "font-bold !text-neutral-900" : "!text-neutral-900"
-                  }`}
-                  onClick={() => handleAppClick(app)}
-                >
-                  {app.nombreAplicacion || "Aplicación"}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* DERECHA: periodo + campana */}
-        <div className="flex items-center gap-4 flex-none">
-          {periodo && (
-            <span className="text-black px-3 py-1">
-              {periodo}
-            </span>
-          )}
-
-          <div className="relative">
-            <Button
-              shape="circle"
-              color="ghost"
-              onClick={() => setIsModalOpen(true)}
-              disabled={loading}
-            >
-              {loading ? (
-                <ArrowPathRoundedSquareIcon className="w-5 h-5 animate-spin" />
-              ) : (
-                <FiBell className="w-6 h-6" />
-              )}
-            </Button>
-
-            {!loading && notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-pulse">
-                {notificationCount}
+          {/* DERECHA: periodo + campana */}
+          <div className="flex items-center gap-4 flex-none">
+            {periodo && (
+              <span className="text-white px-3 py-1">
+                {periodo}
               </span>
-            )}
+            )} 
+
+            <div className="relative">
+              <Button
+                shape="circle"
+                color="ghost"
+                onClick={() => setIsModalOpen(true)}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ArrowPathRoundedSquareIcon className="w-5 h-5 animate-spin" />
+                ) : (
+                  <FiBell className="w-6 h-6" />
+                )}
+              </Button>
+
+              {!loading && notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-pulse">
+                  {notificationCount}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-    <Modal open={isModalOpen}>
-      <Modal.Header className="font-bold">Notificaciones</Modal.Header>
-      <Modal.Body>
-        <p>
-          Tienes{" "}
-          <span className="font-bold">{notificationCount}</span>{" "}
-          inventario(s) por registrar
-        </p>
-      </Modal.Body>
-      <Modal.Actions>
-        <Button color="primary" onClick={handleClickIrInventario}>
-          Ir a inventario
-        </Button>
-        <Button className="btn-primary outline sistema color-primary" onClick={() => setIsModalOpen(false)}>
-          Cerrar
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  </>
-);
+      <Modal open={isModalOpen}>
+        <Modal.Header className="font-bold">Notificaciones</Modal.Header>
+        <Modal.Body>
+          <p>
+            Tienes{" "}
+            <span className="font-bold">{notificationCount}</span>{" "}
+            inventario(s) por registrar
+          </p>
+        </Modal.Body>
+        <Modal.Actions>
+          <Button color="primary" onClick={handleClickIrInventario}>
+            Ir a inventario
+          </Button>
+          <Button className="btn-primary outline sistema color-primary" onClick={() => setIsModalOpen(false)}>
+            Cerrar
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    </>
+  );
 }

@@ -6,7 +6,11 @@ import { api_getIFRByDetalle, api_getIFRByDetalleToExcel } from "@/services/info
 import { api_getAllInFiDe } from "@/services/inventario.service";
 import { useContextStore } from "@/store/context.store";
 import { useUserStore } from "@/store/user.store";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import React from "react";
+import {
+  PDFDownloadLink,
+  BlobProviderParams,
+} from "@react-pdf/renderer";
 import router from "next/router";
 import { useEffect, useState } from "react";
 import { Loading, Table } from "react-daisyui";
@@ -159,8 +163,8 @@ interface propsArticle {
   registro: IInventarioFisicoRegistro[];
   bodega: string | undefined;
   numeroIn: number;
-  jwt:string;
-  ifdId:string;
+  jwt: string;
+  ifdId: string;
 }
 
 interface IDataToSend {
@@ -199,7 +203,7 @@ function TablaRegistro(props: propsArticle) {
       // Limpiar el enlace temporal y revocar la URL
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url); // Libera memoria utilizada por el Blob
-        // Limpia el objeto URL después de la descarga
+      // Limpia el objeto URL después de la descarga
     } catch (error) {
       console.error("Error al descargar el archivo Excel:", error);
     }
@@ -252,8 +256,8 @@ function TablaRegistro(props: propsArticle) {
                       e.cantidadFisica - e.cantidadSistema < 0
                         ? "text-red-600 font-semibold"
                         : e.cantidadFisica - e.cantidadSistema > 0
-                        ? "text-green-600 font-semibold"
-                        : "text-gray-900 font-semibold"
+                          ? "text-green-600 font-semibold"
+                          : "text-gray-900 font-semibold"
                     }
                   >
                     {e.cantidadFisica - e.cantidadSistema}
@@ -274,10 +278,14 @@ function TablaRegistro(props: propsArticle) {
               }
               fileName={`inventario_numero_${props.numeroIn}`}
             >
-              {({ loading, url, error, blob }) =>
-                loading ? (
-                  "Cargando.."
-                ) : (
+              {(({
+                loading,
+                error,
+              }: BlobProviderParams) => {
+                if (loading) return <span>Cargando...</span>;
+                if (error) return <span>Error al generar PDF</span>;
+
+                return (
                   <button
                     type="button"
                     className="btn btn-outline btn-accent mt-4"
@@ -285,10 +293,10 @@ function TablaRegistro(props: propsArticle) {
                     <FaFilePdf />
                     Exportar
                   </button>
-                )
-              }
+                );
+              }) as unknown as React.ReactNode}
             </PDFDownloadLink>
-            
+
             <div className="col-span-2 mt-3">
               <button
                 type="button"

@@ -34,22 +34,31 @@ export default function Layout(props: LayoutProps) {
   const { setJwt, jwt, setUserProfile } = useUserStore();
   const { setApps, setMenus, menus, setCurrentMenu, setCurrentApp, currentAppId } = useContextStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const mapMenuItems = useMemo(
-    () =>
-      (items: any[] = []) =>
-        items.map((item: any) => ({
-          aplicacionId: item.aplicacionId,
-          menuId: item.menuId,
-          id: item.id || item.menuId || item.nombre,
-          nombre: item.nombre || item.name || item.title || "Menú",
-          titulo: item.titulo || item.nombre || item.title,
-          url: item.url,
-          acciones: item.acciones || item.accions || item.accionesPermitidas || item.listAccions || [],
-          menuItems: mapMenuItems(item.menuItems || []),
-        })),
-    [],
-  );
+  const mapMenuItems = useMemo<
+    (items?: any[]) => MenuItem[]
+  >(() => {
+    const mapper = (items: any[] = []): MenuItem[] =>
+      items.map((item: any): MenuItem => ({
+        aplicacionId: item.aplicacionId,
+        menuId: item.menuId,
+        id: item.id || item.menuId || item.nombre,
+        nombre: item.nombre || item.name || item.title || "Menú",
+        titulo: item.titulo || item.nombre || item.title,
+        url: item.url,
+        acciones:
+          item.acciones ||
+          item.accions ||
+          item.accionesPermitidas ||
+          item.listAccions ||
+          [],
+        menuItems: mapper(item.menuItems || []),
+      }));
+
+    return mapper;
+  }, []);
+
 
   useEffect(() => {
     const userToken = searchParams.get("user");
@@ -102,6 +111,21 @@ export default function Layout(props: LayoutProps) {
     loadMenus();
   }, [jwt, currentAppId, mapMenuItems, setApps, setMenus, setUserProfile, setCurrentApp]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // aparece solo cuando estás cerca del footer
+      const isNearBottom = scrollTop + windowHeight >= documentHeight - 150;
+
+      setShowScrollTop(isNearBottom);
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const normalize = (path: string) => {
@@ -140,7 +164,7 @@ export default function Layout(props: LayoutProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-base-100 flex flex-col">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white text-neutral-800 flex flex-col border-b">
         <InfoBar />
         <TopBar open={() => setSidebarOpen((prev) => !prev)} />
       </header>
@@ -151,6 +175,15 @@ export default function Layout(props: LayoutProps) {
         </Body>
       </MenuActionsProvider>
       <Footer />
+      {showScrollTop && (
+        <button
+          className="scroll-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Subir"
+        >
+          ↑
+        </button>
+      )}
     </>
   );
 }

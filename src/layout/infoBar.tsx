@@ -216,7 +216,7 @@ export default function InfoBar() {
                     d="M77.271 17.7476C77.4678 18.2413 77.7994 18.588 78.2631 18.7863C78.7281 18.9846 79.2484 19.0844 79.8253 19.0844C80.4022 19.0844 80.9791 19.0121 81.5142 18.8677C82.0493 18.7246 82.4779 18.5565 82.8027 18.3634C83.0278 18.5013 83.2179 18.693 83.3729 18.9399C83.5279 19.1868 83.6047 19.4481 83.6047 19.7226C83.6047 20.0653 83.5063 20.3608 83.3095 20.6076C83.1127 20.8545 82.8351 21.0607 82.4752 21.2248C82.1167 21.3903 81.6907 21.5098 81.1974 21.5846C80.7041 21.6595 80.1622 21.6976 79.5719 21.6976C78.7416 21.6976 77.9706 21.5846 77.2603 21.3575C76.5499 21.1316 75.934 20.7915 75.4123 20.3384C74.8907 19.8854 74.4836 19.3168 74.1871 18.6313C73.8919 17.9458 73.7437 17.1435 73.7437 16.2243C73.7437 15.3051 73.8946 14.5408 74.1979 13.8895C74.4998 13.2381 74.9015 12.7037 75.4015 12.2848C75.9016 11.8672 76.4677 11.5586 77.1012 11.359C77.7347 11.1607 78.3817 11.0609 79.0435 11.0609C79.7902 11.0609 80.4682 11.1699 81.0815 11.3892C81.6934 11.6085 82.2218 11.9105 82.6652 12.294C83.1087 12.6787 83.4497 13.137 83.6896 13.6728C83.9282 14.2073 84.0482 14.7903 84.0482 15.4219C84.0482 15.8881 83.9147 16.2453 83.6465 16.4922C83.3796 16.739 83.0063 16.8966 82.5278 16.9662L79.2174 17.4849C78.8265 17.5466 78.4504 17.3116 78.3426 16.9413C78.0919 16.0759 78.6647 15.1895 79.5732 15.0346L80.669 14.8481C80.6556 14.7115 80.6124 14.571 80.5423 14.4266C80.4722 14.2821 80.3739 14.1495 80.2472 14.0247C80.1205 13.9013 79.9587 13.8015 79.7619 13.7266C79.5638 13.6505 79.3319 13.6137 79.0651 13.6137C78.53 13.6137 78.0838 13.7713 77.7239 14.0864C77.3654 14.4016 77.1578 14.8481 77.0796 15.4233C77.0015 16.001 76.9327 16.7863 77.2697 17.7476H77.271Z"
                     fill="#200031"
                   />
-                  <line x1="119.5" y1="5" x2="119.5" y2="32" stroke="#6500E4" />
+                  <line x1="119.5" y1="5" x2="119.5" y2="32" stroke="#169eee" />
                   <defs>
                     <linearGradient
                       id="paint0_linear_2_24821"
@@ -252,11 +252,13 @@ export default function InfoBar() {
                     </linearGradient>
                   </defs>
                 </svg>
-                <span className="ml-2">{appName || "INVENTARIO"}</span>
+                <span className="inventario-title">
+                  {appName || "INVENTARIO"}
+                </span>
               </Button>
 
               {companyName && (
-                <span className="ml-4 font-semibold text-black">
+                <span className="company-name">
                   {companyName}
                 </span>
               )}
@@ -267,16 +269,15 @@ export default function InfoBar() {
                   color="ghost"
                   className="text-sm font-medium text-neutral-800 normal-case px-0 hover:bg-transparent flex items-center gap-2"
                 >
-                  {displayName || "Usuario"}
+                  {displayName
+                    ?.toLowerCase()
+                    .replace(/\b\w/g, l => l.toUpperCase()) || "Usuario"}
+
                   <i className="fas fa-caret-down py-1 ms-2"></i>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="bg-white text-neutral-800">
-                  <Dropdown.Item
-                    onClick={handleGoPortalMembresia}
-                    className="text-sm font-medium text-neutral-800"
-                  >
-                 <span className="material-icons text-base">open_in_new</span>   
-                 Ir al portal
+                  <Dropdown.Item onClick={handleGoPortalMembresia}>
+                    Portal
                   </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogout} className="text-sm font-medium text-neutral-800">
                     <span className="inline-flex items-center gap-2">

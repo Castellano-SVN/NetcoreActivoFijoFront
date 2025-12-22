@@ -12,9 +12,17 @@ import Element from "@/components/inventario-informe/Element";
 import { toast } from "react-toastify";
 import { FaCircleXmark } from "react-icons/fa6";
 
+type ActiveMenu =
+  | "Prestadores"
+  | "Recepcion"
+  | "Despacho"
+  | "Salidas"
+  | "Toma inventario"
+  | "Informes";
+
 type Props = {
   label: string;
-  activeMenuName?: string;
+  activeMenuName?: ActiveMenu;
   accions?: number[];
 };
 
@@ -126,82 +134,101 @@ export default function EmpresasPage({ label, activeMenuName, accions }: Props) 
         <div className="d-flex justify-content-between align-items-center my-4 border-bottom pb-2">
           <h3 className="titulo-seccion">{sectionTitle}</h3>
         </div>
-        {/* componente de busqueda */}
-        <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
-          <div className="w-full md:w-1/2">
-            <div className="flex flex-row items-center">
+
+        {/* Buscador */}
+        <div className="w-full my-4">
+          <div className="border rounded-lg shadow-sm bg-white p-4">
+
+            {/* Label */}
+            <label className="block mb-2 text-sm font-semibold">
+              Buscar empresas:
+            </label>
+
+            {/* Input */}
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
               <input
                 type="text"
-                placeholder="Buscar empresas..."
+                placeholder=""
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-primary w-full"
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="input input-bordered w-full rounded-full"
               />
+
+              {/* Buscar */}
               <button
-                className="btn btn-primary ml-2"
-                onClick={handleSearch}
-                disabled={searchTerm.trim() === ""}
+                type="button"
+                className="btn btn-primary rounded-full px-10 shrink-0"
+                onClick={() => {
+                  if (searchTerm.trim() === "") return;
+                  handleSearch();
+                }}
               >
-                <FaSearch />
+                Buscar
               </button>
+
               {isSearching && (
-                <button className="btn btn-ghost ml-2" onClick={clearSearch}>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={clearSearch}
+                  aria-label="Limpiar búsqueda"
+                >
                   <FaCircleXmark className="text-error" />
                 </button>
               )}
             </div>
-          </div>
 
-          <div className="w-full md:w-1/2 mt-2 md:mt-0">
-            <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
-              <label className="flex items-center cursor-pointer">
+            {/* Radios */}
+            <div className="flex flex-wrap gap-8 mt-4">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "startsWith"}
                   onChange={() => setSearchType("startsWith")}
                 />
-                <span className="ml-1 text-sm">Comienza con</span>
+                <span>Comienza</span>
               </label>
 
-              <label className="flex items-center cursor-pointer ml-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "contains"}
                   onChange={() => setSearchType("contains")}
                 />
-                <span className="ml-1 text-sm">Contiene</span>
+                <span>Contiene</span>
               </label>
 
-              <label className="flex items-center cursor-pointer ml-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "endsWith"}
                   onChange={() => setSearchType("endsWith")}
                 />
-                <span className="ml-1 text-sm">Termina con</span>
+                <span>Termina con</span>
               </label>
 
-              <label className="flex items-center cursor-pointer ml-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "exact"}
                   onChange={() => setSearchType("exact")}
                 />
-                <span className="ml-1 text-sm">Exacto</span>
+                <span>Exacto</span>
               </label>
             </div>
+
           </div>
         </div>
-        {/*fin componente de busqueda */}
+
         {/* modificamos el warning */}
         {noItems ? (
           <WarningAlert
@@ -242,8 +269,8 @@ export default function EmpresasPage({ label, activeMenuName, accions }: Props) 
                   {isFetchingNextPage
                     ? "Cargando más..."
                     : hasNextPage
-                    ? "Ver más"
-                    : "No hay más datos"}
+                      ? "Ver más"
+                      : "No hay más datos"}
                 </button>
               </div>
               <div className="mt-4"></div>

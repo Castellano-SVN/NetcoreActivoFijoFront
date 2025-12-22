@@ -163,7 +163,7 @@ export default function Index() {
     setIsSearching(false);
     setPage(1); // Resetear a primera página
   };
-  
+
 
   return (
     <div className="flex items-center justify-center">
@@ -174,83 +174,85 @@ export default function Index() {
         </div>
 
         <MenuEmpresa total={meta.total} isLoading={isLoading} />
+        {/* Buscador */}
+        <div className="w-full my-4">
+          <div className="border rounded-lg shadow-sm bg-white p-4">
 
-        {/* Componente de búsqueda (nuevo) */}
-        <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
-          <div className="w-full md:w-1/2">
-            <div className="flex flex-row items-center">
+            {/* Label */}
+            <label className="block mb-2 text-sm font-semibold">
+              Buscar empresas:
+            </label>
+
+            {/* Input */}
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
               <input
                 type="text"
-                placeholder="Buscar empresas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-primary w-full"
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="input input-bordered w-full rounded-full"
               />
-              <button 
-                className="btn btn-primary ml-2"
-                onClick={handleSearch}
-                disabled={searchTerm.trim() === ""}
+
+              {/* Botón */}
+              <button
+                type="button"
+                className="btn btn-primary rounded-full px-10 shrink-0"
+                onClick={() => {
+                  if (searchTerm.trim() === "") return;
+                  handleSearch();
+                }}
               >
-                <FaSearch />
+                Buscar
               </button>
-              {isSearching && (
-                <button 
-                  className="btn btn-ghost ml-2"
-                  onClick={clearSearch}
-                >
-                  <FaCircleXmark className="text-error" />
-                </button>
-              )}
             </div>
-          </div>
-          
-          <div className="w-full md:w-1/2 mt-2 md:mt-0">
-            <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
-              <label className="flex items-center cursor-pointer">
+
+            {/* Radios */}
+            <div className="flex flex-wrap gap-8 mt-4">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "startsWith"}
                   onChange={() => setSearchType("startsWith")}
                 />
-                <span className="ml-1 text-sm">Comienza con</span>
+                <span>Comienza</span>
               </label>
-              
-              <label className="flex items-center cursor-pointer">
+
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "contains"}
                   onChange={() => setSearchType("contains")}
                 />
-                <span className="ml-1 text-sm">Contiene</span>
+                <span>Contiene</span>
               </label>
-              
-              <label className="flex items-center cursor-pointer">
+
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "endsWith"}
                   onChange={() => setSearchType("endsWith")}
                 />
-                <span className="ml-1 text-sm">Termina con</span>
+                <span>Termina con</span>
               </label>
-              
-              <label className="flex items-center cursor-pointer">
+
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="searchType"
-                  className="radio radio-sm radio-primary"
+                  className="radio radio-primary"
                   checked={searchType === "exact"}
                   onChange={() => setSearchType("exact")}
                 />
-                <span className="ml-1 text-sm">Exacto</span>
+                <span>Exacto</span>
               </label>
             </div>
+
           </div>
         </div>
 
@@ -510,7 +512,7 @@ function EmpresaPagination({
           onClick={() => setPage(page - 1)}
           className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base !text-white disabled:!text-white disabled:opacity-60"
         >
-          Página anterior
+          Anterior
         </button>
         <div className="text-lg text-accent">
           Página {page} de {totalPages}
@@ -520,7 +522,7 @@ function EmpresaPagination({
           onClick={() => setPage(page + 1)}
           className="btn btn-primary rounded-full px-6 py-2 text-lg md:text-base !text-white disabled:!text-white disabled:opacity-60"
         >
-          Próxima página
+          Siguiente
         </button>
       </div>
     </div>
