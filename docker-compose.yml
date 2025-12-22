@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  next-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
+    container_name: nextjs_app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production        
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

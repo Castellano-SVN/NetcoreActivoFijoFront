@@ -407,15 +407,19 @@ console.log("accions", accions)
         <div className="flex justify-end">
           <div className="flex justify-end flex-wrap items-center gap-3 w-full">
             {/* <NButtonAcceso type="button" accions={menuActions}></NButtonAcceso> */}
-            <NButtonVolver type="button" size="1" accions={menuActions.length ? menuActions : [4, 5, 6]} className="w-auto inline-flex" onClick={() => router.back()}>
+            <NButtonVolver type="button" size="1" accions={[4, 5, 6]} className="w-auto inline-flex" onClick={() => router.back()}>
               Volver
             </NButtonVolver>
-
-            <NButtonAdd type="button" size="1" accions={menuActions.length ? menuActions : [2, 4, 5, 6]} className="w-auto inline-flex" onClick={() => postInventariar({ EmpresaId: dataEmpresa?.id })}>
+            <NButtonAdd
+              type="button"
+              size="1"
+              accions={[2, 4, 5, 6]}
+              className="w-auto inline-flex"
+              onClick={() => dataEmpresa?.id && postInventariar({ EmpresaId: dataEmpresa.id })}
+            >
               Inventariar
             </NButtonAdd>
-
-            <NButtonAdd type="button" size="1" accions={menuActions.length ? menuActions : [2, 4, 5, 6]} className="w-auto inline-flex" onClick={handleShowModal}>
+            <NButtonAdd type="button" size="1" accions={[2, 4, 5, 6]} className="w-auto inline-flex" onClick={handleShowModal}>
               Programar revisión
             </NButtonAdd>
           </div>
@@ -537,8 +541,7 @@ console.log("accions", accions)
                       <NButtonAgregar
                         // accions={accions}
                         size="2"
-                        accions={menuActions.length ? menuActions : [2]}
-                        actions="agregar"
+                        accions={[2]}
                         submited
                       >
                         Guardar
