@@ -45,17 +45,28 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="flex items-center gap-4 bg-white shadow-sm px-4 py-3">
-        <button
-          onClick={() => router.back()}
-          className="p-2 rounded-full hover:bg-gray-100 transition"
-          aria-label="Volver"
-        >
-          <FaArrowLeft size={20} className="text-gray-700" />
-        </button>
-        <h1 className="text-lg font-semibold text-gray-800">
-          Quiebre de stock de Bodega
-        </h1>
+      <header className="flex items-center justify-between bg-[#169eee] text-white px-6 py-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            type="button"
+            className="
+        inline-flex items-center justify-center
+        w-10 h-10 rounded-full
+        bg-white/15 hover:bg-white/25
+        transition
+        focus:outline-none focus:ring-2 focus:ring-white/30
+      "
+            aria-label="Volver"
+            title="Volver"
+          >
+            <FaArrowLeft className="w-4 h-4 text-white" />
+          </button>
+
+          <h1 className="text-sm md:text-base font-bold">
+            Stock de bodega:
+          </h1>
+        </div>
       </header>
 
       {/* Contenido */}

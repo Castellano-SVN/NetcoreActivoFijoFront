@@ -1,136 +1,101 @@
 import { useRouter } from "next/router";
 import { useInfiniteQuery, useQuery } from "react-query";
-
 import { useUserStore } from "../../../store/user.store";
-import { AxiosError } from "axios"; // Importa AxiosError de axios
+import { AxiosError } from "axios";
 import Head from "next/head";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import IcentroCosto, {
-  IcentroCosto_Bodega,
-} from "../../../interfaces/modules/ICentroCosto.interface";
-import {
-  ICentroCosto,
-  ITipoLocation,
-  LocationFormValues,
-} from "../../../interfaces/creation";
+import IcentroCosto, { IcentroCosto_Bodega } from "../../../interfaces/modules/ICentroCosto.interface";
 import { FiPlus } from "react-icons/fi";
-import {
-  Button,
-  Collapse,
-  Divider,
-  Input,
-  Modal,
-  Select,
-  Table,
-  Textarea,
-} from "react-daisyui";
+import { Button, Collapse, Divider, Input, Modal, Select, Table } from "react-daisyui";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlmacenFormValues } from "../../../interfaces/creation";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ItipoAlmacen } from "@/schemas/tipo_almacen.schema";
 import { toast } from "react-toastify";
-import {
-  api_getAlmacen,
-  api_getOneCentroCosto,
-  api_postAlmacen,
-  api_getTipoLocation,
-  api_postLocation,
-} from "@/services/bodega.service";
+import { api_getAlmacen, api_getOneCentroCosto, api_postAlmacen } from "@/services/bodega.service";
 import { api_getTipoAlmacen } from "@/services/tipos.service";
-import {
-  IAlmacen,
-  ILocacion,
-} from "../../../interfaces/modules/IAlmacen.interface";
-import {
-  FaArchive,
-  FaArrowLeft,
-  FaBox,
-  FaDropbox,
-  FaEye,
-  FaPencilAlt,
-  FaPlus,
-  FaSearch,
-  FaXbox,
-} from "react-icons/fa";
+import { IAlmacen } from "../../../interfaces/modules/IAlmacen.interface";
+import { FaArchive, FaBox, FaEye, FaPencilAlt, FaSearch, FaArrowLeft } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { SlEye } from "react-icons/sl";
-import { FaCircleXmark, FaPencil, FaToolbox } from "react-icons/fa6";
-import { useSearchParams } from "next/navigation";
+import { FaCircleXmark } from "react-icons/fa6";
 import WarningAlert from "@/components/alerts/warningAlert";
 
 export default function Page() {
   const router = useRouter();
-  const idString = router.query.id as string; // Convertir a cadena
+  const idString = router.query.id as string;
 
+  // Input (lo que escribes)
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchType, setSearchType] = useState<
-    "startsWith" | "contains" | "endsWith" | "exact"
-  >("contains");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [filteredBodegas, setFilteredBodegas] = useState<IcentroCosto_Bodega[]>(
-    [],
-  );
+  // Lo que realmente se ejecuta al apretar Buscar
+  const [submittedTerm, setSubmittedTerm] = useState<string>("");
+
+  const [searchType, setSearchType] = useState<"startsWith" | "contains" | "endsWith" | "exact">("contains");
+
+  const isSearching = submittedTerm.trim() !== "";
+  const [filteredBodegas, setFilteredBodegas] = useState<IcentroCosto_Bodega[]>([]);
 
   const { jwt } = useUserStore();
   const [tipoAlmacen, setTipoAlmacen] = useState<ItipoAlmacen[]>([]);
   const [dataCentroCosto, setDataCentroCosto] = useState<IcentroCosto>();
-  const { isLoading, error, data, refetch } = useQuery(
-    "CCbyID",
-    () => api_getOneCentroCosto(jwt, idString),
-    {
-      enabled: idString !== undefined,
-      onSuccess: (data) => {
-        if (data.data.dataList.length !== 1) {
-          return router.back();
-        }
-        setDataCentroCosto(data.data.dataList[0]);
-      },
-      onError: (err: AxiosError) => {
-        if ((err.response?.data as any)?.message === "ID no encontrado")
-          return router.back();
-      },
-    },
-  );
 
+  const { isLoading } = useQuery("CCbyID", () => api_getOneCentroCosto(jwt, idString), {
+    enabled: idString !== undefined,
+    onSuccess: (data) => {
+      if (data.data.dataList.length !== 1) return router.back();
+      const centroCosto = data.data.dataList[0];
+      setDataCentroCosto(centroCosto);
+      // Backup: ensure list renders even before any search runs.
+      setFilteredBodegas(centroCosto.bodegas ?? []);
+    },
+    onError: (err: AxiosError) => {
+      if ((err.response?.data as any)?.message === "ID no encontrado") return router.back();
+    },
+  });
+
+  // Filtro SOLO cuando cambias submittedTerm / searchType / dataCentroCosto
   useEffect(() => {
-    if (dataCentroCosto) {
-      let filtered = dataCentroCosto.bodegas;
-      if (searchTerm.trim()) {
-        filtered = dataCentroCosto.bodegas.filter((bodega) => {
-          const term = searchTerm.toLowerCase();
-          const nombre = bodega.nombre?.toLowerCase() || "";
-          const sigla = bodega.sigla?.toLowerCase() || "";
-          switch (searchType) {
-            case "startsWith":
-              return nombre.startsWith(term) || sigla.startsWith(term);
-            case "contains":
-              return nombre.includes(term) || sigla.includes(term);
-            case "endsWith":
-              return nombre.endsWith(term) || sigla.endsWith(term);
-            case "exact":
-              return nombre === term || sigla === term;
-            default:
-              return true;
-          }
-        });
-      }
-      setFilteredBodegas(filtered);
-      setIsSearching(searchTerm.trim() !== "");
+    if (!dataCentroCosto) return;
+
+    let filtered = dataCentroCosto.bodegas ?? [];
+
+    if (submittedTerm.trim()) {
+      const term = submittedTerm.toLowerCase();
+      filtered = dataCentroCosto.bodegas.filter((bodega) => {
+        const nombre = bodega.nombre?.toLowerCase() || "";
+        const sigla = bodega.sigla?.toLowerCase() || "";
+
+        switch (searchType) {
+          case "startsWith":
+            return nombre.startsWith(term) || sigla.startsWith(term);
+          case "contains":
+            return nombre.includes(term) || sigla.includes(term);
+          case "endsWith":
+            return nombre.endsWith(term) || sigla.endsWith(term);
+          case "exact":
+            return nombre === term || sigla === term;
+          default:
+            return true;
+        }
+      });
     }
-  }, [searchTerm, searchType, dataCentroCosto]);
+
+    setFilteredBodegas(filtered);
+  }, [submittedTerm, searchType, dataCentroCosto]);
 
   const handleSearch = () => {
-    if (searchTerm.trim() !== "") {
-      setIsSearching(true);
-    } else {
+    const term = searchTerm.trim();
+    if (term === "") {
       toast.info("Ingrese un término de búsqueda");
+      return;
     }
+    setSubmittedTerm(term);
   };
 
   const clearSearch = () => {
     setSearchTerm("");
-    setIsSearching(false);
+    setSubmittedTerm("");
   };
 
   const createBodega = () => {
@@ -143,6 +108,7 @@ export default function Page() {
     sessionStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
     router.push("/bodega/crear");
   };
+
   const editBodega = (almacen: IcentroCosto_Bodega) => {
     const bodegaData = {
       empresaId: dataCentroCosto?.empresaId,
@@ -157,6 +123,7 @@ export default function Page() {
     sessionStorage.setItem("BodegaNew", JSON.stringify(bodegaData));
     router.push("/bodega/crear");
   };
+
   const getTipoAlmacen = async () => {
     try {
       const data = await api_getTipoAlmacen(jwt);
@@ -165,176 +132,184 @@ export default function Page() {
       console.log(error);
     }
   };
+
   useEffect(() => {
+    if (!jwt) return;
     getTipoAlmacen();
-  }, []);
+  }, [jwt]);
 
   return (
-    <div className="flex items-center justify-center lg:mx-48">
+    <div className="flex justify-center px-4">
       <Head>
         <title>Centro de costo</title>
         <meta name="description" content="Generated by create next app" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       {!isLoading && (
-        <div className="w-full rounded-lg border shadow-md hover:shadow-xl transition duration-300 ease-in-out container">
-          <div className="flex flex-col">
-            <div className="flex flex-row justify-between bg-primary text-primary-content px-6 py-4 rounded-t-lg items-center">
-              <h3 className="text- md:text-lg font-bold text-left">
+        <div className="w-full max-w-5xl rounded-2xl border shadow-md hover:shadow-xl transition duration-300 ease-in-out bg-white overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between bg-[#169eee] text-white px-6 py-4 rounded-t-lg">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 transition focus:outline-none focus:ring-2 focus:ring-white/30"
+                aria-label="Volver"
+                title="Volver"
+              >
+                <FaArrowLeft className="w-4 h-4 text-white" />
+              </button>
+
+              <h3 className="text-md md:text-lg font-bold text-left truncate">
                 {dataCentroCosto?.nombre?.toUpperCase()}
               </h3>
-              <h3 className="text-sm md:text-lg font-extrabold ">
-                {dataCentroCosto?.sigla
-                  ? dataCentroCosto?.sigla.toUpperCase()
-                  : "Siglas no informadas"}
-              </h3>
             </div>
-            <div></div>
+
+            <h3 className="text-sm md:text-lg font-extrabold">
+              {dataCentroCosto?.sigla ? dataCentroCosto?.sigla.toUpperCase() : "Siglas no informadas"}
+            </h3>
           </div>
-          <div className="flex flex-col-reverse  md:flex-row justify-around items-center md:justify-between">
-            <div className="flex md:flex-row flex-col-reverse space-y-2">
+
+          {/* Botones + total */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 px-4 py-3">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
+                type="button"
                 onClick={createBodega}
-                className="my-2 mx-0 md:mx-2 btn btn-primary"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium bg-[#169eee] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(22,158,238,0.35)] focus:outline-none focus:ring-2 focus:ring-[#169eee]/40"
               >
-                <FiPlus className="mr-2" />
+                <FiPlus className="w-4 h-4" />
                 Crear bodega
               </button>
+
               <button
+                type="button"
                 onClick={() => router.push("/bodega/almacen/tipoalmacen")}
-                className=" btn btn-primary  "
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium bg-[#169eee] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(22,158,238,0.35)] focus:outline-none focus:ring-2 focus:ring-[#169eee]/40"
               >
-                <FaArchive className="mr-2" /> Tipo de almacenes
+                <FaArchive className="w-4 h-4" />
+                Tipo de almacenes
               </button>
             </div>
-            <div
-              className={
-                isLoading
-                  ? "stats shadow skeleton m-2 mt-4 md:mt-0"
-                  : "stats shadow m-2 mt-4 md:mt-0"
-              }
-            >
-              <div className="stat mr-3 text-center">
-                <div className="stat-title">
-                  {isLoading ? (
-                    <span style={{ color: "transparent" }}>asd</span>
-                  ) : (
-                    "Total Bodegas"
-                  )}
-                </div>
-                <div className="stat-value ">
-                  {isLoading ? (
-                    <span style={{ color: "transparent" }}>0</span>
-                  ) : (
-                    dataCentroCosto?.bodegas.length
-                  )}
-                </div>
+
+            <div className={isLoading ? "rounded-xl border bg-white shadow-sm px-5 py-3 text-center skeleton" : "rounded-xl border bg-white shadow-sm px-5 py-3 text-center"}>
+              <div className="text-xs text-gray-500">Total bodegas</div>
+              <div className="text-2xl font-extrabold text-gray-900">
+                {isLoading ? <span style={{ color: "transparent" }}>0</span> : dataCentroCosto?.bodegas.length}
               </div>
             </div>
           </div>
-          <div className="divider" />
-          <div className="text-left ml-4 mb-4">
-            <span className="font-bold text-lg">Lista de Bodegas</span>
-          </div>
-          <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
-            <div className="w-full md:w-1/2">
-              <div className="flex flex-row items-center">
+
+          {/* Buscador bodegas */}
+          <div className="w-full my-4 px-4">
+            <div className="border rounded-lg shadow-sm bg-white p-4">
+              <label className="block mb-2 text-sm font-semibold">Buscar bodegas:</label>
+
+              <div className="flex flex-col lg:flex-row gap-4 items-center">
                 <input
                   type="text"
-                  placeholder="Buscar bodegas..."
+                  placeholder=""
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-primary w-full"
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="input input-bordered w-full rounded-full border-gray-300 focus:border-gray-300 focus:outline-none"
                 />
+
                 <button
-                  className="btn btn-primary ml-2"
+                  type="button"
                   onClick={handleSearch}
-                  disabled={searchTerm.trim() === ""}
+                  className="inline-flex items-center justify-center rounded-full px-10 py-2 shrink-0 text-sm font-semibold bg-[#6500E4] text-white transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#6500E4]/40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <FaSearch />
+                  Buscar
                 </button>
+
+
                 {isSearching && (
-                  <button className="btn btn-ghost ml-2" onClick={clearSearch}>
-                    <FaCircleXmark className="text-error" />
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="btn btn-ghost rounded-full"
+                    aria-label="Limpiar"
+                    title="Limpiar"
+                  >
+                    <FaCircleXmark className="text-error text-lg" />
                   </button>
                 )}
               </div>
-            </div>
 
-            <div className="w-full md:w-1/2 mt-2 md:mt-0">
-              <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
-                <label className="flex items-center cursor-pointer">
+              <div className="flex flex-wrap gap-8 mt-4">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="searchType"
-                    className="radio radio-sm radio-primary"
+                    className="radio radio-primary"
                     checked={searchType === "startsWith"}
                     onChange={() => setSearchType("startsWith")}
                   />
-                  <span className="ml-1 text-sm">Comienza con</span>
+                  <span>Comienza</span>
                 </label>
-                <label className="flex items-center cursor-pointer ml-2">
+
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="searchType"
-                    className="radio radio-sm radio-primary"
+                    className="radio radio-primary"
                     checked={searchType === "contains"}
                     onChange={() => setSearchType("contains")}
                   />
-                  <span className="ml-1 text-sm">Contiene</span>
+                  <span>Contiene</span>
                 </label>
-                <label className="flex items-center cursor-pointer ml-2">
+
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="searchType"
-                    className="radio radio-sm radio-primary"
+                    className="radio radio-primary"
                     checked={searchType === "endsWith"}
                     onChange={() => setSearchType("endsWith")}
                   />
-                  <span className="ml-1 text-sm">Termina con</span>
+                  <span>Termina con</span>
                 </label>
-                <label className="flex items-center cursor-pointer ml-2">
+
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="searchType"
-                    className="radio radio-sm radio-primary"
+                    className="radio radio-primary"
                     checked={searchType === "exact"}
                     onChange={() => setSearchType("exact")}
                   />
-                  <span className="ml-1 text-sm">Exacto</span>
+                  <span>Exacto</span>
                 </label>
               </div>
             </div>
           </div>
-          {filteredBodegas.length === 0 ? (
-            <>
-              <WarningAlert
-                message={
-                  isSearching
-                    ? "No se encontraron resultados para la búsqueda"
-                    : "No existen Bodegas vinculadas a este centro de costo"
-                }
-              />
-              <button className="px-12 btn btn-primary" onClick={createBodega}>
-                Crear Bodega <FaPlus />
-              </button>
-            </>
-          ) : (
-            filteredBodegas.map(
-              (option: IcentroCosto_Bodega, index: number) => (
+
+          {/* Lista bodegas */}
+          <div className="px-4 pb-6">
+            {filteredBodegas.length === 0 ? (
+              <>
+                <WarningAlert
+                  message={
+                    isSearching
+                      ? "No se encontraron resultados para la búsqueda"
+                      : "No existen Bodegas vinculadas a este centro de costo"
+                  }
+                />
+                <button className="px-12 btn bg-[#169eee] border-[#169eee] text-white hover:opacity-90 rounded-full" onClick={createBodega}>
+                  Crear Bodega <FiPlus />
+                </button>
+              </>
+            ) : (
+              filteredBodegas.map((option: IcentroCosto_Bodega, index: number) => (
                 <div key={index}>
-                  <BodegaList
-                    bodega={option}
-                    index={index}
-                    tipoalmacen={tipoAlmacen}
-                    edit={editBodega}
-                  />
+                  <BodegaList bodega={option} index={index} tipoalmacen={tipoAlmacen} edit={editBodega} />
                 </div>
-              ),
-            )
-          )}
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -352,157 +327,97 @@ function BodegaList({
   tipoalmacen: ItipoAlmacen[];
   edit: (almacen: IcentroCosto_Bodega) => void;
 }) {
-  // Estados para el buscador
+  // Input (lo que escribes)
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchType, setSearchType] = useState<
-    "startsWith" | "contains" | "endsWith" | "exact"
-  >("contains");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  // Ejecutado (lo que se busca al apretar Buscar)
+  const [submittedTerm, setSubmittedTerm] = useState<string>("");
 
-  // Función de búsqueda
-  const handleSearch = () => {
-    if (searchTerm.trim() !== "") {
-      setIsSearching(true);
-      refetch();
-    } else {
-      toast.info("Ingrese un término de búsqueda");
-    }
-  };
-
-  // Limpiar búsqueda
-  const clearSearch = () => {
-    setSearchTerm("");
-    setIsSearching(false);
-    refetch();
-  };
+  const [searchType, setSearchType] = useState<"startsWith" | "contains" | "endsWith" | "exact">("contains");
+  const isSearching = submittedTerm.trim() !== "";
 
   const router = useRouter();
+  const { jwt } = useUserStore();
 
   const validationSchema = z.object({
-    EmpresaId: z
-      .string({
-        required_error: "Campo inválido",
-        invalid_type_error: "Campo inválido",
-      })
-      .default(bodega.empresaId),
-    CentroCostoId: z
-      .string({
-        required_error: "Campo inválido",
-        invalid_type_error: "Campo inválido",
-      })
-      .default(bodega.centroCostoId),
-    BodegaId: z
-      .string({
-        required_error: "Campo inválido",
-        invalid_type_error: "Campo inválido",
-      })
-      .default(bodega.id),
-    Id: z
-      .string({
-        required_error: "Campo inválido",
-        invalid_type_error: "Campo inválido",
-      })
-      .optional(),
-    TipoAlmacenId: z.string({
-      required_error: "Campo inválido",
-      invalid_type_error: "Campo inválido",
-    }),
-    Nombre: z
-      .string({
-        required_error: "Campo requerido",
-        invalid_type_error: "Campo incorrecto",
-      })
-      .min(4, { message: "Campo incorrecto" }),
+    EmpresaId: z.string().default(bodega.empresaId),
+    CentroCostoId: z.string().default(bodega.centroCostoId),
+    BodegaId: z.string().default(bodega.id),
+    Id: z.string().optional(),
+    TipoAlmacenId: z.string(),
+    Nombre: z.string().min(4, { message: "Campo incorrecto" }),
   });
+
   const methods = useForm<AlmacenFormValues>({
     resolver: zodResolver(validationSchema),
   });
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    getValues,
-    setValue,
-    formState: { errors },
-  } = methods;
-  const { jwt } = useUserStore();
-  const [page, setPage] = useState<number>(1);
-  const [meta, setMeta] = useState<{ total: number; pages: number }>({
-    total: 0,
-    pages: 0,
-  });
-  const [almacen, setAlmacen] = useState<IAlmacen>({
-    centroCostoId: "0",
-    descripcion: "",
-    bodegaId: "0",
-    codigo: "0",
-    empresaId: "0",
-    id: "0",
-    nombre: "0",
-    tipoAlmacenId: "0",
-  });
+
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = methods;
+
   const creationRef = useRef<HTMLDialogElement>(null);
-  const handleShowCreation = useCallback(() => {
-    creationRef.current?.showModal();
-  }, [creationRef]);
-  const handleCloseCreation = useCallback(() => {
-    creationRef.current?.close();
-  }, [creationRef]);
+  const handleShowCreation = useCallback(() => creationRef.current?.showModal(), []);
+  const handleCloseCreation = useCallback(() => creationRef.current?.close(), []);
 
-  const [isOpen, setIsOpen] = useState(false);
+  // fetch usa queryKey para tomar term / tipo actuales
+  const fetchAlmacen = async ({ pageParam = 1, queryKey }: any) => {
+    const [, bodegaId, term, sType] = queryKey as [
+      string,
+      string,
+      string,
+      "startsWith" | "contains" | "endsWith" | "exact"
+    ];
 
-  // Modificar la función fetchAlmacen
-  const fetchAlmacen = async ({ pageParam = 1 }) => {
-    if (isSearching && searchTerm) {
-      const response = await api_getAlmacen(jwt, pageParam, bodega.id, {
-        searchTerm,
-        searchType,
+    if (term && term.trim() !== "") {
+      const response = await api_getAlmacen(jwt, pageParam, bodegaId, {
+        searchTerm: term,
+        searchType: sType,
       });
       return response.data;
-    } else {
-      const response = await api_getAlmacen(jwt, pageParam, bodega.id);
-      return response.data;
     }
+
+    const response = await api_getAlmacen(jwt, pageParam, bodegaId);
+    return response.data;
   };
 
-  // Actualizar useInfiniteQuery
   const {
     data,
-    error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
     refetch,
     isLoading,
   } = useInfiniteQuery(
-    [`almacen-${bodega.id}`, searchTerm, searchType, isSearching],
+    ["almacen", bodega.id, submittedTerm, searchType],
     fetchAlmacen,
     {
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage.pages > pages.length) {
-          return pages.length + 1;
-        } else {
-          return undefined;
-        }
+        if (lastPage.pages > pages.length) return pages.length + 1;
+        return undefined;
       },
-      keepPreviousData: true,
-      onSuccess: (data) => {
-        const lastPage = data.pages[data.pages.length - 1];
-        setMeta({
-          total: lastPage.total,
-          pages: lastPage.pages,
-        });
-      },
-    },
+      keepPreviousData: false,
+    }
   );
 
-  const AlmacenSubmit = async (data: AlmacenFormValues) => {
+  const allItems = data?.pages?.flatMap((page) => page.dataList) || [];
+
+  const handleSearch = () => {
+    const term = searchTerm.trim();
+    if (term === "") {
+      toast.info("Ingrese un término de búsqueda");
+      return;
+    }
+    setSubmittedTerm(term);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setSubmittedTerm("");
+  };
+
+  const AlmacenSubmit = async (form: AlmacenFormValues) => {
     try {
-      await api_postAlmacen(jwt, data);
-      if (!data.Id) toast.success("¡El nuevo almacén se creo correctamente!");
-      if (data.Id) toast.success("¡Se modifico el almacén correctamente");
+      await api_postAlmacen(jwt, form);
+      if (!form.Id) toast.success("¡El nuevo almacén se creo correctamente!");
+      if (form.Id) toast.success("¡Se modifico el almacén correctamente");
       refetch();
       reset();
       handleCloseCreation();
@@ -510,99 +425,105 @@ function BodegaList({
       console.log(error);
     }
   };
+
   const editAlmacen = (almacen: IAlmacen) => {
     setValue("Id", almacen.id);
     setValue("TipoAlmacenId", almacen.tipoAlmacenId);
     setValue("Nombre", almacen.nombre);
     handleShowCreation();
   };
-  const ref = useRef<HTMLDialogElement>(null);
-  const handleShow = useCallback(() => {
-    ref.current?.showModal();
-    /* setValue(); */
-  }, [ref]);
+  console.log("tipoalmacen:", tipoalmacen);
 
-  const allItems = data?.pages?.flatMap((page) => page.dataList) || [];
-
-  // bodega
   return (
     <>
-      <Collapse.Details tabIndex={index} open={isOpen} icon="arrow">
-        <Collapse.Details.Title className="text-lg font-bold cursor-pointer border-b border-gray-200 pb-2">
-          {bodega.nombre?.toUpperCase()}{" "}
-          {bodega.sigla && `- ${bodega.sigla.toUpperCase()}`}
-        </Collapse.Details.Title>
-        <Collapse.Content className="p-4">
-          {/* Componente de búsqueda */}
-          <div className="flex flex-col md:flex-row items-center gap-2 mx-2 my-4 p-4 border rounded-lg shadow-sm bg-white">
-            <div className="w-full md:w-1/2">
-              <div className="flex flex-row items-center">
-                <input
-                  type="text"
-                  placeholder="Buscar almacenes..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-primary w-full"
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                />
+      <div className="border border-gray-200 rounded-lg my-2 overflow-hidden">
+        {/* Header azul */}
+        <div className="flex items-center justify-between bg-[#169eee] text-white px-5 py-3">
+          <h3 className="text-sm md:text-base font-bold">
+            {bodega.nombre?.toUpperCase()} {bodega.sigla && `- ${bodega.sigla.toUpperCase()}`}
+          </h3>
+        </div>
+
+        <div className="p-4">
+          {/* Buscador almacenes */}
+          <div className="border rounded-lg shadow-sm bg-white p-4 my-4">
+            <label className="block mb-2 text-sm font-semibold">Buscar almacenes:</label>
+
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              <input
+                type="text"
+                placeholder=""
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="input input-bordered w-full rounded-full border-gray-300 focus:border-gray-300 focus:outline-none"
+              />
+
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="inline-flex items-center justify-center rounded-full px-10 py-2 shrink-0 text-sm font-semibold bg-[#6500E4] text-white transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#6500E4]/40 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Buscar
+              </button>
+
+              {isSearching && (
                 <button
-                  className="btn btn-primary ml-2"
-                  onClick={handleSearch}
-                  disabled={searchTerm.trim() === ""}
+                  type="button"
+                  onClick={clearSearch}
+                  className="btn btn-ghost rounded-full"
+                  aria-label="Limpiar"
+                  title="Limpiar"
                 >
-                  <FaSearch />
+                  <FaCircleXmark className="text-error text-lg" />
                 </button>
-                {isSearching && (
-                  <button className="btn btn-ghost ml-2" onClick={clearSearch}>
-                    <FaCircleXmark className="text-error" />
-                  </button>
-                )}
-              </div>
+              )}
             </div>
 
-            <div className="w-full md:w-1/2 mt-2 md:mt-0">
-              <div className="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="searchType"
-                    className="radio radio-sm radio-primary"
-                    checked={searchType === "startsWith"}
-                    onChange={() => setSearchType("startsWith")}
-                  />
-                  <span className="ml-1 text-sm">Comienza con</span>
-                </label>
-                <label className="flex items-center cursor-pointer ml-2">
-                  <input
-                    type="radio"
-                    name="searchType"
-                    className="radio radio-sm radio-primary"
-                    checked={searchType === "contains"}
-                    onChange={() => setSearchType("contains")}
-                  />
-                  <span className="ml-1 text-sm">Contiene</span>
-                </label>
-                <label className="flex items-center cursor-pointer ml-2">
-                  <input
-                    type="radio"
-                    name="searchType"
-                    className="radio radio-sm radio-primary"
-                    checked={searchType === "endsWith"}
-                    onChange={() => setSearchType("endsWith")}
-                  />
-                  <span className="ml-1 text-sm">Termina con</span>
-                </label>
-                <label className="flex items-center cursor-pointer ml-2">
-                  <input
-                    type="radio"
-                    name="searchType"
-                    className="radio radio-sm radio-primary"
-                    checked={searchType === "exact"}
-                    onChange={() => setSearchType("exact")}
-                  />
-                  <span className="ml-1 text-sm">Exacto</span>
-                </label>
-              </div>
+            <div className="flex flex-wrap gap-8 mt-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name={`searchType-${bodega.id}`}
+                  className="radio radio-primary"
+                  checked={searchType === "startsWith"}
+                  onChange={() => setSearchType("startsWith")}
+                />
+                <span>Comienza</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name={`searchType-${bodega.id}`}
+                  className="radio radio-primary"
+                  checked={searchType === "contains"}
+                  onChange={() => setSearchType("contains")}
+                />
+                <span>Contiene</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name={`searchType-${bodega.id}`}
+                  className="radio radio-primary"
+                  checked={searchType === "endsWith"}
+                  onChange={() => setSearchType("endsWith")}
+                />
+                <span>Termina con</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name={`searchType-${bodega.id}`}
+                  className="radio radio-primary"
+                  checked={searchType === "exact"}
+                  onChange={() => setSearchType("exact")}
+                />
+                <span>Exacto</span>
+              </label>
             </div>
           </div>
 
@@ -612,341 +533,130 @@ function BodegaList({
               message={
                 isSearching
                   ? "No se encontraron resultados para la búsqueda"
-                  : "No existen Almacenes creados para esta Bodega"
+                  : "No existen almacenes creados para esta bodega"
               }
             />
           )}
+
           {isLoading ? (
             <h1>Cargando</h1>
           ) : (
             <>
-              <div className="text-left ml-2 mb-4">
-                {allItems.length !== 0 && (
-                  <span className="font-bold text-lg mb-2">
-                    Lista de Almacenes
-                  </span>
-                )}
-                {bodega.descripcion && bodega.descripcion.length !== 0 && (
-                  <div className="flex flex-row justify-center mt-3">
-                    <div className="rounded-3xl	bg-[#E0EFF2] border-2 border-[#8AE4F6] flex items-center flex-row md:pt-2  md:pr-6  md:pb-2 md:pl-4">
-                      <div className="m-4">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-12 h-12 md:w-12 md:h-12"
-                          viewBox="0 0 32 32"
-                          fill="none"
-                        >
-                          <g clipPath="url(#clip0_200_2260)">
-                            <path d="M0 0H32V32H0V0Z" fill="#E0EFF2" />
-                            <path
-                              d="M16.0001 2.66663C8.64008 2.66663 2.66675 8.63996 2.66675 16C2.66675 23.36 8.64008 29.3333 16.0001 29.3333C23.3601 29.3333 29.3334 23.36 29.3334 16C29.3334 8.63996 23.3601 2.66663 16.0001 2.66663ZM16.0001 22.6666C15.2667 22.6666 14.6667 22.0666 14.6667 21.3333V16C14.6667 15.2666 15.2667 14.6666 16.0001 14.6666C16.7334 14.6666 17.3334 15.2666 17.3334 16V21.3333C17.3334 22.0666 16.7334 22.6666 16.0001 22.6666ZM17.3334 12H14.6667V9.33329H17.3334V12Z"
-                              fill="#6500E4"
-                            />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_200_2260">
-                              <rect width="32" height="32" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                      </div>
-                      <span className=" mx-4 text-sm text-left md:text-base font-bold my-4 md:my-0">
-                        {bodega.descripcion}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {allItems.length !== 0 ? (
-                <>
-                  <span className="font-bold text-lg mb-2">
-                    Lista de Almacenes
-                  </span>
 
-                  {/* SM SCREEN */}
-                  {data?.pages?.map((page, pageIndex) => (
-                    <React.Fragment key={pageIndex}>
-                      {page.dataList
-                        .sort(
-                          (a: any, b: any) =>
-                            parseInt(a.codigo) - parseInt(b.codigo),
-                        ) // Ordenar por código
-                        .map((almacen: IAlmacen, index: number) => (
-                          <div
-                            key={almacen.id}
-                            className="md:hidden shadow my-2 border rounded-md  w-full shadow-md"
-                          >
-                            <div className="flex flex-row justify-between p-2">
-                              <div className="basis-1/2 flex flex-col justify-left text-left">
-                                <span className="font-bold mb-2">Nombre</span>
-                                <span className="text-sm align-left">
-                                  {almacen.nombre?.toUpperCase()}
-                                </span>
-                              </div>
-                              <div className="basis-1/2 flex flex-col justify-left text-right ">
-                                <span className="font-bold mb-2">Tipo</span>
-                                <span className="text-sm align-left">
-                                  {
-                                    tipoalmacen.find(
-                                      (e) => e.id === almacen.tipoAlmacenId,
-                                    )?.nombre
-                                  }
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex flex-row p-3 bg-[#FAF6FF] justify-between">
-                              <span className="font-bold text-sm">
-                                Acciones
-                              </span>
-                              <div className="flex space-x-4">
-                                <a
-                                  onClick={() => editAlmacen(almacen)}
-                                  className="flex items-center"
-                                >
-                                  <span className=" underline text-primary">
-                                    Editar
-                                  </span>
-                                  <FaPencil className="text-primary ml-2" />
-                                </a>
-                                <a
-                                  onClick={() =>
-                                    router.push(
-                                      `/empresa/centrocosto/almacen/${almacen.id}`,
-                                    )
-                                  }
-                                  className="flex items-center"
-                                >
-                                  <span className="underline text-primary">
-                                    Ver
-                                  </span>
-                                  <FaEye className="text-primary ml-2" />
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                    </React.Fragment>
-                  ))}
-
-                  {/* MD SCREEN */}
-                  <Table
-                    className="shadow border-collapse w-full responsive hidden md:table"
-                    size="sm"
-                  >
-                    <thead className="bg-primary">
-                      <tr>
-                        <th className="text-base-100 font-extrabold">Codigo</th>
-                        <th className="text-base-100 font-extrabold">
-                          Nombre almacén
-                        </th>
-                        <th className="text-base-100 font-bold">
-                          Tipo almacén
-                        </th>
-                        <th className="text-base-100 font-bold">Editar</th>
-                        <th className="text-base-100 font-bold">Ver</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data?.pages?.map((page, pageIndex) => (
-                        <React.Fragment key={pageIndex}>
-                          {page.dataList.map(
-                            (almacen: IAlmacen, index: number) => (
-                              <tr key={almacen.id}>
-                                <td className="text-gray-700">
-                                  {almacen.codigo}
-                                </td>
-                                <td className="text-gray-700">
-                                  {almacen.nombre?.toUpperCase()}{" "}
-                                </td>
-                                <td className="text-gray-700">
-                                  {
-                                    tipoalmacen.find(
-                                      (e) => e.id === almacen.tipoAlmacenId,
-                                    )?.nombre
-                                  }
-                                </td>
-                                <td>
-                                  <button
-                                    onClick={() => editAlmacen(almacen)}
-                                    className="flex items-center justify-center w-8 h-8 rounded-full mr-2"
-                                  >
-                                    <CiEdit className="h-6 w-6 text-primary" />
-                                  </button>
-                                  <div
-                                    className="tooltip mx-3"
-                                    data-tip="Ubicaciones"
-                                  >
-                                    {/* <LocationList bodega={bodega} almacen={almacen}/> */}
-                                  </div>
-                                </td>
-                                <td>
-                                  <button
-                                    onClick={() =>
-                                      router.push(
-                                        `/empresa/centrocosto/almacen/${almacen.id}`,
-                                      )
-                                    }
-                                    className="flex items-center justify-center w-8 h-8 rounded-full"
-                                  >
-                                    <SlEye className="h-5 w-5 text-primary" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ),
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </Table>
-
-                  {/* NEXT PAGE BUTTON */}
-                  <button
-                    onClick={() => fetchNextPage()}
-                    className="btn btn-primary rounded-full px-10 my-4"
-                    disabled={!hasNextPage || isFetchingNextPage}
-                  >
-                    {isFetchingNextPage
-                      ? "Cargando más..."
-                      : hasNextPage
-                        ? "Ver más"
-                        : "No hay más datos"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-row justify-center mb-6">
-                  <div className="rounded-3xl	bg-[#FFF9E1] border-2 border-[#FFE476] flex items-center flex-row md:pt-4  md:pr-6  md:pb-6 md:pl-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-24 h-24 md:w-12 md:h-12"
-                      viewBox="0 0 32 32"
-                      fill="none"
-                    >
-                      <path
-                        d="M5.96 28H26.04C28.0933 28 29.3733 25.7734 28.3467 24L18.3067 6.65336C17.28 4.88003 14.72 4.88003 13.6933 6.65336L3.65333 24C2.62667 25.7734 3.90667 28 5.96 28ZM16 18.6667C15.2667 18.6667 14.6667 18.0667 14.6667 17.3334V14.6667C14.6667 13.9334 15.2667 13.3334 16 13.3334C16.7333 13.3334 17.3333 13.9334 17.3333 14.6667V17.3334C17.3333 18.0667 16.7333 18.6667 16 18.6667ZM17.3333 24H14.6667V21.3334H17.3333V24Z"
-                        fill="#FF7E00"
-                      />
-                    </svg>
-                    <span className=" mx-4 text-sm text-left md:text-base font-bold">
-                      No existen Almacenes creados para esta Bodega
-                    </span>
-                  </div>
-                </div>
-              )}
-              <div className="flex flex-col md:flex-row my-2">
-                <div className="mt-2 md:mt-0 md:mr-2">
+              {/* Botones inferiores centrados */}
+              <div className="w-full flex justify-center mt-3">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     onClick={() => {
                       reset();
                       handleShowCreation();
                     }}
-                    className="btn btn-primary w-full md:w-auto"
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2 rounded-full text-sm font-semibold bg-[#169eee] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(22,158,238,0.35)] focus:outline-none focus:ring-2 focus:ring-[#169eee]/40"
                   >
-                    <FiPlus className="mr-2" />
-                    Crear Almacén
+                    <FiPlus className="w-4 h-4" />
+                    Crear almacén
                   </button>
-                </div>
-                <div>
+
                   <button
                     onClick={() => edit(bodega)}
-                    className="btn btn-link w-full md:w-auto mt-2 md:mt-0 md:ml-2"
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2 rounded-full text-sm font-semibold text-[#6500E4] border border-[#6500E4]/40 bg-white transition-all duration-200 hover:bg-[#6500E4]/10 focus:outline-none focus:ring-2 focus:ring-[#6500E4]/25"
                   >
-                    <FaPencilAlt className="mr-2" />
-                    Editar Bodega
+                    <FaPencilAlt className="w-4 h-4" />
+                    Editar bodega
                   </button>
-                </div>
-                <div>
+
                   <button
-                    onClick={() => {
-                      router.push(`/empresa/centrocosto/stock/${bodega.id}`);
-                    }}
-                    className="btn btn-link w-full md:w-auto mt-2 md:mt-0 md:ml-2"
+                    onClick={() => router.push(`/empresa/centrocosto/stock/${bodega.id}`)}
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2 rounded-full text-sm font-semibold text-[#6500E4] border border-[#6500E4]/40 bg-white transition-all duration-200 hover:bg-[#6500E4]/10 focus:outline-none focus:ring-2 focus:ring-[#6500E4]/25"
                   >
-                    <FaBox className="mr-2" />
-                    Ver quiebre de stock
+                    <FaBox className="w-4 h-4" />
+                    Ver stock
                   </button>
                 </div>
               </div>
+
+              {/* NEXT PAGE BUTTON */}
+              <button
+                onClick={() => fetchNextPage()}
+                className="btn bg-[#169eee] border-[#169eee] text-white hover:opacity-90 rounded-full px-10 my-4"
+                disabled={!hasNextPage || isFetchingNextPage}
+                type="button"
+              >
+                {isFetchingNextPage ? "Cargando más..." : hasNextPage ? "Ver más" : "No hay más datos"}
+              </button>
             </>
           )}
-        </Collapse.Content>
-      </Collapse.Details>
+        </div>
+      </div>
 
+      {/* Modal crear/editar almacén */}
       <Modal backdrop responsive ref={creationRef}>
-        <Modal.Header className="font-bold">Almacén</Modal.Header>
-        <Divider />
-        <Modal.Body>
-          <form
-            onSubmit={handleSubmit((d) => AlmacenSubmit(d))}
-            className="space-y-4"
-          >
-            <div className="flex flex-col">
-              <label className="label">
-                <span className="label-text">Nombre</span>
-              </label>
-              <Input
-                color={errors.Nombre ? "error" : "neutral"}
-                {...register("Nombre", {
-                  setValueAs: (value) => (value === "" ? undefined : value),
-                })}
-              />
-              {errors.Nombre && (
-                <label className="label text-error">
-                  {errors.Nombre.message}
-                </label>
-              )}
+        <div className="w-full overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          <Modal.Header className="p-0 m-0">
+            <div className="w-full bg-[#169eee] text-white px-5 py-3">
+              <h3 className="font-bold text-sm md:text-base">Almacén</h3>
             </div>
-            {/* <div className="flex flex-col">
-              <label className="label">
-                <span className="label-text">Código</span>
-              </label>
-              <Input
-                color={errors.Codigo ? "error" : "neutral"}
-                {...register("Codigo", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
-              />
-              {errors.Codigo && (
-                <label className="label text-error">
-                  {errors.Codigo.message}
-                </label>
-              )}
-            </div> */}
-            <div className="flex flex-col">
-              <label className="label">
-                <span className="label-text">Tipo almacén</span>
-              </label>
-              <Select
-                color={errors.TipoAlmacenId ? "error" : "neutral"}
-                defaultValue={""}
-                {...register("TipoAlmacenId", {
-                  setValueAs: (value) => (value === "" ? undefined : value),
-                })}
-              >
-                <Select.Option value="" disabled>
-                  Seleccione el tipo de almacén
-                </Select.Option>
-                {tipoalmacen &&
-                  tipoalmacen.map((almacen, index) => (
-                    <Select.Option key={index} value={almacen.id}>
-                      {almacen.nombre}
+          </Modal.Header>
+
+          {/* Cuerpo */}
+          <Modal.Body className="m-0">
+            <div className="px-5 py-4">
+              <form onSubmit={handleSubmit((d) => AlmacenSubmit(d))} className="space-y-4">
+                <div className="flex flex-col">
+                  <label className="label">
+                    <span className="label-text">Nombre:</span>
+                  </label>
+                  <Input
+                    color={errors.Nombre ? "error" : "neutral"}
+                    {...register("Nombre", {
+                      setValueAs: (value) => (value === "" ? undefined : value),
+                    })}
+                  />
+                  {errors.Nombre && <label className="label text-error">{errors.Nombre.message as any}</label>}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="label">
+                    <span className="label-text">Tipo almacén:</span>
+                  </label>
+                  <Select
+                    color={errors.TipoAlmacenId ? "error" : "neutral"}
+                    defaultValue={""}
+                    {...register("TipoAlmacenId", {
+                      setValueAs: (value) => (value === "" ? undefined : value),
+                    })}
+                  >
+                    <Select.Option value="" disabled>
+                      Seleccione el tipo de almacén
                     </Select.Option>
-                  ))}
-              </Select>
-              {errors.TipoAlmacenId && (
-                <label className="label text-error">
-                  {errors.TipoAlmacenId.message}
-                </label>
-              )}
+                    {tipoalmacen &&
+                      tipoalmacen.map((a, i) => (
+                        <Select.Option key={i} value={a.id}>
+                          {a.nombre}
+                        </Select.Option>
+                      ))}
+                  </Select>
+
+                  {errors.TipoAlmacenId && (
+                    <label className="label text-error">{errors.TipoAlmacenId.message as any}</label>
+                  )}
+                </div>
+
+                <div className="flex justify-center pt-2">
+                  <Button type="submit" color="primary">
+                    Guardar
+                  </Button>
+                </div>
+              </form>
             </div>
-            <div className="flex justify-center">
-              <Button type="submit" color="primary">
-                Guardar
-              </Button>
-            </div>
-          </form>
-        </Modal.Body>
+          </Modal.Body>
+        </div>
       </Modal>
     </>
   );
 }
+
+

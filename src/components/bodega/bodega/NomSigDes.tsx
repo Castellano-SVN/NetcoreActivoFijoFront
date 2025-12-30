@@ -107,7 +107,7 @@ export default function NomSigDes({ errors }: props) {
 
                 <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
                     <label className="label">
-                        <span className="label-text">Nombre</span>
+                        <span className="label-text">Nombre:</span>
                     </label>
                     <Input {...register("Nombre", { setValueAs: (value) => value === "" ? undefined : value })} onChange={handleChange} />
                     <label className="label text-error">
@@ -117,7 +117,7 @@ export default function NomSigDes({ errors }: props) {
 
                 <div className="flex flex-col w-full sm:w-1/3 lg:w-1/3 p-2">
                     <label className="label">
-                        <span className="label-text">Sigla</span>
+                        <span className="label-text">Sigla:</span>
                     </label>
                     <Input {...register("Sigla", { setValueAs: (value) => value === "" ? undefined : value })} onChange={handleChange}/>
                     <label className="label text-error">
@@ -127,7 +127,7 @@ export default function NomSigDes({ errors }: props) {
 
                 <div className="flex flex-col w-full">
                     <label className="label">
-                        <span className="label-text">Descripción</span>
+                        <span className="label-text">Descripción:</span>
                     </label>
                     <textarea {...register("Descripcion", { setValueAs: (value) => value === "" ? undefined : (value) })} className="mt-1 block w-full border border:bg-primary  rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 bg-white" rows={10}>
                     </textarea>

@@ -99,7 +99,7 @@ export const StockPDF = ({ data }: { data: DataI }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.title}>Reporte de Stock</Text>
+          <Text style={styles.title}>Reporte de stock</Text>
           <Text style={styles.subtitle}>{data.nombre}</Text>
           <Text style={styles.subtitle}>Código: {data.codigo ?? "—"}</Text>
         </View>

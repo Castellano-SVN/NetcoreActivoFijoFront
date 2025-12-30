@@ -54,21 +54,23 @@ function AnoMes({ jwt }: AnoMesProps) {
 
   return (
     <div className="w-full flex justify-center m-4 px-4">
-      <div className="w-full max-w-xl p-4 border-2 border-primary rounded-lg shadow-md bg-white">
+      <div className="w-full max-w-xl p-4 border-2 border-[#169eee] rounded-lg shadow-md bg-white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="md:col-span-2">
             <h1 className="text-xl text-black text-center"> Período del proceso actual </h1>
           </div>
+
           <div className="text-3xl flex items-center justify-center">
             <div className="border rounded-lg flex flex-col items-center justify-center gap-1 w-full p-3">
               <span className="text-base text-neutral-600">Año</span>
-              <span className="font-semibold text-primary">{dataAnoMes.anoNumero}</span>
+              <span className="font-semibold text-[#169eee]">{dataAnoMes.anoNumero}</span>
             </div>
           </div>
+
           <div className="text-3xl flex items-center justify-center">
             <div className="border rounded-lg flex flex-col items-center justify-center gap-1 w-full p-3">
               <span className="text-base text-neutral-600">Mes</span>
-              <span className="font-semibold text-primary">{monthName(dataAnoMes.mes)}</span>
+              <span className="font-semibold text-[#169eee]">{monthName(dataAnoMes.mes)}</span>
             </div>
           </div>
         </div>

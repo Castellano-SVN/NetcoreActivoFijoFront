@@ -14,7 +14,7 @@ import {
 } from "react";
 import { Button, Input, Modal, Select, Table } from "react-daisyui";
 import { FieldErrors, useFormContext } from 'react-hook-form';
-import { LuSearch, LuXCircle } from 'react-icons/lu';
+import { LuSearch, LuCircleX   } from 'react-icons/lu';
 import { useQuery } from "react-query";
 import { IPersona } from "@/interfaces/creation";
 
@@ -420,7 +420,7 @@ const BusquedaEmpresa = ({
             className="flex inset-y-0 right-0 items-center px-2"
             aria-label="Clear"
           >
-            <LuXCircle />
+            <LuCircleX />
           </button>
 
         </div>

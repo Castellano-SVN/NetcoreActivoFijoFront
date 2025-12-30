@@ -141,9 +141,9 @@ export default function CreateBodega() {
     try {
       const save = await api_postBodegas(jwt, data);
       if (!data.Id) toast.success("La bodega se guardado correctamente");
-      if (data.Id) toast.success("Bodega Actualizada correctamente");
+      if (data.Id) toast.success("Bodega actualizada correctamente");
       router.back();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -175,14 +175,20 @@ export default function CreateBodega() {
             onSubmit={methods.handleSubmit(onSubmit)}
             className="shadow p-4"
           >
-            <div className="flex flex-col">
-              <FaArrowLeft
-                onClick={() => router.back()}
-                className="cursor-pointer text-primary mr-2 mt-2"
-              />
-              <span className="font-bold">Editor de bodega</span>
-              <NomSigDes errors={errors} />
+            {/* Header azul */}
+            <div className="bg-[#169eee] text-white px-4 py-3 -m-4 mb-4 rounded-t-lg flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FaArrowLeft
+                  onClick={() => router.back()}
+                  className="cursor-pointer text-white"
+                />
+                <span className="font-bold">Editor de bodega</span>
+              </div>
             </div>
+
+            {/* Contenido del formulario */}
+            <NomSigDes errors={errors} />
+
             <div className="my-2">
               {exist && (
                 <div className="flex flex-row justify-center mb-6">

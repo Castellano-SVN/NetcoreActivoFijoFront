@@ -99,7 +99,11 @@ export default function TopBar(props: Props) {
     setCurrentApp(app.aplicacionId);
     setMenus(mapMenuItems(app.listMenuPhone || []) as any);
     setCurrentMenu(null);
+
+    // vista inicial (donde sale el período)
+    router.push(app.urlInicio ?? "/");
   };
+
 
   useEffect(() => {
     if (!currentAppId && apps.length > 0) {
@@ -122,18 +126,18 @@ export default function TopBar(props: Props) {
                 <FaAlignJustify className="w-6 h-6" />
               </Button>
             </div>
-     {/* despues vere si dejo el boton ahi o no, pd: cami */}
-            <div className="hidden">
+            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
               {apps.map((app, index) => {
                 const active = app.aplicacionId === currentAppId;
+
                 return (
                   <button
                     key={app.aplicacionId || index}
-                    className={`px-3 py-1 rounded-md text-sm transition-colors ${active
+                    type="button"
+                    className={`px-3 py-1 rounded-md text-sm transition-colors shrink-0 ${active
                         ? "bg-white/25 text-white font-semibold"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                       }`}
-
                     onClick={() => handleAppClick(app)}
                   >
                     {app.nombreAplicacion || "Aplicación"}
@@ -143,13 +147,14 @@ export default function TopBar(props: Props) {
             </div>
           </div>
 
+
           {/* DERECHA: periodo + campana */}
           <div className="flex items-center gap-4 flex-none">
             {periodo && (
               <span className="text-white px-3 py-1">
                 {periodo}
               </span>
-            )} 
+            )}
 
             <div className="relative">
               <Button

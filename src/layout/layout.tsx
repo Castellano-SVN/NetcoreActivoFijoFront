@@ -36,9 +36,7 @@ export default function Layout(props: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const mapMenuItems = useMemo<
-    (items?: any[]) => MenuItem[]
-  >(() => {
+  const mapMenuItems = useMemo<(items?: any[]) => MenuItem[]>(() => {
     const mapper = (items: any[] = []): MenuItem[] =>
       items.map((item: any): MenuItem => ({
         aplicacionId: item.aplicacionId,
@@ -59,7 +57,6 @@ export default function Layout(props: LayoutProps) {
     return mapper;
   }, []);
 
-
   useEffect(() => {
     const userToken = searchParams.get("user");
 
@@ -70,7 +67,7 @@ export default function Layout(props: LayoutProps) {
       router.replace(
         { pathname: router.pathname, query: Object.fromEntries(params.entries()) },
         undefined,
-        { shallow: true },
+        { shallow: true }
       );
       setLoading(false);
       return;
@@ -88,13 +85,22 @@ export default function Layout(props: LayoutProps) {
       if (!jwt) return;
       try {
         const data = await api_getModeloMenusPermisos(jwt);
-        const apps = data?.data?.aplicacionPerfiles || data?.aplicacionPerfiles || [];
-        setApps(apps);
 
-        if (apps.length > 0) {
+        const apps = data?.data?.aplicacionPerfiles || data?.aplicacionPerfiles || [];
+
+        // ✅ AQUÍ MISMO (justo después de const apps = ...)
+        // Agregamos el home de la aplicación (pantalla del período => "/")
+        const appsWithHome = (apps || []).map((a: any) => ({
+          ...a,
+          urlInicio: "/", // <- esta es la vista inicial donde aparece el período
+        }));
+
+        setApps(appsWithHome);
+
+        if (appsWithHome.length > 0) {
           // Si no hay app seleccionada (ej. refresh), seleccionamos la primera.
-          if (!currentAppId) setCurrentApp(apps[0].aplicacionId);
-          setMenus(mapMenuItems(apps[0].listMenuPhone || []));
+          if (!currentAppId) setCurrentApp(appsWithHome[0].aplicacionId);
+          setMenus(mapMenuItems(appsWithHome[0].listMenuPhone || []));
         } else {
           setMenus([]);
         }
