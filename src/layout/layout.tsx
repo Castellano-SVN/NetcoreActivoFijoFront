@@ -4,55 +4,94 @@ import { generateToken } from "../services/jwt.service";
 import { useCallback, useEffect, useState } from "react";
 import TopBar from "./topBar";
 import Body from "./body";
-import { Drawer, Loading, Menu } from "react-daisyui";
+import { Drawer, Loading } from "react-daisyui";
 import Menus from "./menus";
 import InfoBar from "./infoBar";
-import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
+
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export default function Layout(props: LayoutProps) {
-  const searchParams = useSearchParams()
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
   const toggleVisible = useCallback(() => {
     setVisible((visible) => !visible);
   }, []);
-  const rut = searchParams.get('remotetoken')
-  const router = useRouter();
+
+  const remotetoken = router.isReady
+    ? (router.query.remotetoken as string | undefined)
+    : undefined;
 
   const { setJwt, jwt } = useUserStore();
   const mutation = useMutation(generateToken);
+
   useEffect(() => {
-    const token = async (rut:string) => {
-      setLoading(true)
+    const unsubHydrate = useUserStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    if (useUserStore.persist.hasHydrated()) {
+      setHydrated(true);
+    }
+    return unsubHydrate;
+  }, []);
+
+  useEffect(() => {
+    const fetchToken = async (rut: string) => {
+      setLoading(true);
       try {
+        
         const result = await mutation.mutateAsync(rut);
         if (result.data) {
-          const params = new URLSearchParams(window.location.search);
           setJwt(result.data);
-          params.delete('remotetoken');
-          router.replace({
-            pathname: router.pathname,
-            query: Object.fromEntries(params.entries()), // Convertir los parámetros restantes a un objeto
-          }, undefined, { shallow: true });
+          const { remotetoken: _, ...restQuery } = router.query;
+          router.replace(
+            {
+              pathname: router.pathname,
+              query: restQuery,
+            },
+            undefined,
+            { shallow: true },
+          );
         }
       } catch (error) {
         console.error("Error al generar el token:", error);
-        setLoading(false);
       } finally {
         setLoading(false);
       }
     };
-    if (!rut || rut === null) return;
-    token(rut);
-  }, [rut]);
-  
-  if (!jwt || loading )return ( <div className="flex items-center justify-center min-h-screen">
-    <Loading size="lg" color="primary" />
-  </div>);
+
+    if (!router.isReady || !remotetoken) return;
+    fetchToken(remotetoken);
+  }, [router.isReady, remotetoken]);
+
+  if (!hydrated || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading size="lg" color="primary" />
+      </div>
+    );
+  }
+
+  if (!jwt) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
+        <h1 className="text-xl font-semibold text-primary">
+          Sesión no iniciada
+        </h1>
+        <p className="max-w-md text-base-content/80">
+          Debe acceder desde el portal de membresía Netcore con un enlace que
+          incluya el parámetro{" "}
+          <code className="rounded bg-neutral px-1">remotetoken</code>, o tener
+          una sesión activa en este navegador.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
