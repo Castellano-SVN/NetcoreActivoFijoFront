@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:qa": "next dev --mode qa",
     "build": "next build",
+    "build:qa": "next build --mode qa",
     "start": "next start",
     "lint": "next lint"
   },
