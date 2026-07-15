@@ -41,9 +41,7 @@ export default function Layout(props: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    debugger;
     const fetchToken = async (rut: string) => {
-      debugger;
       setLoading(true);
       try {
         
@@ -68,7 +66,6 @@ export default function Layout(props: LayoutProps) {
     };
 
     if (!router.isReady || !remotetoken) return;
-    debugger;
     fetchToken(remotetoken);
   }, [router.isReady, remotetoken]);
 
