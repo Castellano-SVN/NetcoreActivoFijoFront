@@ -1,6 +1,4 @@
-import { useMutation } from "react-query";
 import { useUserStore } from "../store/user.store";
-import { generateToken } from "../services/jwt.service";
 import { useCallback, useEffect, useState } from "react";
 import TopBar from "./topBar";
 import Body from "./body";
@@ -23,12 +21,11 @@ export default function Layout(props: LayoutProps) {
     setVisible((visible) => !visible);
   }, []);
 
-  const remotetoken = router.isReady
-    ? (router.query.remotetoken as string | undefined)
+  const userToken = router.isReady
+    ? (router.query.user as string | undefined)
     : undefined;
 
   const { setJwt, jwt } = useUserStore();
-  const mutation = useMutation(generateToken);
 
   useEffect(() => {
     const unsubHydrate = useUserStore.persist.onFinishHydration(() => {
@@ -41,33 +38,26 @@ export default function Layout(props: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    const fetchToken = async (rut: string) => {
-      setLoading(true);
-      try {
-        
-        const result = await mutation.mutateAsync(rut);
-        if (result.data) {
-          setJwt(result.data);
-          const { remotetoken: _, ...restQuery } = router.query;
-          router.replace(
-            {
-              pathname: router.pathname,
-              query: restQuery,
-            },
-            undefined,
-            { shallow: true },
-          );
-        }
-      } catch (error) {
-        console.error("Error al generar el token:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!router.isReady || !hydrated) return;
 
-    if (!router.isReady || !remotetoken) return;
-    fetchToken(remotetoken);
-  }, [router.isReady, remotetoken]);
+    if (!userToken) return;
+
+    setLoading(true);
+    try {
+      setJwt(userToken);
+      const { user: _, ...restQuery } = router.query;
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: restQuery,
+        },
+        undefined,
+        { shallow: true },
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [router.isReady, hydrated, userToken]);
 
   if (!hydrated || loading) {
     return (
@@ -86,7 +76,7 @@ export default function Layout(props: LayoutProps) {
         <p className="max-w-md text-base-content/80">
           Debe acceder desde el portal de membresía Netcore con un enlace que
           incluya el parámetro{" "}
-          <code className="rounded bg-neutral px-1">remotetoken</code>, o tener
+          <code className="rounded bg-neutral px-1">user</code>, o tener
           una sesión activa en este navegador.
         </p>
       </div>
